@@ -1,3 +1,0 @@
-/* Things that are specific to Solaris 2.9 */
-
-#define PlatformFlags	-DSolaris29=Solaris29

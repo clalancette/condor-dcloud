@@ -1,3 +1,0 @@
-/* Things that are specific to Solaris 2.6 */
-
-#define PlatformFlags	-DSolaris26=Solaris26

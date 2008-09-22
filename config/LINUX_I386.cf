@@ -29,7 +29,7 @@
 #define WANT_BLAHP	YES
 #endif
 
-#define WANT_PVM	YES
+#define WANT_PVM	NO
 #define PVM_ARCH	LINUX
 
 #define HAS_GSI		YES

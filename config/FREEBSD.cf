@@ -14,5 +14,5 @@
 #define WANT_KERBEROS           YES
 
 #undef WANT_PVM
-#define WANT_PVM                YES
+#define WANT_PVM                NO
 #define PVM_ARCH                FREEBSD

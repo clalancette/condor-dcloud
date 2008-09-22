@@ -16,7 +16,7 @@
 #define HAS_NEW_FORTRAN YES
 
 #define WANT_JAVA       YES
-#define WANT_PVM		YES
+#define WANT_PVM		NO
 #define WANT_CONDOR_G	YES
 #define WANT_NETMAN	NO
 #define WANT_GSI		YES

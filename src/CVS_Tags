@@ -1,3 +1,8 @@
+04/11/09 V7_2_2
+  The offical tag for 7.2.2, from the V7_2_2-branch.
+  Version string: $CondorVersion: 7.2.2 Apr  9 2009 BuildID: 145189 $
+  Original build tag: BUILD-V7_2_2-branch-2009-4-9
+
 03/23/2009 V7_2-deb5-branch
   Branch used for the deb5 stduniv port, based from V7_2-branch.
 

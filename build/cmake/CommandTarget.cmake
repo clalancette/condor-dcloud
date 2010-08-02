@@ -1,0 +1,14 @@
+MACRO ( COMMAND_TARGET _TARGET _COMMAND _INARGS _OUTPUT )
+
+add_custom_command(
+    OUTPUT ${_OUTPUT}
+	COMMAND ${_COMMAND}
+	ARGS ${_INARGS}
+)
+
+add_custom_target(
+		${_TARGET}
+		ALL
+		DEPENDS ${_OUTPUT} )
+
+ENDMACRO ( COMMAND_TARGET )

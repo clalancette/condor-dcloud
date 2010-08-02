@@ -1,0 +1,13 @@
+MACRO (CLONE_INSTALL _ORIG_TARGET _NEWNAMES _INSTALL_LOC )
+
+	if ( WINDOWS )
+		set(${_ORIG_TARGET}_loc ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_CONFIG_NAME}/${_ORIG_TARGET}.exe)
+	else(WINDOWS)
+		get_target_property(${_ORIG_TARGET}_loc ${_ORIG_TARGET} LOCATION )
+	endif( WINDOWS )
+
+	foreach ( new_target ${_NEWNAMES} )
+		install (CODE "FILE(INSTALL \"${${_ORIG_TARGET}_loc}\" DESTINATION \"${CMAKE_INSTALL_PREFIX}/${_INSTALL_LOC}\" USE_SOURCE_PERMISSIONS RENAME \"${new_target}\")")
+	endforeach(new_target)
+
+ENDMACRO (CLONE_INSTALL)

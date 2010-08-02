@@ -1,0 +1,87 @@
+#!/usr/bin/env perl
+##**************************************************************
+##
+## Copyright (C) 1990-2007, Condor Team, Computer Sciences Department,
+## University of Wisconsin-Madison, WI.
+## 
+## Licensed under the Apache License, Version 2.0 (the "License"); you
+## may not use this file except in compliance with the License.  You may
+## obtain a copy of the License at
+## 
+##    http://www.apache.org/licenses/LICENSE-2.0
+## 
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+##
+##**************************************************************
+
+
+######################################################################
+# script to setup the Condor build
+######################################################################
+
+use Cwd;
+
+use Getopt::Long;
+use vars qw/ $opt_use_externals_cache $opt_clear_externals_cache /;
+# We use -- and everything after it will be configure arguments only.
+GetOptions(
+            'clear_externals_cache' => \$opt_clear_externals_cache,
+            'clear-externals-cache' => \$opt_clear_externals_cache,
+            'clear_externals_cache_weekly' => \$opt_clear_externals_cache_weekly,
+            'clear-externals-cache-weekly' => \$opt_clear_externals_cache_weekly,
+);
+
+my $BaseDir = getcwd();
+#my $buildid;
+
+# autoflush our STDOUT
+$| = 1;
+
+
+
+print "------------------------- ENV DUMP ------------------------\n";
+if ($ENV{NMI_PLATFORM} =~ /winnt/) {
+    system("set");
+} else {
+	$ENV{PATH} ="$ENV{PATH}:/sw/bin:/sw/sbin:/usr/kerberos/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/usr/bin/X11:/usr/X11R6/bin:/usr/local/condor/bin:/usr/local/condor/sbin:/usr/local/bin:/bin:/usr/bin:/usr/X11R6/bin:/usr/ccs/bin:/usr/lib/java/bin";
+    system("env");
+}
+print "------------------------- ENV DUMP ------------------------\n";
+print "Configure args: " . join(' ', @ARGV) . "\n";
+
+system("cmake --version");
+######################################################################
+# run cmake on the source tree
+######################################################################
+my $configexecstr = 
+      "cmake . " .
+	  join(' ', @ARGV); # GetOpt already stripped out the non-configure args!
+
+	  # will deal with this soon adding build id + other bits. 
+	  #$buildid .
+      # also need to deal w/ -G but that can be the args passed in.
+      #"--with-externals=$externals " .
+
+print "$configexecstr\n";
+$exit_status = system($configexecstr);
+
+if( $exit_status ) {
+    die "failed with status $exit_status\n";
+}
+
+if (defined($opt_clear_externals_cache)) {
+
+	print "make clean";
+	$exit_status = system("make clean");
+
+	if( $exit_status ) {
+    	die "failed with status $exit_status\n";
+	}
+
+}
+
+exit 0;

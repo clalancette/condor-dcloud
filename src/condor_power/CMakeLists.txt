@@ -1,0 +1,11 @@
+if(NOT WIN_EXEC_NODE_ONLY)
+
+	condor_exe( condor_power "power.cpp" ${C_BIN} "${CONDOR_TOOL_LIBS};${PCRE_FOUND};${OPENSSL_FOUND};${KRB5_FOUND};${CLASSADS_FOUND};${COREDUMPER_FOUND}")
+
+	condor_exe( condor_power_state "power_state.cpp" ${C_LIBEXEC} "${CONDOR_TOOL_LIBS};${PCRE_FOUND};${OPENSSL_FOUND};${KRB5_FOUND};${CLASSADS_FOUND};${COREDUMPER_FOUND}")
+
+	file( GLOB ROOSTER rooster* )
+
+	condor_exe( condor_rooster "${ROOSTER}" ${C_LIBEXEC} "${CONDOR_LIBS};${PCRE_FOUND};${OPENSSL_FOUND};${KRB5_FOUND};${CLASSADS_FOUND};${COREDUMPER_FOUND}")
+
+endif(NOT WIN_EXEC_NODE_ONLY)

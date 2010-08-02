@@ -1,0 +1,7 @@
+MACRO (DPRINT _MSG )
+
+	if (_DEBUG)
+		message(STATUS "DEBUG: ${_MSG}")
+	endif(_DEBUG)
+
+ENDMACRO (DPRINT)

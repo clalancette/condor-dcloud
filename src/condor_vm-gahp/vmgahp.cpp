@@ -34,7 +34,7 @@
 #include "vm_type.h"
 #include "vmware_type.h"
 #if defined(LINUX)
-#  include "xen_type.h"
+#  include "xen_type.linux.h"
 #endif
 #include "vmgahp_error_codes.h"
 

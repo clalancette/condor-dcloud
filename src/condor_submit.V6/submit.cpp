@@ -696,6 +696,12 @@ init_job_ad()
 	buffer.sprintf( "%s = 0", ATTR_JOB_COMMITTED_TIME);
 	InsertJobExpr (buffer);
 
+	buffer.sprintf( "%s = 0", ATTR_COMMITTED_SLOT_TIME);
+	InsertJobExpr (buffer);
+
+	buffer.sprintf( "%s = 0", ATTR_CUMULATIVE_SLOT_TIME);
+	InsertJobExpr (buffer);
+
 	buffer.sprintf( "%s = 0", ATTR_TOTAL_SUSPENSIONS);
 	InsertJobExpr (buffer);
 
@@ -1289,8 +1295,8 @@ SetJobMachineAttrs()
 	if( history_len_str.Length() ) {
 		char *endptr=NULL;
 		long history_len = strtol(history_len_str.Value(),&endptr,10);
-		if( history_len > MAXINT || history_len < 0 || *endptr) {
-			fprintf(stderr,"\nERROR: job_machine_attrs_history_length=%s is out of bounds 0 to %d\n",history_len_str.Value(),MAXINT);
+		if( history_len > INT_MAX || history_len < 0 || *endptr) {
+			fprintf(stderr,"\nERROR: job_machine_attrs_history_length=%s is out of bounds 0 to %d\n",history_len_str.Value(),INT_MAX);
 			DoCleanup(0,0,NULL);
 			exit( 1 );
 		}
@@ -2413,7 +2419,7 @@ SetTransferFiles()
 
 		macro_value = condor_param( JarFiles, ATTR_JAR_FILES );
 		if(macro_value) {
-			StringList files(macro_value);
+			StringList files(macro_value, ",");
 			files.rewind();
 			while ( (tmp_ptr=files.next()) ) {
 				tmp = tmp_ptr;
@@ -6357,7 +6363,7 @@ check_open( const char *name, int flags )
 
 	temp = condor_param( AppendFiles, ATTR_APPEND_FILES );
 	if(temp) {
-		list = new StringList(temp);
+		list = new StringList(temp, ",");
 		if(list->contains_withwildcard(name)) {
 			flags = flags & ~O_TRUNC;
 		}
@@ -7781,7 +7787,7 @@ SetVMParams()
 		// Look for .vmx and .vmdk files in transfer_input_files
 		StringList vmx_files;
 		StringList vmdk_files;
-		StringList input_files;
+		StringList input_files( NULL, "," );
 		MyString input_files_str;
 		job->LookupString( ATTR_TRANSFER_INPUT_FILES, input_files_str );
 		input_files.initializeFromString( input_files_str.Value() );

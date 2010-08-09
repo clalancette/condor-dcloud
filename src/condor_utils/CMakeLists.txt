@@ -13,3 +13,8 @@ command_target( utils_genparams perl param_info_c_generator.pl param_info_init.c
 condor_static_lib( utils "${HeaderFiles};${SourceFiles}" )
 
 add_dependencies(utils utils_genparams syscall_numbers )
+
+add_definitions(-DENABLE_STATE_DUMP)
+condor_exe_test(test_log_reader "test_log_reader.cpp" "${CONDOR_TOOL_LIBS};${PCRE_FOUND}")
+condor_exe_test(test_log_reader_state "test_log_reader_state.cpp" "${CONDOR_TOOL_LIBS};${PCRE_FOUND}")
+condor_exe_test(test_log_writer "test_log_writer.cpp" "${CONDOR_TOOL_LIBS};${PCRE_FOUND}")

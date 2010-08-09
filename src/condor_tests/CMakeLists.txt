@@ -161,8 +161,12 @@ if (BUILD_TESTS)
 	condor_pl_test(lib_eventlog-xml "Basic XML Event Log Test" "core;quick;full")
 	condor_pl_test(lib_eventlog_base "Test re-initialization of eventlog reader does not cause seg faults" "lib;quick;full")
 	#if defined(IS_IA64_LINUX_RHEL3) || defined(IS_CONDOR_PPC_LINUX_SLES9) || defined(IS_PPC_OSX_10_4) || defined(IS_CONDOR_PPC_LINUX_YD50) || defined(IS_X86_64_LINUX_RHEL5)  || defined(IS_X86_64_LINUX_RHEL3) || defined(IS_I386_OSX_10_4) || defined(IS_I386_LINUX_RHEL5) || defined(IS_I386_LINUX_RHEL51)
-		condor_pl_test(lib_eventlog_build "Test building of eventlog program" "lib;quick;full")
-	condor_pl_test(lib_eventlog_rotation-defaults "Event Log Rotation: Default settings" "core;quick;full")
+	# condor_pl_test(lib_eventlog_build "Test building of eventlog program" "lib;quick;full")
+	# alread built as part of make tests prior to running batch_test
+
+	dprint("TODO: Need to fix this test")
+	#condor_pl_test(lib_eventlog_rotation-defaults "Event Log Rotation: Default settings" "core;quick;full")
+
 	condor_pl_test(lib_eventlog_rotation-no_rotations_1 "Event Log Rotation: no rotations/1" "core;quick;full")
 	condor_pl_test(lib_eventlog_rotation-no_rotations_2 "Event Log Rotation: no rotations/2" "core;quick;full")
 	condor_pl_test(lib_eventlog_rotation-no_rotations_3 "Event Log Rotation: no rotations/3" "core;quick;full")
@@ -327,7 +331,7 @@ if (BUILD_TESTS)
 	condor_pl_test(lib_ccb_schedd "Test of submit daemons using CCB." "core;quick;full;quicknolink")
 	condor_pl_test(lib_ccb_schedd_privnet "Test of submit daemons using CCB in private net." "core;quick;full;quicknolink")
 	condor_pl_test(lib_job_router_local "Test of JobRouter routing to local universe." "core;quick;full;quicknolink")
-	condor_pl_test(job_core_shadow-lessthan-memlimit_van, "Make sure the shadow stays below memory limit" "core;quick;full;quicknolink")
+	condor_pl_test(job_core_shadow-lessthan-memlimit_van "Make sure the shadow stays below memory limit" "core;quick;full;quicknolink")
 	#if !defined( IS_CONDOR_PPC_LINUX_SLES9 ) && !defined( IS_CONDOR_PPC_LINUX_YD30 ) && !defined( IS_I386_LINUX_RHEL3 ) && !defined( IS_CONDOR_PPC_LINUX_YD50 ) && !defined( IS_SUN4X_SOLARIS28 )
 		condor_pl_test(soap_job_tests "Soap: currently 10 different interface tests" "core;quick;full;quicknolink")
 

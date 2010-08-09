@@ -3,6 +3,8 @@ message(STATUS "***********************************************************")
 message(STATUS "System: ${OS_NAME}(${OS_VER}) Arch=${SYS_ARCH} BitMode=${BIT_MODE}")
 message(STATUS "********* BEGINNING CONFIGURATION *********")
 
+add_definitions(-DPLATFORM=${CMAKE_SYSTEM})
+
 ##################################################
 ##################################################
 set( CMAKE_VERBOSE_MAKEFILE TRUE )
@@ -170,6 +172,14 @@ option(WANT_LEASE_MANAGER "Enable lease manager functionality" OFF)
 option(WANT_QUILL "Enable quill functionality" OFF)
 option(HAVE_JOB_HOOKS "Enable job hook functionality" ON)
 option(HAVE_SSH_TO_JOB "Support for condor_ssh_to_job" ON)
+
+if (NOT ${OS_NAME} STREQUAL "HPUX")
+	option(HAVE_SHARED_PORT "Support for condor_shared_port" ON)
+	if (NOT WINDOWS)
+		set (HAVE_SCM_RIGHTS_PASSFD ON)
+	endif()
+endif()
+
 option(NEEDS_KBDD "Enable KBDD functionality" ON)
 option(HAVE_BACKFILL "Compiling support for any backfill system" ON)
 option(HAVE_BOINC "Compiling support for backfill with BOINC" ON)
@@ -181,6 +191,10 @@ if (NOT WINDOWS)
 	option(PROPER "If externals are not found it will error" ON)
 	option(BUILD_TESTS "Will build internal test applications" ON)
 endif()
+
+if (BUILD_TESTS)
+	set(TEST_TARGET_DIR ${CONDOR_SOURCE_DIR}/src/condor_tests)
+endif(BUILD_TESTS)
 
 ##################################################
 ##################################################

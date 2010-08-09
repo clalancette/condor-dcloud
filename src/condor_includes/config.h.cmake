@@ -142,6 +142,12 @@
 /* Define to 1 to support condor_ssh_to_job (USED)*/
 #cmakedefine HAVE_SSH_TO_JOB 1
 
+/* Define to 1 to support condor_shared_port (USED)*/
+#cmakedefine HAVE_SHARED_PORT 1
+
+/* Define to 1 to support condor_shared_port(s) passing fds (USED)*/
+#cmakedefine HAVE_SCM_RIGHTS_PASSFD 1
+
 /* Define if doing a clipped build (USED)*/
 #cmakedefine CLIPPED 1
 

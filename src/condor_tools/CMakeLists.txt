@@ -41,4 +41,6 @@ endif(NOT WINDOWS)
 
 condor_exe(condor_stats "stats.cpp" ${C_BIN} "${TOOL_LINK_LIBS}")
 
+condor_exe_test(condor_test_auth "test_auth.cpp" "${TOOL_LINK_LIBS}")
+
 

@@ -59,7 +59,7 @@ endif()
 # 1st set the location of the install targets.
 set( C_BIN		bin) #usr/bin )
 set( C_LIB		lib) #usr/lib/condor )
-set( C_LIBEXEC	libexec/condor) #usr/libexec/condor )
+set( C_LIBEXEC	libexec ) #usr/libexec/condor )
 set( C_SBIN		sbin) #usr/sbin )
 
 set( C_INCLUDE	include/condor) #usr/include/condor )
@@ -68,7 +68,7 @@ set( C_SRC		src) #usr/src)
 set( C_SQL		usr/share/condor/sql)
 
 set( C_INIT		etc/init.d )
-set( C_ETC		etc/condor )
+set( C_ETC		etc/examples )
 
 set( C_ETC_EXAMPLES	etc/examples) #usr/share/doc/${CONDOR_VER}/etc/examples )
 set( C_DOC	.) #usr/share/doc/${CONDOR_VER} )
@@ -108,7 +108,7 @@ elseif ( ${OS_NAME} MATCHES "WIN" )
 	set (CPACK_WIX_WXS_FILES ${CONDOR_SOURCE_DIR}/build/backstage/win/CondorCfgDlg.wxs)
 		
 	## You could do the configure idea to strip out information from this prior
-	## to packaging.  
+	## to packaging.
 	#configure_file(${CONDOR_SOURCE_DIR}/build/backstage/win/win.xsl.in ${CONDOR_SOURCE_DIR}/build/backstage/win/win.xsl @ONLY)
 	#set (CPACK_WIX_XSL ${CONDOR_SOURCE_DIR}/build/backstage/win/win.xsl)
 

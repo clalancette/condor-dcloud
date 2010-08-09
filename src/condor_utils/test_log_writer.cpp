@@ -32,7 +32,7 @@
 #include "user_log_header.h"
 #include "my_username.h"
 #include <stdio.h>
-#if defined(UNIX)
+#if defined(UNIX) || defined (LINUX)
 # include <unistd.h>
 # define ENABLE_WORKERS
 #endif
@@ -381,7 +381,7 @@ main(int argc, const char **argv)
 		exit( 1 );
 	}
 
-# if defined(UNIX)
+# if defined(UNIX) || defined (LINUX)
 	signal( SIGTERM, handle_sig );
 	signal( SIGQUIT, handle_sig );
 	signal( SIGINT, handle_sig );
@@ -882,7 +882,7 @@ GlobalOptions::parseArgs( int argc, const char **argv )
 void
 handle_sigchild(int /*sig*/ )
 {
-#if defined(UNIX)
+#if defined(UNIX) || defined (LINUX)
 	pid_t	pid;
 	int		status;
 	if ( !global_workers ) {
@@ -920,7 +920,7 @@ Worker::Kill( int signum ) const
 	if ( !m_alive || (m_pid <= 0) ) {
 		return false;
 	}
-# if defined(UNIX)
+# if defined(UNIX) || defined (LINUX)
 	if ( kill(m_pid, signum) < 0 ) {
 		return false;
 	}
@@ -938,7 +938,7 @@ Workers::~Workers( void )
 {
 	signalWorkers( SIGKILL );
 	waitForWorkers( 10 );
-# if defined(UNIX)
+# if defined(UNIX) || defined(LINUX) 
 	signal( SIGCHLD, SIG_DFL );
 # endif
 	for( unsigned num = 0;  num < m_workers.size();  num++ ) {
@@ -955,7 +955,7 @@ Workers::createWorkers( void )
 		return worker;
 	}
 
-# if defined(UNIX)
+# if defined(UNIX) || defined (LINUX)
 	signal( SIGCHLD, handle_sigchild );
 	for( int num = 0;  num < m_options.getNumWorkers();  num++ ) {
 		Worker *worker = new Worker( *m_options.getWorkerOpts(num), num );
@@ -1076,7 +1076,7 @@ static const char *getUserName( void )
 {
 	static char	buf[128];
 	buf[0] = '\0';
-# if defined(UNIX)
+# if defined(UNIX) || defined (LINUX)
 	struct passwd	*pw = getpwuid( getuid() );
 	if ( NULL == pw ) {
 		return "owner";

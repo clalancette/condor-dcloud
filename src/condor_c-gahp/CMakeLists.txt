@@ -1,11 +1,15 @@
 if (NOT WIN_EXEC_NODE_ONLY)
 
-	file( GLOB CGahpSrcs PipeBuffer.* io_loop.* cgahp_common.* )
+	file( GLOB CGahpSrcs Pipe*.h Pipe*.cpp io*.h io*.cpp cgahp*.h
+	cgahp*.cpp )
 
-	condor_exe( condor_c-gahp "${CGahpSrcs}" ${C_SBIN} "qmgmt;${CONDOR_LIBS};${PCRE_FOUND};${OPENSSL_FOUND};${KRB5_FOUND};${LIBVIRT_FOUND};${COREDUMPER_FOUND}" )
+	condor_exe( condor_c-gahp "${CGahpSrcs}" ${C_SBIN}
+	"qmgmt;${CONDOR_LIBS};${PCRE_FOUND};${OPENSSL_FOUND};${KRB5_FOUND};${COREDUMPER_FOUND}" )
 
-	file( GLOB CGahpWorkerSrcs PipeBuffer.* schedd_client.* schedd_client_main.* SchedDCommands.* cgahp_common.*)
+	file( GLOB CGahpWorkerSrcs Pipe*.h Pipe*.cpp schedd*.h schedd*.cpp
+	Sched*.h Sched*.cpp cgahp*.h cgahp*.cpp)
 
-	condor_exe( condor_c-gahp_worker_thread "${CGahpWorkerSrcs}" ${C_SBIN} "qmgmt;${CONDOR_LIBS};${PCRE_FOUND};${OPENSSL_FOUND};${KRB5_FOUND};${LIBVIRT_FOUND};${COREDUMPER_FOUND}" )
+	condor_exe( condor_c-gahp_worker_thread "${CGahpWorkerSrcs}" ${C_SBIN}
+	"qmgmt;${CONDOR_LIBS};${PCRE_FOUND};${OPENSSL_FOUND};${KRB5_FOUND};${COREDUMPER_FOUND}" )
 
 endif(NOT WIN_EXEC_NODE_ONLY)

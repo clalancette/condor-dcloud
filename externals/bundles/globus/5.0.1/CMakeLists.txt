@@ -127,10 +127,13 @@ if (WITH_GLOBUS)
 			## Set all the config information
 			set (GLOBUS_FOUND "${EXTERNAL_STAGE}/lib/libglobus_gss_assist_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_gssapi_gsi_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_gsi_proxy_core_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_gsi_credential_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_gsi_callback_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_gsi_sysconfig_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_oldgaa_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_gsi_cert_utils_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_openssl_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_openssl_error_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_proxy_ssl_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_callout_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_common_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libltdl_${GLOBUS_FLAVOR}.a")
 
-			set (GLOBUS_GRID_UNIVERSE_COMMON "${EXTERNAL_STAGE}/lib/libglobus_gssapi_error_${GLOBUS_FLAVOR};${EXTERNAL_STAGE}/lib/libglobus_xio_${GLOBUS_FLAVOR};${EXTERNAL_STAGE}/lib/libglobus_io_${GLOBUS_FLAVOR};${EXTERNAL_STAGE}/lib/libglobus_rsl_${GLOBUS_FLAVOR}")
+			set (GLOBUS_GRID_UNIVERSE_COMMON
+			"${EXTERNAL_STAGE}/lib/libglobus_gssapi_error_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_xio_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_io_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_rsl_${GLOBUS_FLAVOR}.a")
 			
-			set (GLOBUS_GRID_UNIVERSE_GT2 "${EXTERNAL_STAGE}/lib/libglobus_gass_transfer_${GLOBUS_FLAVOR};${EXTERNAL_STAGE}/lib/libglobus_gram_client_${GLOBUS_FLAVOR};${EXTERNAL_STAGE}/lib/libglobus_gram_protocol_${GLOBUS_FLAVOR}")
-			set (GLOBUS_GRID_UNIVERSE_NORUID "${EXTERNAL_STAGE}/lib/libglobus_ftp_client_${GLOBUS_FLAVOR};${EXTERNAL_STAGE}/lib/libglobus_ftp_control_${GLOBUS_FLAVOR}")
+			set (GLOBUS_GRID_UNIVERSE_GT2
+			"${EXTERNAL_STAGE}/lib/libglobus_gass_transfer_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_gram_client_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_gram_protocol_${GLOBUS_FLAVOR}.a")
+			set (GLOBUS_GRID_UNIVERSE_NORUID
+			"${EXTERNAL_STAGE}/lib/libglobus_ftp_client_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_ftp_control_${GLOBUS_FLAVOR}.a")
 			append_var (CONDOR_EXTERNALS globus)
 
 			install ( DIRECTORY ${EXTERNAL_STAGE}/${C_LIB}/gt4 DESTINATION ${C_LIB} )

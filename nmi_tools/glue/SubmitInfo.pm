@@ -51,7 +51,7 @@ our %build_and_test_sets = (
 		#'x86_macos_10.4',
 		'x86_rhap_5',
 		'x86_rhas_3',
-		'x86_winnt_5.1', #cygwin path issue
+		#'x86_winnt_5.1', #cygwin path issue
 		#the below are commented out for speed.
 		#'ppc_aix_5.2-pl5',
 	],

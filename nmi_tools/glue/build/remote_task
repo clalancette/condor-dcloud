@@ -32,7 +32,7 @@
 
 use Cwd;
 my $BaseDir = getcwd();
-my $execstr= "make -j all";
+my $execstr= "make externals && make -j4 all";
 my $SrcDir = "$BaseDir/src";
 my $msconfigDir = "$BaseDir/msconfig";
 my $PublicDir = "$BaseDir/public";

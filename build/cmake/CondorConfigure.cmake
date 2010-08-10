@@ -172,6 +172,12 @@ option(WANT_LEASE_MANAGER "Enable lease manager functionality" OFF)
 option(WANT_QUILL "Enable quill functionality" OFF)
 option(HAVE_JOB_HOOKS "Enable job hook functionality" ON)
 option(HAVE_SSH_TO_JOB "Support for condor_ssh_to_job" ON)
+option(NEEDS_KBDD "Enable KBDD functionality" ON)
+option(HAVE_BACKFILL "Compiling support for any backfill system" ON)
+option(HAVE_BOINC "Compiling support for backfill with BOINC" ON)
+option(HAVE_VMWARE "Compiling support for VM Ware" OFF)
+option(CLIPPED "Disables the standard universe" ON)
+option(SOFT_IS_HARD "Enable strict checking for WITH_<LIB>" OFF)
 
 if (NOT ${OS_NAME} STREQUAL "HPUX")
 	option(HAVE_SHARED_PORT "Support for condor_shared_port" ON)
@@ -179,13 +185,6 @@ if (NOT ${OS_NAME} STREQUAL "HPUX")
 		set (HAVE_SCM_RIGHTS_PASSFD ON)
 	endif()
 endif()
-
-option(NEEDS_KBDD "Enable KBDD functionality" ON)
-option(HAVE_BACKFILL "Compiling support for any backfill system" ON)
-option(HAVE_BOINC "Compiling support for backfill with BOINC" ON)
-option(HAVE_VMWARE "Compiling support for VM Ware" OFF)
-option(CLIPPED "Disables the standard universe" ON)
-option(SOFT_IS_HARD "Enable strict checking for WITH_<LIB>" OFF)
 
 if (NOT WINDOWS)
 	option(PROPER "If externals are not found it will error" ON)
@@ -220,7 +219,16 @@ if (SCRATCH_EXTERNALS)
 	else(WINDOWS)
 		set (EXTERNAL_STAGE /scratch/${PACKAGE_NAME}_${PACKAGE_VERSION}/externals/stage/root)
 		set (EXTERNAL_DL /scratch/${PACKAGE_NAME}_${PACKAGE_VERSION}/externals/stage/download)
+
+		set (EXTERNAL_MOD_DEP /scratch/${PACKAGE_NAME}_${PACKAGE_VERSION}/mod.txt)
+		add_custom_command(
+		OUTPUT ${EXTERNAL_MOD_DEP}
+		COMMAND chmod
+		ARGS -f -R a+rwX && touch ${EXTERNAL_MOD_DEP}
+		COMMENT "changing ownership on externals cache because nmi is awesome!!" )
+
 	endif(WINDOWS)
+
 else(SCRATCH_EXTERNALS)
 	set (EXTERNAL_STAGE ${CONDOR_EXTERNAL_DIR}/stage/root)
 	set (EXTERNAL_DL ${CONDOR_EXTERNAL_DIR}/stage/download)
@@ -274,9 +282,11 @@ if (NOT WINDOWS)
 	#add_subdirectory(${CONDOR_SOURCE_DIR}/bundles/cream/1.10.1-p2)
 endif(NOT WINDOWS)
 
+### addition of a single externals target
 if (CONDOR_EXTERNALS AND NOT WINDOWS)
-	add_custom_target( externals DEPENDS ${CONDOR_EXTERNALS} )
-endif()
+	add_custom_target( externals DEPENDS ${EXTERNAL_MOD_DEP} )
+	add_dependencies( externals ${CONDOR_EXTERNALS} )
+endif(CONDOR_EXTERNALS AND NOT WINDOWS)
 
 dprint("CONDOR_EXTERNALS=${CONDOR_EXTERNALS}")
 
@@ -295,7 +305,7 @@ if ( $ENV{JAVA_HOME} )
 endif()
 include_directories(${CONDOR_SOURCE_DIR}/src/condor_includes)
 include_directories(${CONDOR_SOURCE_DIR}/src/condor_utils)
-set (DAEMON_CORE ${CONDOR_SOURCE_DIR}/src/condor_daemon_core.V6) #referenced elsewhere primarily for soap gen stuff
+set (DAEMON_CORE ${CONDOR_SOURCE_DIR}/src/condor_daemon_core.V6) #referenced elsewhere primarily for soap gen stuff 
 include_directories(${DAEMON_CORE})
 include_directories(${CONDOR_SOURCE_DIR}/src/condor_daemon_client)
 include_directories(${CONDOR_SOURCE_DIR}/src/ccb)

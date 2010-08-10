@@ -7,7 +7,7 @@ if (HAVE_EXT_POSTGRESQL)
 
 	condor_static_lib( tt "${ttLibSrcs}" )
 
-	condor_exe(condor_quill "${ttHdrs};${ttSrcs}" ${C_SBIN} "tt;${PCRE_FOUND};${CONDOR_LIBS};${OPENSSL_FOUND};${COREDUMPER_FOUND};${KRB5_FOUND};${POSTGRESQL_FOUND}")
+	condor_exe(condor_quill "${ttHdrs};${ttSrcs}" OFF "tt;${PCRE_FOUND};${CONDOR_LIBS};${OPENSSL_FOUND};${COREDUMPER_FOUND};${KRB5_FOUND};${POSTGRESQL_FOUND}")
 else()
 	message(STATUS "NOTE: tt targets will not be built HAVE_EXT_POSTGRESQL=!DEFINED")
 endif()

@@ -7,7 +7,7 @@ if (HAVE_EXT_GLOBUS AND HAVE_LDAP_H)
 	condor_exe( nordugrid_gahp
 				"${HeaderFiles};${SourceFiles}"
 				${C_SBIN}
-				"${CONDOR_TOOL_LIBS};${GLOBUS_GRID_UNIVERSE_COMMON};${GLOBUS_GRID_UNIVERSE_NORUID};ldap" )
+				"${CONDOR_TOOL_LIBS};${GLOBUS_GRID_UNIVERSE_COMMON};${GLOBUS_GRID_UNIVERSE_NORUID};${OPENSSL_FOUND};ldap" )
 
 else()
 

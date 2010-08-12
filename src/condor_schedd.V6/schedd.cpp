@@ -219,7 +219,7 @@ match_rec::match_rec( char* claim_id, char* p, PROC_ID* job_id,
 	num_exceptions = 0;
 	if( match ) {
 		my_match_ad = new ClassAd( *match );
-		if( DebugFlags && D_MACHINE ) {
+		if( DebugFlags & D_MACHINE ) {
 			dprintf( D_MACHINE, "*** ClassAd of Matched Resource ***\n" );
 			my_match_ad->dPrint( D_MACHINE );
 			dprintf( D_MACHINE | D_NOHEADER, "*** End of ClassAd ***\n" );
@@ -13235,6 +13235,9 @@ Scheduler::calculateCronTabSchedule( ClassAd *jobAd, bool calculate )
 			valid = cronTab->isValid();
 			if ( valid ) {
 				this->cronTabs->insert( id, cronTab );
+			} else {
+				delete cronTab;
+				cronTab = 0;
 			}
 				//
 				// We set the force flag to true so that we are 

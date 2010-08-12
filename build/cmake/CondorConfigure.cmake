@@ -35,11 +35,6 @@ else()
 	# set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 endif()
 
-# use vars set by FindThreads.
-set(HAS_PTHREADS ${CMAKE_USE_PTHREADS_INIT})
-set(HAVE_PTHREADS ${CMAKE_USE_PTHREADS_INIT})
-set(HAVE_PTHREAD_H ${CMAKE_HAVE_PTHREAD_H})
-
 # add global definitions
 add_definitions(-D${OS_NAME}=${OS_NAME}_${OS_VER})
 add_definitions(-D${SYS_ARCH}=${SYS_ARCH})
@@ -112,7 +107,7 @@ if (NOT WINDOWS)
 	check_struct_has_member("struct statfs" f_fstyp "sys/statfs.h" HAVE_STRUCT_STATFS_F_FSTYP)
 	check_struct_has_member("struct statfs" f_fstypename "sys/statfs.h" HAVE_STRUCT_STATFS_F_FSTYPENAME)
 	check_struct_has_member("struct statfs" f_type "sys/statfs.h" HAVE_STRUCT_STATFS_F_TYPE)
-	check_struct_has_member("struct statvfs" f_basetype "sys/statfs.h" HAVE_STRUCT_STATVFS_F_BASETYPE)
+	check_struct_has_member("struct statvfs" f_basetype "sys/types.h;sys/statvfs.h" HAVE_STRUCT_STATVFS_F_BASETYPE)
 
 	# the follow arg checks should be a posix check.
 	# previously they were ~=check_cxx_source_compiles
@@ -141,6 +136,7 @@ if (${OS_NAME} STREQUAL "SUNOS")
 	set(DOES_SAVE_SIGSTATE ON)
 	set(HAS_FLOCK OFF)
 	add_definitions(-DSolaris)
+	check_symbol_exists(inet_ntoa "sys/types.h;sys/socket.h;netinet/in.h;arpa/inet.h" HAS_INET_NTOA)
 elseif(${OS_NAME} STREQUAL "LINUX")
 	set(DOES_SAVE_SIGSTATE ON)
 	check_symbol_exists(SIOCETHTOOL "linux/sockios.h" HAVE_DECL_SIOCETHTOOL)
@@ -151,6 +147,12 @@ elseif(${OS_NAME} STREQUAL "LINUX")
 	check_include_files("linux/personality.h" HAVE_LINUX_PERSONALITY_H)
 	check_include_files("linux/sockios.h" HAVE_LINUX_SOCKIOS_H)
 	check_include_files("linux/types.h" HAVE_LINUX_TYPES_H)
+
+	dprint("Threaded functionality only enable in Linux and Windows")
+	set(HAS_PTHREADS ${CMAKE_USE_PTHREADS_INIT})
+	set(HAVE_PTHREADS ${CMAKE_USE_PTHREADS_INIT})
+	set(HAVE_PTHREAD_H ${CMAKE_HAVE_PTHREAD_H})
+
 elseif(${OS_NAME} STREQUAL "AIX")
 	set(DOES_SAVE_SIGSTATE ON)
 	set(NEEDS_64BIT_STRUCTS ON)
@@ -214,19 +216,18 @@ endif(PROPER)
 
 if (SCRATCH_EXTERNALS)
 	if (WINDOWS)
-		set (EXTERNAL_STAGE C:/temp/scratch/${PACKAGE_NAME}_${PACKAGE_VERSION}/root)
-		set (EXTERNAL_DL C:/temp/scratch/${PACKAGE_NAME}_${PACKAGE_VERSION}/download)
+		set (EXTERNAL_STAGE C:/temp/scratch/externals/cmake/${PACKAGE_NAME}_${PACKAGE_VERSION}/root)
+		set (EXTERNAL_DL C:/temp/scratch/externals/cmake/${PACKAGE_NAME}_${PACKAGE_VERSION}/download)
 	else(WINDOWS)
-		set (EXTERNAL_STAGE /scratch/${PACKAGE_NAME}_${PACKAGE_VERSION}/externals/stage/root)
-		set (EXTERNAL_DL /scratch/${PACKAGE_NAME}_${PACKAGE_VERSION}/externals/stage/download)
+		set (EXTERNAL_STAGE /scratch/externals/cmake/${PACKAGE_NAME}_${PACKAGE_VERSION}/stage/root)
+		set (EXTERNAL_DL /scratch/externals/cmake/${PACKAGE_NAME}_${PACKAGE_VERSION}/externals/stage/download)
 
-		set (EXTERNAL_MOD_DEP /scratch/${PACKAGE_NAME}_${PACKAGE_VERSION}/mod.txt)
+		set (EXTERNAL_MOD_DEP /scratch/externals/cmake/${PACKAGE_NAME}_${PACKAGE_VERSION}/mod.txt)
 		add_custom_command(
 		OUTPUT ${EXTERNAL_MOD_DEP}
 		COMMAND chmod
-		ARGS -f -R a+rwX && touch ${EXTERNAL_MOD_DEP}
-		COMMENT "changing ownership on externals cache because nmi is awesome!!" )
-
+		ARGS -f -R a+rwX /scratch/externals/cmake && touch ${EXTERNAL_MOD_DEP}
+		COMMENT "changing ownership on externals cache because so on multiple user machines they can take advantage" )
 	endif(WINDOWS)
 
 else(SCRATCH_EXTERNALS)
@@ -321,7 +322,6 @@ if (HAVE_EXT_OPENSSL)
 endif(HAVE_EXT_OPENSSL)
 
 set(BUILD_SHARED_LIBS FLASE)
-
 ###########################################
 # order of the below elements is important, do not touch unless you know what you are doing.
 # otherwise you will break due to stub collisions.

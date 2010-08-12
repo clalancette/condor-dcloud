@@ -463,7 +463,7 @@ int tcp_accept_timeout(int ConnectionSock, struct sockaddr *sinful, int *len,
     if( count == 0 ) {
 		return -2;
     } else if( FD_ISSET(ConnectionSock,&readfds) ) {
-		newsock =  accept( ConnectionSock, (struct sockaddr *)sinful, &slt_len);
+		newsock =  accept( ConnectionSock, (struct sockaddr *)sinful, (socklen_t*)&slt_len);
 		if ( newsock > -1 ) {
 			int on = 1;
 			setsockopt( newsock, SOL_SOCKET, SO_KEEPALIVE, (char*)&on,

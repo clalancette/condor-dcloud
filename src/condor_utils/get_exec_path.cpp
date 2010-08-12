@@ -124,7 +124,7 @@ solaris_getExecPath( void )
 		*/ 
 	cwd = getcwd( NULL, MAXPATHLEN );
 	size = strlen(cwd) + strlen(name) + 2;
-	full_path = malloc(size);
+	full_path = (char *) malloc(size);
 	snprintf( full_path, size, "%s/%s", cwd, name );
 	free( cwd );
 	cwd = NULL;

@@ -159,7 +159,7 @@ my @default_build_configure_args =
 	'-DPROPER:BOOL=OFF' 	=> undef,
 	'-DWITH_CREAM:BOOL=OFF'	=> undef,
 	'-DWITH_SRB:BOOL=OFF'	=> undef,
-	'-DSCRATCH_EXTERNALS:BOOL=OFF'	=> undef,
+	'-DSCRATCH_EXTERNALS:BOOL=ON'	=> undef,
 	);
 
 ###############################################################################
@@ -409,7 +409,7 @@ our %submit_info = (
 		'build' => {
 			'configure_args' => { '-DPROPER:BOOL=OFF' => undef,
 				'-DWITH_SRB:BOOL=OFF' => undef,
-				'-DSCRATCH_EXTERNALS:BOOL=OFF'	=> undef,
+				'-DSCRATCH_EXTERNALS:BOOL=ON'	=> undef,
 			 },
 			'prereqs'	=> [ @default_prereqs ],
 			'xtests'	=> undef,
@@ -556,7 +556,7 @@ our %submit_info = (
 		'build' => {
 			'configure_args' => { '-DPROPER:BOOL=OFF' => undef,
 				'-DWITH_SRB:BOOL=OFF' => undef,
-				'-DSCRATCH_EXTERNALS:BOOL=OFF'	=> undef,
+				'-DSCRATCH_EXTERNALS:BOOL=ON'	=> undef,
 			},
 			'prereqs'	=> [ @default_prereqs ],
 			'xtests'	=> [ 'unmanaged-x86_rhap_5' ],
@@ -596,7 +596,7 @@ our %submit_info = (
 		'build' => {
 			'configure_args' => { '-DPROPER:BOOL=OFF' => undef,
 				'-DWITH_SRB:BOOL=OFF' => undef,
-				'-DSCRATCH_EXTERNALS:BOOL=OFF'	=> undef,
+				'-DSCRATCH_EXTERNALS:BOOL=ON'	=> undef,
 			},
 			'prereqs'	=> [ 
 				@default_prereqs,

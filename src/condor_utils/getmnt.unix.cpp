@@ -161,13 +161,7 @@ struct fs_data	*ent;
 
 /*FILE			*setmntent();*/
 
-int
-getmnt( start, buf, bufsize, mode, path )
-int				*start;
-struct fs_data	buf[];
-unsigned		bufsize;
-int				mode;
-char			*path;
+int getmnt( int * start, struct fs_data buf[], unsigned bufsize, int mode, char * path )
 {
 	FILE			*tab;
 	int			check;

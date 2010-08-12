@@ -18,11 +18,9 @@
 ##
 ##**************************************************************
 
-
 ######################################################################
 # script to setup the Condor build
 ######################################################################
-
 use Cwd;
 
 use Getopt::Long;
@@ -36,16 +34,19 @@ GetOptions(
 );
 
 my $BaseDir = getcwd();
-#my $buildid;
+my $SrcDir = "$BaseDir/src";
+my $buildid_file = "BUILD-ID";
+my $buildid;
+my $externals_loc="/scratch/externals/cmake"
 
 # autoflush our STDOUT
 $| = 1;
 
-
-
 print "------------------------- ENV DUMP ------------------------\n";
 if ($ENV{NMI_PLATFORM} =~ /winnt/) {
+	$ENV{PATH} ="$ENV{PATH};./msconfig";
     system("set");
+	my $externals_loc="C:/temp/scratch/externals/cmake"
 } else {
 	$ENV{PATH} ="$ENV{PATH}:/sw/bin:/sw/sbin:/usr/kerberos/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/usr/bin/X11:/usr/X11R6/bin:/usr/local/condor/bin:/usr/local/condor/sbin:/usr/local/bin:/bin:/usr/bin:/usr/X11R6/bin:/usr/ccs/bin:/usr/lib/java/bin";
     system("env");
@@ -54,34 +55,52 @@ print "------------------------- ENV DUMP ------------------------\n";
 print "Configure args: " . join(' ', @ARGV) . "\n";
 
 system("cmake --version");
+
+######################################################################
+# grab out the build id so we can tell cmake what to use for buildid
+######################################################################
+print "Finding build id of Condor\n";
+open( BUILDID, "$buildid_file" ) || die "Can't open $buildid_file: $!\n";
+while( <BUILDID> ) {
+    chomp;
+    $buildid = $_;
+}
+close( BUILDID );
+if( ! $buildid ) {
+    die "Can't find Condor build id in $buildid_file!\n";
+}
+print "Build id is: $buildid\n";
+$buildid = "-DBUILD_ID:STRING=$buildid ";
+
 ######################################################################
 # run cmake on the source tree
 ######################################################################
-my $configexecstr = 
-      "cmake . " .
-	  join(' ', @ARGV); # GetOpt already stripped out the non-configure args!
+if ( defined($opt_clear_externals_cache)||defined($opt_clear_externals_cache_weekly) ) {
 
-	  # will deal with this soon adding build id + other bits. 
-	  #$buildid .
-      # also need to deal w/ -G but that can be the args passed in.
-      #"--with-externals=$externals " .
+	print "deleting externals cache";
+	$exit_status = system("rm -rf $externals_loc/*");
+
+	if( $exit_status ) {
+    	die "failed with status $exit_status\n";
+	}
+
+	system("chmod -f -R a+rwX $externals_loc");
+
+}
+
+######################################################################
+# run cmake on the source tree
+######################################################################
+my $configexecstr =
+			"cmake . " .
+			$buildid .
+			" join(' ', @ARGV);
 
 print "$configexecstr\n";
 $exit_status = system($configexecstr);
 
 if( $exit_status ) {
     die "failed with status $exit_status\n";
-}
-
-if (defined($opt_clear_externals_cache)) {
-
-	print "make clean";
-	$exit_status = system("make clean");
-
-	if( $exit_status ) {
-    	die "failed with status $exit_status\n";
-	}
-
 }
 
 exit 0;

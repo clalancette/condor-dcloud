@@ -36,8 +36,9 @@
 use Cwd;
 
 use Getopt::Long;
-use vars qw/ $opt_skip_doc/;
+use vars qw/ $opt_version_buildid $opt_skip_doc/;
 GetOptions(
+  'version-buildid=s' => \$opt_version_buildid,
   'skip-doc' => \$opt_skip_doc,
 );
 
@@ -86,4 +87,59 @@ if(!(defined $opt_skip_doc)){
 	print "Done removing doc directory\n";
 } else {
 	print "Doc being skipped as requested\n";
+}
+
+######################################################################
+# Step #2) Obtain the build id... I don't particularly like this but...
+######################################################################
+
+print "Creating embedded buildid\n";
+chdir( "$CommonDir" ) || die "Can't chdir($CommonDir): $!\n";
+
+# Stash this in the common dir for remote_pre
+if (defined($opt_version_buildid)) {
+  $runid = $opt_version_buildid;
+  print "Using build id from command-line: $runid\n";
+}
+else {
+  $runid = acquire_runid();
+  print "Automatically discovered that my build id is: $runid\n";
+}
+
+my $buildid_file="BUILD-ID";
+open( BUILDID_FILE, ">$buildid_file") || die "Can't open $buildid_file: $!\n";
+print BUILDID_FILE "$runid\n";
+close( BUILDID_FILE );
+
+######################################################################
+# subroutines
+######################################################################
+
+sub acquire_runid() {
+	my $runid;
+	my $tries = 5;
+	my $count = 0;
+	my $delay = 60;
+
+	# Try for $tries times, with a delay of $delay, to try and get a runid
+	# from the database for this gid. If all else fails, just use the gid
+	# (which we don't initially want to use since this is going into
+	# the version string of the binaries and it is a user interface mistake to
+	# have it in there).
+	
+	# figure out the runid, if not available, then put in the gid.
+	$runid = `nmi_gid2runid $ENV{_NMI_GID} 2>&1`;
+	while($count < $tries && ($? != 0 || $runid =~ m/ERROR/)) {
+		$count++;
+		sleep $delay;
+		$runid = `nmi_gid2runid $ENV{_NMI_GID} 2>&1`;
+	}
+	if ($? != 0 || $runid =~ m/ERROR/) {
+		# oops, no runid, so we'll just slam the gid in here for now until we
+		# find a better semantic thing to do
+		$runid = $ENV{_NMI_GID};
+	}
+	
+	chomp $runid;
+	return $runid;
 }

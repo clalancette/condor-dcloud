@@ -202,7 +202,7 @@ sock_to_string(SOCKET sockd)
 
 	addr_len = sizeof(addr);
 
-	if (getsockname(sockd, (struct sockaddr *)&addr, &addr_len) < 0 || addr_len==0) 
+	if (getsockname(sockd, (struct sockaddr *)&addr, (socklen_t*)&addr_len) < 0 || addr_len==0) 
 		return mynull;
 
 	return ( sin_to_string( &addr ) );
@@ -220,7 +220,7 @@ sock_peer_to_string( SOCKET fd, char *buf, size_t buflen, char const *unknown )
 
 	addr_len = sizeof(who);
 	memset(buf,0,buflen);
-	if( getpeername(fd, (struct sockaddr *)&who, &addr_len) == 0) {
+	if( getpeername(fd, (struct sockaddr *)&who, (socklen_t*)&addr_len) == 0) {
 		if( who.sin_family == AF_INET ) {
 			char const *sinful = sin_to_string( &who );
 			if( sinful ) {
@@ -1011,7 +1011,7 @@ getSockAddr(int sockfd)
     // do getsockname
     static struct sockaddr_in sa_in;
     SOCKET_LENGTH_TYPE namelen = sizeof(sa_in);
-    if (getsockname(sockfd, (struct sockaddr *)&sa_in, &namelen) < 0) {
+    if (getsockname(sockfd, (struct sockaddr *)&sa_in, (socklen_t*)&namelen) < 0) {
         dprintf(D_ALWAYS, "failed getsockname(%d): %s\n", sockfd, strerror(errno));
         return NULL;
     }

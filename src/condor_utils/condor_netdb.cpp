@@ -217,7 +217,7 @@ condor_gethostname(char *name, size_t namelen) {
 			addr_len = sizeof(struct sockaddr_in);
 			if (getsockname(s,
 							(struct sockaddr *) &addr,
-							&addr_len)) {
+							(socklen_t*) &addr_len)) {
 				dprintf(D_HOSTNAME,
 						"NO_DNS: Failed to get socket name, errno=%d (%s)\n",
 						errno, strerror(errno));

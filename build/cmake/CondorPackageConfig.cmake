@@ -57,21 +57,23 @@ if (NOT WINDOWS AND CONDOR_PACKAGE_BUILD)
 endif()
 
 # 1st set the location of the install targets.
-set( C_BIN		bin) #usr/bin )
-set( C_LIB		lib) #usr/lib/condor )
-set( C_LIBEXEC	libexec ) #usr/libexec/condor )
-set( C_SBIN		sbin) #usr/sbin )
+set( C_BIN			bin) #usr/bin )
+set( C_LIB			lib) #usr/lib/condor )
+set( C_LIBEXEC		libexec ) #usr/libexec/condor )
+set( C_SBIN			sbin) #usr/sbin )
 
-set( C_INCLUDE	include/condor) #usr/include/condor )
-set( C_MAN		man) #usr/share/man )
-set( C_SRC		src) #usr/src)
-set( C_SQL		usr/share/condor/sql)
+set( C_INCLUDE		include/condor) #usr/include/condor )
+set( C_MAN			man) #usr/share/man )
+set( C_SRC			src) #usr/src)
+set( C_SQL			usr/share/condor/sql)
 
-set( C_INIT		etc/init.d )
-set( C_ETC		etc/examples )
+set( C_INIT			etc/init.d )
+set( C_ETC			etc/examples )
+set( C_CONFIGD		etc/condor/config.d )
+set( C_SYSCONFIG	etc/sysconfig )
 
 set( C_ETC_EXAMPLES	etc/examples) #usr/share/doc/${CONDOR_VER}/etc/examples )
-set( C_DOC	.) #usr/share/doc/${CONDOR_VER} )
+set( C_DOC			.) #usr/share/doc/${CONDOR_VER} )
 
 set( C_LOCAL_DIR	var/lib/condor )
 set( C_LOG_DIR		var/log/condor )
@@ -153,11 +155,29 @@ elseif( ${OS_NAME} STREQUAL "LINUX" )
 			"${CMAKE_CURRENT_SOURCE_DIR}/build/packaging/debian/prerm"
 			"${CMAKE_CURRENT_SOURCE_DIR}/build/packaging/debian/conffiles"
 			)
+	
+		#Directory overrides
+		#Same as RPM
+		set( C_BIN			usr/bin )
+		set( C_LIB			usr/lib/condor )
+		set( C_SBIN			usr/sbin )
+		set( C_INCLUDE		usr/include/condor )
+		set( C_MAN			usr/share/man )
+		set( C_SRC			usr/src)
+		set( C_SQL			usr/share/condor/sql)
+		set( C_INIT			etc/init.d )
+		set( C_ETC			etc/condor )
+		set( C_CONFIGD		etc/condor/config.d )
 		
+		#Debian specific
 		set( C_ETC_EXAMPLES	usr/share/doc/condor/etc/examples )
-		set( C_DOC		usr/share/doc/condor )
-		set( C_LIBEXEC	usr/lib/condor/libexec )
-
+		set( C_DOC			usr/share/doc/condor )
+		set( C_LIBEXEC		usr/lib/condor/libexec )
+		set( C_SYSCONFIG	etc/default )
+		
+		#Because CPACK_PACKAGE_DEFAULT_LOCATION is set to "/" somewhere, so we have to set prefix like this
+		#This might break as we move to newer version of CMake
+		set( CMAKE_INSTALL_PREFIX "")
 		set( CPACK_SET_DESTDIR "ON")
 
 		# Processing control files
@@ -201,8 +221,27 @@ elseif( ${OS_NAME} STREQUAL "LINUX" )
 
 		#Specify SPEC file template
 		set(CPACK_RPM_USER_BINARY_SPECFILE "${CMAKE_CURRENT_SOURCE_DIR}/build/packaging/rpm/condor.spec.in")
-
+		
+		#Directory overrides
+		set( C_BIN			usr/bin )
+		set( C_LIB			usr/lib/condor )
+		set( C_LIBEXEC		usr/libexec/condor )
+		set( C_SBIN			usr/sbin )
+		set( C_INCLUDE		usr/include/condor )
+		set( C_MAN			usr/share/man )
+		set( C_SRC			usr/src)
+		set( C_SQL			usr/share/condor/sql)
+		set( C_INIT			etc/init.d )
+		set( C_ETC			etc/condor )
+		set( C_CONFIGD		etc/condor/config.d )
+		set( C_ETC_EXAMPLES	usr/share/doc/${CONDOR_VER}/etc/examples )
+		set( C_DOC			usr/share/doc/${CONDOR_VER} )
+				
+		#Because CPACK_PACKAGE_DEFAULT_LOCATION is set to "/" somewhere, so we have to set prefix like this
+		#This might break as we move to newer version of CMake
+		set( CMAKE_INSTALL_PREFIX "")		
 		set( CPACK_SET_DESTDIR "ON")
+		
 
 		#Set lib dir according to architecture
 		#if (${BIT_MODE} STREQUAL "32")
@@ -212,6 +251,35 @@ elseif( ${OS_NAME} STREQUAL "LINUX" )
 		#endif()
 
 	endif()
+
+	# Generate empty folder to ship with package
+	#Local dir
+	file (MAKE_DIRECTORY execute temp )
+	add_custom_target(	change_execute_folder_permission
+						ALL
+						WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+						COMMAND chmod 1777 execute
+						DEPENDS execute)
+	install(DIRECTORY	execute
+			DESTINATION	"${C_LOCAL_DIR}"
+			DIRECTORY_PERMISSIONS	USE_SOURCE_PERMISSIONS)
+	install(DIRECTORY	temp
+			DESTINATION	"${C_LOCAL_DIR}/spool")
+	install(DIRECTORY	temp
+			DESTINATION	"${C_CONFIGD}")
+	install(DIRECTORY	temp
+			DESTINATION	"${C_LOCK_DIR}")
+	install(DIRECTORY	temp
+			DESTINATION	"${C_LOG_DIR}")
+	install(DIRECTORY	temp
+			DESTINATION	"${C_RUN_DIR}")
+	#install(DIRECTORY	temp
+	#	DESTINATION	"${C_MAN}")
+	install(DIRECTORY	temp
+			DESTINATION	"${C_INCLUDE}")
+	install(DIRECTORY	temp
+			DESTINATION	"${C_LIB}")
+
 
 else()
 

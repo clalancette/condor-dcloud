@@ -3,16 +3,21 @@ message(STATUS "***********************************************************")
 message(STATUS "System: ${OS_NAME}(${OS_VER}) Arch=${SYS_ARCH} BitMode=${BIT_MODE}")
 message(STATUS "********* BEGINNING CONFIGURATION *********")
 
+##################################################
+##################################################
+include (FindThreads)
+
+add_definitions(-D${OS_NAME}=${OS_NAME}_${OS_VER})
+add_definitions(-D${SYS_ARCH}=${SYS_ARCH})
 add_definitions(-DPLATFORM=${CMAKE_SYSTEM})
 
-##################################################
-##################################################
+set( CONDOR_EXTERNAL_DIR ${CONDOR_SOURCE_DIR}/externals )
 set( CMAKE_VERBOSE_MAKEFILE TRUE )
-
-include (FindThreads)
+set( BUILD_SHARED_LIBS FLASE )
 
 # Windows is so different perform the check 1st and start setting the vars.
 if(${OS_NAME} MATCHES "WIN" AND NOT ${OS_NAME} MATCHES "DARWIN")
+
 	set(WINDOWS ON)
 	add_definitions(-DWINDOWS)
 	# The following is necessary for sdk/ddk version to compile against.
@@ -24,7 +29,12 @@ if(${OS_NAME} MATCHES "WIN" AND NOT ${OS_NAME} MATCHES "DARWIN")
 	set(C_WIN_BIN ${CONDOR_SOURCE_DIR}/msconfig) #${CONDOR_SOURCE_DIR}/build/backstage/win)
 	set(BISON_SIMPLE ${C_WIN_BIN}/bison.simple)
 	set(CMAKE_SUPPRESS_REGENERATION TRUE)
+
+	set (HAVE_SNPRINTF 1)
+	set (HAVE_WORKING_SNPRINTF 1)
+
 else()
+
 	set( CMD_TERM && )
 	set( CMAKE_BUILD_TYPE RelWithDebInfo ) # = -O2 -g (package will strip the info)
 	set( CMAKE_SUPPRESS_REGENERATION FALSE )
@@ -33,20 +43,9 @@ else()
 	# set (CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 	# set (CMAKE_INSTALL_RPATH YOUR_LOC)
 	# set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-endif()
 
-# add global definitions
-add_definitions(-D${OS_NAME}=${OS_NAME}_${OS_VER})
-add_definitions(-D${SYS_ARCH}=${SYS_ARCH})
+	set(HAVE_PTHREAD_H ${CMAKE_HAVE_PTHREAD_H})
 
-# use relative refs so as code shifts it's easy to shift with it.
-set( CONDOR_EXTERNAL_DIR ${CONDOR_SOURCE_DIR}/externals )
-
-##################################################
-##################################################
-# check symbols, libs, functions, headers, and types
-# check_library_exists("gen" "" "" HAVE_LIBGEN)
-if (NOT WINDOWS)
 	find_library(HAVE_X11 X11)
 	check_library_exists(dl dlopen "" HAVE_DLOPEN)
 	check_symbol_exists(res_init "sys/types.h;netinet/in.h;arpa/nameser.h;resolv.h" HAVE_DECL_RES_INIT)
@@ -100,6 +99,8 @@ if (NOT WINDOWS)
 	check_include_files("stdint.h" HAVE_STDINT_H)
 	check_include_files("ustat.h" HAVE_USTAT_H)
 	check_include_files("valgrind.h" HAVE_VALGRIND_H)
+	check_include_files("procfs.h" HAVE_PROCFS_H)
+	check_include_files("sys/procfs.h" HAVE_SYS_PROCFS_H)
 
 	check_type_exists("struct ifconf" "net/if.h" HAVE_STRUCT_IFCONF)
 	check_type_exists("struct ifreq" "net/if.h" HAVE_STRUCT_IFREQ)
@@ -114,10 +115,7 @@ if (NOT WINDOWS)
 	set(STATFS_ARGS "2")
 	set(SIGWAIT_ARGS "2")
 
-else(NOT WINDOWS)
-	set (HAVE_SNPRINTF 1)
-	set (HAVE_WORKING_SNPRINTF 1)
-endif(NOT WINDOWS)
+endif()
 
 check_type_size("id_t" HAVE_ID_T)
 check_type_size("__int64" HAVE___INT64)
@@ -126,18 +124,22 @@ check_type_size("long long" HAVE_LONG_LONG)
 
 ##################################################
 ##################################################
-# Now checking OS based options -
+# Now checking *nix OS based options 
 set(HAS_FLOCK ON)
 set(DOES_SAVE_SIGSTATE OFF)
 
 if (${OS_NAME} STREQUAL "SUNOS")
+	set(SOLARIS ON)
 	set(NEEDS_64BIT_SYSCALLS ON)
 	set(NEEDS_64BIT_STRUCTS ON)
 	set(DOES_SAVE_SIGSTATE ON)
 	set(HAS_FLOCK OFF)
 	add_definitions(-DSolaris)
-	check_symbol_exists(inet_ntoa "sys/types.h;sys/socket.h;netinet/in.h;arpa/inet.h" HAS_INET_NTOA)
+	add_definitions(-D_STRUCTURED_PROC)
+	set(HAS_INET_NTOA ON)
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lkstat -lelf -lsocket")
 elseif(${OS_NAME} STREQUAL "LINUX")
+	set(LINUX ON)
 	set(DOES_SAVE_SIGSTATE ON)
 	check_symbol_exists(SIOCETHTOOL "linux/sockios.h" HAVE_DECL_SIOCETHTOOL)
 	check_symbol_exists(SIOCGIFCONF "linux/sockios.h" HAVE_DECL_SIOCGIFCONF)
@@ -151,14 +153,16 @@ elseif(${OS_NAME} STREQUAL "LINUX")
 	dprint("Threaded functionality only enable in Linux and Windows")
 	set(HAS_PTHREADS ${CMAKE_USE_PTHREADS_INIT})
 	set(HAVE_PTHREADS ${CMAKE_USE_PTHREADS_INIT})
-	set(HAVE_PTHREAD_H ${CMAKE_HAVE_PTHREAD_H})
 
 elseif(${OS_NAME} STREQUAL "AIX")
+	set(AIX ON)
 	set(DOES_SAVE_SIGSTATE ON)
 	set(NEEDS_64BIT_STRUCTS ON)
 elseif(${OS_NAME} STREQUAL "DARWIN")
 	add_definitions(-DDarwin)
+	set(MACOS ON)
 elseif(${OS_NAME} STREQUAL "HPUX")
+	set(HPUX ON)
 	set(DOES_SAVE_SIGSTATE ON)
 	set(NEEDS_64BIT_STRUCTS ON)
 endif()
@@ -181,7 +185,7 @@ option(HAVE_VMWARE "Compiling support for VM Ware" OFF)
 option(CLIPPED "Disables the standard universe" ON)
 option(SOFT_IS_HARD "Enable strict checking for WITH_<LIB>" OFF)
 
-if (NOT ${OS_NAME} STREQUAL "HPUX")
+if (NOT HPUX)
 	option(HAVE_SHARED_PORT "Support for condor_shared_port" ON)
 	if (NOT WINDOWS)
 		set (HAVE_SCM_RIGHTS_PASSFD ON)
@@ -229,7 +233,6 @@ if (SCRATCH_EXTERNALS)
 		ARGS -f -R a+rwX /scratch/externals/cmake && touch ${EXTERNAL_MOD_DEP}
 		COMMENT "changing ownership on externals cache because so on multiple user machines they can take advantage" )
 	endif(WINDOWS)
-
 else(SCRATCH_EXTERNALS)
 	set (EXTERNAL_STAGE ${CONDOR_EXTERNAL_DIR}/stage/root)
 	set (EXTERNAL_DL ${CONDOR_EXTERNAL_DIR}/stage/download)
@@ -318,10 +321,9 @@ include_directories(${CONDOR_SOURCE_DIR}/src/classad)
 ###########################################
 #extra build flags and link libs.
 if (HAVE_EXT_OPENSSL)
-	add_definitions(-DWITH_OPENSSL) # used only by SOAP headers
+	add_definitions(-DWITH_OPENSSL) # used only by SOAP
 endif(HAVE_EXT_OPENSSL)
 
-set(BUILD_SHARED_LIBS FLASE)
 ###########################################
 # order of the below elements is important, do not touch unless you know what you are doing.
 # otherwise you will break due to stub collisions.

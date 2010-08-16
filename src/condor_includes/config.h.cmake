@@ -15,10 +15,6 @@
 //#cmakedefine CONDOR_FREEBSD6
 ///* Define if on FreeBSD7 */
 //#cmakedefine CONDOR_FREEBSD7
-//* Define if on DUX */
-//#cmakedefine DUX
-///* Define if on DUX5 */
-//#cmakedefine DUX5
 ///* Define if on OS X 10.3 */
 //#cmakedefine Darwin_10_3
 ///* Define if on OS X 10.4 */
@@ -447,6 +443,12 @@
 /* Define to 1 if you have the <valgrind.h> header file. (USED)*/
 #cmakedefine HAVE_VALGRIND_H 1
 
+/* Define to 1 if you have the <procfs.h> header file. (USED)*/
+#cmakedefine HAVE_PROCFS_H 1
+
+/* Define to 1 if you have the <sys/procfs.h> header file. (USED)*/
+#cmakedefine HAVE_SYS_PROCFS_H 1
+
 /* Define to 1 if you have the `vasprintf' function. (USED)*/
 #cmakedefine HAVE_VASPRINTF 1
 
@@ -494,9 +496,6 @@
 
 /* Number of arguments to sigwait() (USED)*/
 #cmakedefine SIGWAIT_ARGS 2
-
-///* Define if on TRU64 (DUX) (USED)*/
-//#cmakedefine TRU64
 
 
 #endif

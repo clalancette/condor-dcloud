@@ -29,6 +29,7 @@ else()
 	# I should probably just add all and subtract tests.
 	file( GLOB ClassadSrcs attrrefs.cpp common.cpp collection* fnCall.cpp expr* indexfile* lexer* literals.cpp matchClassad.cpp new_classad* query.cpp sink.cpp source.cpp transaction.cpp view.cpp xml* )	
 	add_library( classads STATIC ${ClassadSrcs} )
+	add_dependencies( classads pcre )
 	
 	set( CLASSADS_FOUND classads )
 	

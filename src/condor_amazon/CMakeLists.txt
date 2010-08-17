@@ -1,6 +1,6 @@
 
 
-if (HAVE_EXT_GSOAP AND HAVE_EXT_OPENSSL AND NOT WINDOWS)
+if (HAVE_EXT_GSOAP AND HAVE_EXT_OPENSSL AND HAVE_PTHREADS)
 
 	
 	set (AMAZON_SOAP_FILES "soapC.cpp;soapClient.cpp;soapH.h;soapStub.h;soapAmazonEC2Object.h;soapAmazonEC2Proxy.h;")

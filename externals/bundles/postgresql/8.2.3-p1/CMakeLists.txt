@@ -8,7 +8,7 @@ if (WITH_POSTGRESQL)
 
 		if (WINDOWS)
 			set (POSTGRESQL_CONFIGURE echo "Nothing to patch on Windows")
-			set (POSTGRESQL_MAKE cd src/interfaces/libpq \r\n
+			set (POSTGRESQL_MAKE cd src \r\n
 			                     nmake -f win32.mak )
 			set (POSTGRESQL_INSTALL cp src/interfaces/libpq/Release/*.lib  ${EXTERNAL_STAGE}/lib \r\n
 									cp src/interfaces/libpq/Release/*.dll ${EXTERNAL_STAGE}/lib \r\n

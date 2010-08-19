@@ -420,9 +420,14 @@ else(MSVC)
 	endif(cxx_rdynamic)
 
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--warn-once -Wl,--warn-common")
+
+	if(HAVE_DLOPEN)
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -ldl")
+	endif(HAVE_DLOPEN)
+
 	if (NOT PROPER)
 		#b/c of the way the
-		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -ldl -lresolv -lcrypt")
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lresolv -lcrypt")
 	endif(NOT PROPER)
 
 	if (HAVE_PTHREADS)

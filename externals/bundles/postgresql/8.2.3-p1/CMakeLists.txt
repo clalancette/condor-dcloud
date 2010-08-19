@@ -63,6 +63,6 @@ if (WITH_POSTGRESQL AND WANT_QUILL)
 		set( HAVE_EXT_POSTGRESQL ON PARENT_SCOPE )
 	endif(POSTGRESQL_FOUND)
 
-else(WITH_POSTGRESQL)
+else()
 	message (STATUS "external skiped (postgresql)")
-endif(WITH_POSTGRESQL)
+endif()

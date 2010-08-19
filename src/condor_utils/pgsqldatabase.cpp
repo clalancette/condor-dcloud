@@ -19,10 +19,11 @@
 
 
 #include "condor_common.h"
+#ifdef HAVE_EXT_POSTGRESQL
 #include "condor_io.h"
 #include "pgsqldatabase.h"
 
-#ifdef HAVE_EXT_POSTGRESQL
+
 const int QUILLPP_HistoryHorFieldNum = 62;
 const char *QUILLPP_HistoryHorFields[] ={"ScheddName", "ClusterId", "ProcId", "QDate", "Owner", "GlobalJobId", "NumCkpts", "NumRestarts", "NumSystemHolds", "CondorVersion", "CondorPlatform", "RootDir", "Iwd", "JobUniverse", "Cmd", "MinHosts", "MaxHosts", "JobPrio", "User", "Env", "UserLog", "CoreSize", "KillSig", "In", "TransferIn", "Out", "TransferOut", "Err", "TransferErr", "ShouldTransferFiles", "TransferFiles", "ExecutableSize", "DiskUsage", "FileSystemDomain", "Args", "LastMatchTime", "NumJobMatches", "JobStartDate", "JobCurrentStartDate", "JobRunCount", "FileReadCount", "FileReadBytes", "FileWriteCount", "FileWriteBytes", "FileSeekCount", "TotalSuspensions", "ImageSize", "ExitStatus", "LocalUserCpu", "LocalSysCpu", "RemoteUserCpu", "RemoteSysCpu", "BytesSent", "BytesRecvd", "RSCBytesSent", "RSCBytesRecvd", "ExitCode", "JobStatus", "EnteredCurrentStatus", "RemoteWallClockTime", "LastRemoteHost", "CompletionDate", 0};
 const int QUILLPP_HistoryHorIsQuoted[] ={/*"ScheddName"*/1, /*"ClusterId"*/0, /*"ProcId"*/0, /*"QDate"*/0, /*"Owner"*/1, /*"GlobalJobId"*/1, /*"NumCkpts"*/0, /*"NumRestarts"*/0, /*"NumSystemHolds"*/0, /*"CondorVersion"*/1, /*"CondorPlatform"*/1, /*"RootDir"*/1, /*"Iwd"*/1, /*"JobUniverse"*/0, /*"Cmd"*/1, /*"MinHosts"*/0, /*"MaxHosts"*/0, /*"JobPrio"*/0, /*"User"*/1, /*"Env"*/1, /*"UserLog"*/1, /*"CoreSize"*/0, /*"KillSig"*/1, /*"In"*/1, /*"TransferIn"*/0, /*"Out"*/1, /*"TransferOut"*/0, /*"Err"*/1, /*"TransferErr"*/0, /*"ShouldTransferFiles"*/1, /*"TransferFiles"*/1, /*"ExecutableSize"*/0, /*"DiskUsage"*/0, /*"FileSystemDomain"*/1, /*"Args"*/1, /*"LastMatchTime"*/0, /*"NumJobMatches"*/0, /*"JobStartDate"*/0, /*"JobCurrentStartDate"*/0, /*"JobRunCount"*/0, /*"FileReadCount"*/0, /*"FileReadBytes"*/0, /*"FileWriteCount"*/0, /*"FileWriteBytes"*/0, /*"FileSeekCount"*/0, /*"TotalSuspensions"*/0, /*"ImageSize"*/0, /*"ExitStatus"*/0, /*"LocalUserCpu"*/0, /*"LocalSysCpu"*/0, /*"RemoteUserCpu"*/0, /*"RemoteSysCpu"*/0, /*"BytesSent"*/0, /*"BytesRecvd"*/0, /*"RSCBytesSent"*/0, /*"RSCBytesRecvd"*/0, /*"ExitCode"*/0, /*"JobStatus"*/0, /*"EnteredCurrentStatus"*/0, /*"RemoteWallClockTime"*/0, /*"LastRemoteHost"*/1, /*"CompletionDate"*/0};

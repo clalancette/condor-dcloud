@@ -64,7 +64,7 @@ if (WITH_KRB5)
 
 	else( NOT PROPER )
 
-		find_multiple( "krb5" KRB5_FOUND )
+		find_multiple( "krb5;k5crypto;comm_err;krb5support" KRB5_FOUND )
 
 	endif( NOT PROPER )
 

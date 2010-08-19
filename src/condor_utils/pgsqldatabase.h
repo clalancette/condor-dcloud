@@ -22,6 +22,7 @@
 #define _PGSQLDATABASE_H_
 
 #include "condor_common.h"
+#ifdef HAVE_EXT_POSTGRESQL
 #include "libpq-fe.h"
 #include "sqlquery.h"
 #include "jobqueuedatabase.h"
@@ -166,4 +167,5 @@ private:
 	PGresult	         *clusterAdsVerRes;//!< result for ClusterAds_num table
 };
 
+#endif
 #endif /* _PGSQLDATABASE_H_ */

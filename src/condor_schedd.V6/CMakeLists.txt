@@ -1,6 +1,6 @@
 
 
-file( GLOB qmgmtElements qmgmt_send_stubs* qmgr_lib_support* qmgr_job_updater* )
+condor_selective_glob("qmgmt_send_stubs*;qmgr_lib_support*;qmgr_job_updater*" qmgmtElements )
 file( GLOB scheddRmvElements Example* *.t.* ${qmgmtElements} )
 
 if (NOT WIN_EXEC_NODE_ONLY)

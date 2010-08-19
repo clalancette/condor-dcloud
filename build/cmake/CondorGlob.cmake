@@ -18,7 +18,7 @@ MACRO (CONDOR_GLOB CONDOR_HEADERS CONDOR_SRCS CONDOR_REMOVE)
 	file(GLOB WinSrcs "*WINDOWS*" "*windows*")
 	file(GLOB LinuxSrcs "*LINUX*" "*linux*")
 	file(GLOB UnixSrcs "*UNIX*" "*unix*")
-	file(GLOB RmvSrcs ${CONDOR_REMOVE} "*.dead*" "*NON_POSIX*")
+	file(GLOB RmvSrcs "*.dead*" "*NON_POSIX*" "*.o" "*.lo" "*.a" "*.la" "*.dll" "*.lib" ${CONDOR_REMOVE})
 	#TBD: do we build for any non-posix besides windows?
 	# they appear to be ignored in the imake files.
 

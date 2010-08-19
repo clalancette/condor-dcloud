@@ -1,6 +1,6 @@
 option(WITH_POSTGRESQL "Compiling with support for POSTGRESQL" ON)
 
-if (WITH_POSTGRESQL)
+if (WITH_POSTGRESQL AND WANT_QUILL)
 
 	if ( NOT PROPER )
 

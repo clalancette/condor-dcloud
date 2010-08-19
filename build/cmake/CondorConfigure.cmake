@@ -422,8 +422,12 @@ else(MSVC)
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--warn-once -Wl,--warn-common")
 	if (NOT PROPER)
 		#b/c of the way the
-		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -ldl -pthread -lresolv -lcrypt")
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -ldl -lresolv -lcrypt")
 	endif(NOT PROPER)
+
+	if (HAVE_PTHREADS)
+		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pthread")
+	endif(HAVE_PTHREADS)
 
 	check_cxx_compiler_flag(-shared HAVE_CC_SHARED)
 

@@ -22,7 +22,7 @@ if (BUILD_TESTS)
 
 	# 1st remove generated files.
 	file( GLOB RMV_FIRST list_* *.desc )
-	if (${RMV_LIST})
+	if (RMV_FIRST)
 		file( REMOVE ${RMV_FIRST} )
 	endif()
 
@@ -35,10 +35,10 @@ if (BUILD_TESTS)
 	condor_exe_test(x_killppid.exe "x_killppid.cpp" "")
 	condor_exe_test(lib_chirpio.exe "lib_chirpio.cpp" "chirp_client")
 	condor_exe_test(job_core_chirp_par.exe "job_core_chirp_par.cpp" "chirp_client")
-	condor_exe_test(x_read_joblog.exe "x_read_joblog.cpp" "${CONDOR_TOOL_LIBS};${PCRE_FOUND};${OPENSSL_FOUND};${KRB5_FOUND}")
-	condor_exe_test(x_write_joblog.exe "x_write_joblog.cpp" "${CONDOR_TOOL_LIBS};${PCRE_FOUND};${OPENSSL_FOUND};${KRB5_FOUND}")
-	condor_exe_test(x_write_joblog_events.exe "x_write_joblog_events.cpp" "${CONDOR_TOOL_LIBS};${PCRE_FOUND};${OPENSSL_FOUND};${KRB5_FOUND}")
-	condor_exe_test(lib_eventlog_base.exe "lib_eventlog_base.cpp" "${CONDOR_TOOL_LIBS};${PCRE_FOUND};${OPENSSL_FOUND};${KRB5_FOUND}")
+	condor_exe_test(x_read_joblog.exe "x_read_joblog.cpp" "condorapi")
+	condor_exe_test(x_write_joblog.exe "x_write_joblog.cpp" "condorapi")
+	condor_exe_test(x_write_joblog_events.exe "x_write_joblog_events.cpp" "condorapi")
+	condor_exe_test(lib_eventlog_base.exe "lib_eventlog_base.cpp" "condorapi")
 	condor_exe_test(job_core_bigenv.exe "job_core_bigenv.cpp" "")
 	if (NOT CLIPPED)
 		condor_exe_test(job_core_compressfiles.exe "job_core_compressfiles.cpp" "")
@@ -168,8 +168,7 @@ if (BUILD_TESTS)
 	# alread built as part of make tests prior to running batch_test
 
 	dprint("TODO: Need to fix this test")
-	#condor_pl_test(lib_eventlog_rotation-defaults "Event Log Rotation: Default settings" "core;quick;full")
-
+	condor_pl_test(lib_eventlog_rotation-defaults "Event Log Rotation: Default settings" "core;quick;full")
 	condor_pl_test(lib_chirpio_van "Exercise the chirp I/O library using the C client library" "lib;quick;full")
 	condor_pl_test(lib_eventlog_rotation-no_rotations_1 "Event Log Rotation: no rotations/1" "core;quick;full")
 	condor_pl_test(lib_eventlog_rotation-no_rotations_2 "Event Log Rotation: no rotations/2" "core;quick;full")

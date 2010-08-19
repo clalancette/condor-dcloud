@@ -51,10 +51,10 @@ set (CPACK_PACKAGE_FILE_NAME "${CONDOR_VER}-${OS_NAME}-${SYS_ARCH}" )
 ## http://www.itk.org/Wiki/CMake:CPackPackageGenerators
 ##################################################################
 
-option(CONDOR_PACKAGE_BUILD "Enables a package build" OFF)
-if (NOT WINDOWS AND CONDOR_PACKAGE_BUILD)
-	set( CMAKE_INSTALL_PREFIX "/")
-endif()
+#option(CONDOR_PACKAGE_BUILD "Enables a package build" OFF)
+#if (NOT WINDOWS AND CONDOR_PACKAGE_BUILD)
+#	set( CMAKE_INSTALL_PREFIX "/")
+#endif()
 
 # 1st set the location of the install targets.
 set( C_BIN			bin) #usr/bin )
@@ -102,15 +102,12 @@ elseif ( ${OS_NAME} MATCHES "WIN" )
 	set (CPACK_PACKAGE_INSTALL_REGISTRY_KEY "${CONDOR_VER}")
 	set (CPACK_PACKAGE_ICON ${CONDOR_SOURCE_DIR}/build/backstage/win/Bitmaps/dlgbmp.bmp) # A branding image that will be displayed inside the installer.
 
-	set (CPACK_GENERATOR "ZIP;WIX")
+	set (CPACK_GENERATOR "ZIP")#;WIX")
 	set (CPACK_WIX_PRODUCT_GUID "ea9608e1-9a9d-4678-800c-645df677094a")
 	set (CPACK_WIX_UPGRADE_GUID "ef96d7c4-29df-403c-8fab-662386a089a4")
-	set (CPACK_WIX_BITMAP_FOLDER ${CONDOR_SOURCE_DIR}/build/backstage/win/Bitmaps)	
+	#set (CPACK_WIX_BITMAP_FOLDER ${CONDOR_SOURCE_DIR}/build/backstage/win/Bitmaps)	
+	#set (CPACK_WIX_WXS_FILES ${CONDOR_SOURCE_DIR}/build/backstage/win/CondorCfgDlg.wxs)
 	
-	set (CPACK_WIX_WXS_FILES ${CONDOR_SOURCE_DIR}/build/backstage/win/CondorCfgDlg.wxs)
-		
-	## You could do the configure idea to strip out information from this prior
-	## to packaging.
 	#configure_file(${CONDOR_SOURCE_DIR}/build/backstage/win/win.xsl.in ${CONDOR_SOURCE_DIR}/build/backstage/win/win.xsl @ONLY)
 	#set (CPACK_WIX_XSL ${CONDOR_SOURCE_DIR}/build/backstage/win/win.xsl)
 

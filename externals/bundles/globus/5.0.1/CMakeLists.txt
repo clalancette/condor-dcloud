@@ -19,8 +19,8 @@ if (WITH_GLOBUS)
 					BUILD_COMMAND echo "Nothing to do"
 					BUILD_IN_SOURCE 1
 					#--install Step ----------
-					INSTALL_DIR ${EXTERNAL_STAGE}
-					INSTALL_COMMAND cp -r gt4-java ${EXTERNAL_STAGE}/${C_LIB}/gt4 )
+					INSTALL_DIR ${EXTERNAL_STAGE}/lib
+					INSTALL_COMMAND cp -r gt4-java ${EXTERNAL_STAGE}/lib/gt4 )
 
 		ExternalProject_Add(gt42
 							PREFIX ${EXTERNAL_BUILD_PREFIX}/${GT42_VER}
@@ -34,8 +34,8 @@ if (WITH_GLOBUS)
 							BUILD_COMMAND echo "Nothing to do"
 							BUILD_IN_SOURCE 1
 							#--install Step ----------
-							INSTALL_DIR ${EXTERNAL_STAGE}
-							INSTALL_COMMAND cp -r gt42-java ${EXTERNAL_STAGE}/${C_LIB}/gt42 )
+							INSTALL_DIR ${EXTERNAL_STAGE}/lib
+							INSTALL_COMMAND cp -r gt42-java ${EXTERNAL_STAGE}/lib/gt42 )
 
 		set (GLOBUS_PATCH patch -i ${CMAKE_CURRENT_SOURCE_DIR}/xio-plugins.patch -p0 &&
 						cd gt5.0.1-all-source-installer/source-trees/xio/src/builtins &&
@@ -136,8 +136,8 @@ if (WITH_GLOBUS)
 			"${EXTERNAL_STAGE}/lib/libglobus_ftp_client_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_ftp_control_${GLOBUS_FLAVOR}.a")
 			append_var (CONDOR_EXTERNALS globus)
 
-			install ( DIRECTORY ${EXTERNAL_STAGE}/${C_LIB}/gt4 DESTINATION ${C_LIB} )
-			install ( DIRECTORY ${EXTERNAL_STAGE}/${C_LIB}/gt42 DESTINATION ${C_LIB} )
+			install ( DIRECTORY ${EXTERNAL_STAGE}/lib/gt4 DESTINATION ${C_LIB} )
+			install ( DIRECTORY ${EXTERNAL_STAGE}/lib/gt42 DESTINATION ${C_LIB} )
 
 	else( NOT PROPER )
 

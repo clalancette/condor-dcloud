@@ -51,20 +51,18 @@ set (CPACK_PACKAGE_FILE_NAME "${CONDOR_VER}-${OS_NAME}-${SYS_ARCH}" )
 ## http://www.itk.org/Wiki/CMake:CPackPackageGenerators
 ##################################################################
 
-#option(CONDOR_PACKAGE_BUILD "Enables a package build" OFF)
-#if (NOT WINDOWS AND CONDOR_PACKAGE_BUILD)
-#	set( CMAKE_INSTALL_PREFIX "/")
-#endif()
+#option used to enable/disable make package for rpm/deb with different install paths
+option(CONDOR_PACKAGE_BUILD "Enables a package build" OFF)
 
 # 1st set the location of the install targets.
-set( C_BIN			bin) #usr/bin )
-set( C_LIB			lib) #usr/lib/condor )
-set( C_LIBEXEC		libexec ) #usr/libexec/condor )
-set( C_SBIN			sbin) #usr/sbin )
+set( C_BIN			bin)
+set( C_LIB			lib)
+set( C_LIBEXEC		libexec )
+set( C_SBIN			sbin)
 
-set( C_INCLUDE		include/condor) #usr/include/condor )
-set( C_MAN			man) #usr/share/man )
-set( C_SRC			src) #usr/src)
+set( C_INCLUDE		include/condor)
+set( C_MAN			man)
+set( C_SRC			src)
 set( C_SQL			usr/share/condor/sql)
 
 set( C_INIT			etc/init.d )
@@ -72,8 +70,8 @@ set( C_ETC			etc/examples )
 set( C_CONFIGD		etc/condor/config.d )
 set( C_SYSCONFIG	etc/sysconfig )
 
-set( C_ETC_EXAMPLES	etc/examples) #usr/share/doc/${CONDOR_VER}/etc/examples )
-set( C_DOC			.) #usr/share/doc/${CONDOR_VER} )
+set( C_ETC_EXAMPLES	etc/examples)
+set( C_DOC			.)
 
 set( C_LOCAL_DIR	var/lib/condor )
 set( C_LOG_DIR		var/log/condor )
@@ -81,13 +79,11 @@ set( C_LOCK_DIR		var/lock/condor )
 set( C_RUN_DIR		var/run/condor )
 # NOTE: any RPATH should use these variables + PREFIX for location
 
-# this needs to be evaluated in order due to WIN collision.
+#this needs to be evaluated in order due to WIN collision.
 if(${OS_NAME} STREQUAL "DARWIN")
-
 	# whatever .dmg is..
 	set ( CPACK_GENERATOR "STGZ" ) #PackageMaker;
 	#set (CPACK_OSX_PACKAGE_VERSION)
-
 elseif ( ${OS_NAME} MATCHES "WIN" )
 
 	# override for windows.
@@ -105,15 +101,16 @@ elseif ( ${OS_NAME} MATCHES "WIN" )
 	set (CPACK_GENERATOR "ZIP")#;WIX")
 	set (CPACK_WIX_PRODUCT_GUID "ea9608e1-9a9d-4678-800c-645df677094a")
 	set (CPACK_WIX_UPGRADE_GUID "ef96d7c4-29df-403c-8fab-662386a089a4")
-	#set (CPACK_WIX_BITMAP_FOLDER ${CONDOR_SOURCE_DIR}/build/backstage/win/Bitmaps)	
+	#set (CPACK_WIX_BITMAP_FOLDER ${CONDOR_SOURCE_DIR}/build/backstage/win/Bitmaps)
 	#set (CPACK_WIX_WXS_FILES ${CONDOR_SOURCE_DIR}/build/backstage/win/CondorCfgDlg.wxs)
-	
+
 	#configure_file(${CONDOR_SOURCE_DIR}/build/backstage/win/win.xsl.in ${CONDOR_SOURCE_DIR}/build/backstage/win/win.xsl @ONLY)
 	#set (CPACK_WIX_XSL ${CONDOR_SOURCE_DIR}/build/backstage/win/win.xsl)
 
 	option(WIN_EXEC_NODE_ONLY "Minimal Package Win exec node only" OFF)
 
-elseif( ${OS_NAME} STREQUAL "LINUX" )	
+	# below are options an overrides to enable packge generation for rpm & deb
+elseif( ${OS_NAME} STREQUAL "LINUX" AND CONDOR_PACKAGE_BUILD )
 
 	# it's a smaller subset easier to differentiate.
 	# check the operating system name
@@ -143,16 +140,15 @@ elseif( ${OS_NAME} STREQUAL "LINUX" )
 		set ( CPACK_DEBIAN_PACKAGE_VERSION "${PACKAGE_VERSION}-${PACKAGE_REVISION}")
 		set ( CPACK_DEBIAN_PACKAGE_HOMEPAGE "${URL}")
 		set ( CPACK_DEBIAN_PACKAGE_DEPENDS "python, adduser")
-		
+
 		#Control files
-		set( CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA 
+		set( CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA
 			"${CMAKE_CURRENT_SOURCE_DIR}/build/packaging/debian/postinst"
 			"${CMAKE_CURRENT_SOURCE_DIR}/build/packaging/debian/postrm"
 			"${CMAKE_CURRENT_SOURCE_DIR}/build/packaging/debian/preinst"
 			"${CMAKE_CURRENT_SOURCE_DIR}/build/packaging/debian/prerm"
-			"${CMAKE_CURRENT_SOURCE_DIR}/build/packaging/debian/conffiles"
-			)
-	
+			"${CMAKE_CURRENT_SOURCE_DIR}/build/packaging/debian/conffiles")
+
 		#Directory overrides
 		#Same as RPM
 		set( C_BIN			usr/bin )
@@ -165,13 +161,13 @@ elseif( ${OS_NAME} STREQUAL "LINUX" )
 		set( C_INIT			etc/init.d )
 		set( C_ETC			etc/condor )
 		set( C_CONFIGD		etc/condor/config.d )
-		
+
 		#Debian specific
 		set( C_ETC_EXAMPLES	usr/share/doc/condor/etc/examples )
 		set( C_DOC			usr/share/doc/condor )
 		set( C_LIBEXEC		usr/lib/condor/libexec )
 		set( C_SYSCONFIG	etc/default )
-		
+
 		#Because CPACK_PACKAGE_DEFAULT_LOCATION is set to "/" somewhere, so we have to set prefix like this
 		#This might break as we move to newer version of CMake
 		set( CMAKE_INSTALL_PREFIX "")
@@ -188,12 +184,12 @@ elseif( ${OS_NAME} STREQUAL "LINUX" )
 	elseif ( RPM_SYSTEM_NAME )
 		# This variable will be defined if the platfrom support RPM
 		message (STATUS "Configuring RPM package on ${LINUX_NAME}-${LINUX_VER}-${SYS_ARCH}")
-						
+
 		##############################################################
 		# For details on RPM package generation see:
 		# http://www.itk.org/Wiki/CMake:CPackPackageGenerators#RPM_.28Unix_Only.29
 		##############################################################
-		
+
 		set ( CPACK_GENERATOR "RPM" )
 		#set ( CPACK_SOURCE_GENERATOR "RPM" )
 
@@ -204,12 +200,12 @@ elseif( ${OS_NAME} STREQUAL "LINUX" )
 		string( TOLOWER "${CPACK_PACKAGE_FILE_NAME}" CPACK_PACKAGE_FILE_NAME )
 
 		set ( CPACK_RPM_PACKAGE_RELEASE ${PACKAGE_REVISION})
-		set ( CPACK_RPM_PACKAGE_GROUP "Applications/System")		
+		set ( CPACK_RPM_PACKAGE_GROUP "Applications/System")
 		set ( CPACK_RPM_PACKAGE_LICENSE "Apache License, Version 2.0")
 		set ( CPACK_RPM_PACKAGE_VENDOR ${CPACK_PACKAGE_VENDOR})
 		set ( CPACK_RPM_PACKAGE_URL ${URL})
 		set ( CPACK_RPM_PACKAGE_DESCRIPTION ${CPACK_PACKAGE_DESCRIPTION})
-		set ( CPACK_RPM_SPEC_IGNORE_FILES 
+		set ( CPACK_RPM_SPEC_IGNORE_FILES
 			"/etc/condor/condor_config"
 			"/etc/condor/condor_config.local"
 			"/etc/init.d/condor")
@@ -218,7 +214,7 @@ elseif( ${OS_NAME} STREQUAL "LINUX" )
 
 		#Specify SPEC file template
 		set(CPACK_RPM_USER_BINARY_SPECFILE "${CMAKE_CURRENT_SOURCE_DIR}/build/packaging/rpm/condor.spec.in")
-		
+
 		#Directory overrides
 		set( C_BIN			usr/bin )
 		set( C_LIB			usr/lib/condor )
@@ -233,12 +229,11 @@ elseif( ${OS_NAME} STREQUAL "LINUX" )
 		set( C_CONFIGD		etc/condor/config.d )
 		set( C_ETC_EXAMPLES	usr/share/doc/${CONDOR_VER}/etc/examples )
 		set( C_DOC			usr/share/doc/${CONDOR_VER} )
-				
+
 		#Because CPACK_PACKAGE_DEFAULT_LOCATION is set to "/" somewhere, so we have to set prefix like this
 		#This might break as we move to newer version of CMake
-		set( CMAKE_INSTALL_PREFIX "")		
-		set( CPACK_SET_DESTDIR "ON")
-		
+		set(CMAKE_INSTALL_PREFIX "")
+		set(CPACK_SET_DESTDIR "ON")
 
 		#Set lib dir according to architecture
 		#if (${BIT_MODE} STREQUAL "32")
@@ -277,10 +272,9 @@ elseif( ${OS_NAME} STREQUAL "LINUX" )
 	install(DIRECTORY	temp
 			DESTINATION	"${C_LIB}")
 
-
 else()
 
-	set ( CPACK_GENERATOR "STGZ" )
+	set ( CPACK_GENERATOR "TGZ" )
 
 endif()
 

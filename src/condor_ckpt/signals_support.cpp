@@ -19,6 +19,9 @@
 
 
 #include "condor_common.h"
+
+#if DOES_SAVE_SIGSTATE
+
 #include "condor_debug.h"		/* for EXCEPT */
 #include "condor_sys.h"
 #include "errno.h"
@@ -477,35 +480,5 @@ void (*func)(int);
 }
 #endif /* defined(SYS_signal) */
 
-#if 0
-void
-display_sigstate( int line, const char * file )
-{
-	int			scm;
-	int			i;
-	sigset_t	pending_sigs;
-	sigset_t	blocked_sigs;
-	struct sigaction	act;
-	int			pending, blocked;
 
-	scm = SetSyscalls( SYS_LOCAL | SYS_UNRECORDED );
-	sigpending( &pending_sigs );
-	sigprocmask(SIG_SETMASK,NULL,&blocked_sigs);
-
-	dprintf( D_ALWAYS, "At line %d in file %s ==============\n", line, file );
-	for( i=1; i<NSIG; i++ ) {
-		sigaction( i, NULL, &act );
-
-		pending = sigismember( &pending_sigs, i );
-		blocked = sigismember( &blocked_sigs, i );
-		dprintf( D_ALWAYS, "%d %s pending %s blocked handler = 0x%p\n",
-			i,
-			pending ? "IS " : "NOT",
-			blocked ? "IS " : "NOT",
-			act.sa_handler
-		);
-	}
-	dprintf( D_ALWAYS, "====================================\n" );
-	SetSyscalls( scm );
-}
 #endif

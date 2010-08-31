@@ -53,19 +53,3 @@ void operator delete( void *to_free )
 #	endif
 #endif
 
-#if 0
-/* This function is called by egcs when a pure virtual method is called.
-   Since the user job may not be linking with egcs libraries, we need to
-   provide our own version. */
-
-#define MESSAGE "pure virtual method called\n"
-
-extern "C" {
-void
-__pure_virtual()
-{
-	write (2, MESSAGE, sizeof (MESSAGE) - 1);
-	_exit (1);
-}
-}
-#endif

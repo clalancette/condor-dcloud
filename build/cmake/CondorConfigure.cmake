@@ -47,6 +47,7 @@ else()
 	set(HAVE_PTHREAD_H ${CMAKE_HAVE_PTHREAD_H})
 
 	find_library(HAVE_X11 X11)
+	find_library(HAVE_DMTCP dmtcpaware HINTS /usr/local/lib/dmtcp )
 	check_library_exists(dl dlopen "" HAVE_DLOPEN)
 	check_symbol_exists(res_init "sys/types.h;netinet/in.h;arpa/nameser.h;resolv.h" HAVE_DECL_RES_INIT)
 
@@ -374,10 +375,11 @@ else(MSVC)
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wshadow")
 	endif(cxx_Wshadow)
 
-	check_cxx_compiler_flag(-Wunreachable-code cxx_Wunreachable_code)
-	if (cxx_Wunreachable_code)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunreachable-code")
-	endif(cxx_Wunreachable_code)
+	# someone else can enable this, as it overshadows all other warnings and can be wrong.
+	# check_cxx_compiler_flag(-Wunreachable-code cxx_Wunreachable_code)
+	# if (cxx_Wunreachable_code)
+	#	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunreachable-code")
+	# endif(cxx_Wunreachable_code)
 
 	check_cxx_compiler_flag(-Wendif-labels cxx_Wendif_labels)
 	if (cxx_Wendif_labels)

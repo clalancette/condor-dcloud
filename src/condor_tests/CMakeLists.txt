@@ -44,6 +44,8 @@ if (BUILD_TESTS)
 		condor_exe_test(job_core_compressfiles.exe "job_core_compressfiles.cpp" "")
 		condor_exe_test(job_core_coredump.exe "job_core_coredump.cpp" "")
 		condor_exe_test(job_rsc_binary-io_std.exe "job_rsc_binary-io_std.cpp" "")
+
+		#condor_exe_test(job_ckpt_dup_std.exe "job_ckpt_dup_std.cpp" "")
 	endif(NOT CLIPPED)
 
 	##########################################################

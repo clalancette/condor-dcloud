@@ -157,6 +157,7 @@ my @default_test_configure_args =
 ###############################################################################
 my @default_build_configure_args =
 	(
+	'-D_DEBUG:BOOL=ON'		=> undef,
 	'-DPROPER:BOOL=OFF' 	=> undef,
 	'-DWITH_CREAM:BOOL=OFF'	=> undef,
 	'-DWITH_SRB:BOOL=OFF'	=> undef,

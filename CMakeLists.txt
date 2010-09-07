@@ -14,7 +14,7 @@ set(PACKAGE_STRING ${PACKAGE} )
 string( TOUPPER "${CMAKE_SYSTEM_NAME}" OS_NAME )
 string( TOUPPER "${CMAKE_SYSTEM_VERSION}" OS_VER )
 string( TOUPPER "${CMAKE_SYSTEM_PROCESSOR}" SYS_ARCH )
-option(_DEBUG "Enables spewing of interal dprint statements" ON)
+option(_DEBUG "Enables spewing of interal dprint statements" OFF)
 
 ###########################################
 # start cmake module inclusion

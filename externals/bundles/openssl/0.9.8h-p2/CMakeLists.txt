@@ -63,7 +63,7 @@ if (WITH_OPENSSL)
 
 	else( NOT PROPER )
 
-		find_multiple( "ssl;crypto;libeay32;ssleay32" OPENSSL_FOUND )
+		find_multiple( "ssl;crypto" OPENSSL_FOUND )
 
 	endif( NOT PROPER )
 

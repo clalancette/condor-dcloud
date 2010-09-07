@@ -6,6 +6,7 @@ message(STATUS "********* BEGINNING CONFIGURATION *********")
 ##################################################
 ##################################################
 include (FindThreads)
+include (GlibcDetect)
 
 add_definitions(-D${OS_NAME}=${OS_NAME}_${OS_VER})
 add_definitions(-D${SYS_ARCH}=${SYS_ARCH})
@@ -13,7 +14,7 @@ add_definitions(-DPLATFORM=${CMAKE_SYSTEM})
 
 set( CONDOR_EXTERNAL_DIR ${CONDOR_SOURCE_DIR}/externals )
 set( CMAKE_VERBOSE_MAKEFILE TRUE )
-set( BUILD_SHARED_LIBS FLASE )
+set( BUILD_SHARED_LIBS FALSE )
 
 # Windows is so different perform the check 1st and start setting the vars.
 if(${OS_NAME} MATCHES "WIN" AND NOT ${OS_NAME} MATCHES "DARWIN")
@@ -21,6 +22,7 @@ if(${OS_NAME} MATCHES "WIN" AND NOT ${OS_NAME} MATCHES "DARWIN")
 	set(WINDOWS ON)
 	add_definitions(-DWINDOWS)
 	# The following is necessary for sdk/ddk version to compile against.
+	# lowest common denominator is winxp (for now)
 	add_definitions(-D_WIN32_WINNT=_WIN32_WINNT_WINXP)
 	add_definitions(-DWINVER=_WIN32_WINNT_WINXP)
 	add_definitions(-DNTDDI_VERSION=NTDDI_WINXP)
@@ -116,8 +118,20 @@ else()
 	set(STATFS_ARGS "2")
 	set(SIGWAIT_ARGS "2")
 
+	# note the following is fairly gcc specific, but *we* only check gcc version in std:u which it requires.
+	exec_program (${CMAKE_CXX_COMPILER}
+    		ARGS ${CMAKE_CXX_COMPILER_ARG1} -dumpversion
+    		OUTPUT_VARIABLE CMAKE_CXX_COMPILER_VERSION )
+
+	exec_program (${CMAKE_C_COMPILER}
+    		ARGS ${CMAKE_C_COMPILER_ARG1} -dumpversion
+    		OUTPUT_VARIABLE CMAKE_C_COMPILER_VERSION )
+
+	option(PROPER "Try to build using native env" ON)
+
 endif()
 
+find_program(HAVE_VMWARE vmware)
 check_type_size("id_t" HAVE_ID_T)
 check_type_size("__int64" HAVE___INT64)
 check_type_size("int64_t" HAVE_INT64_T)
@@ -147,6 +161,7 @@ if (${OS_NAME} STREQUAL "SUNOS")
 	set(HAS_INET_NTOA ON)
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lkstat -lelf -lsocket")
 elseif(${OS_NAME} STREQUAL "LINUX")
+
 	set(LINUX ON)
 	set(DOES_SAVE_SIGSTATE ON)
 	check_symbol_exists(SIOCETHTOOL "linux/sockios.h" HAVE_DECL_SIOCETHTOOL)
@@ -161,6 +176,9 @@ elseif(${OS_NAME} STREQUAL "LINUX")
 	dprint("Threaded functionality only enable in Linux and Windows")
 	set(HAS_PTHREADS ${CMAKE_USE_PTHREADS_INIT})
 	set(HAVE_PTHREADS ${CMAKE_USE_PTHREADS_INIT})
+
+	#The following checks are for std:u only.
+	glibc_detect( GLIBC_VERSION )
 
 elseif(${OS_NAME} STREQUAL "AIX")
 	set(AIX ON)
@@ -177,32 +195,32 @@ endif()
 
 ##################################################
 ##################################################
-# Now checking input options --enable elements
-# will likely change all the names to ENABLE_<OPTION> for consistency
+# compilation/build options.
 option(ENABLE_CHECKSUM_SHA1 "Enable production and validation of SHA1 checksums." OFF)
 option(ENABLE_CHECKSUM_MD5 "Enable production and validation of MD5 checksums for released packages." ON)
 option(HAVE_HIBERNATION "Support for condor controlled hibernation" ON)
-option(WANT_LEASE_MANAGER "Enable lease manager functionality" OFF)
+option(WANT_LEASE_MANAGER "Enable lease manager functionality" ON)
 option(WANT_QUILL "Enable quill functionality" OFF)
 option(HAVE_JOB_HOOKS "Enable job hook functionality" ON)
 option(NEEDS_KBDD "Enable KBDD functionality" ON)
 option(HAVE_BACKFILL "Compiling support for any backfill system" ON)
-option(HAVE_BOINC "Compiling support for backfill with BOINC" ON)
-option(HAVE_VMWARE "Compiling support for VM Ware" OFF)
-option(CLIPPED "Disables the standard universe" ON)
+option(HAVE_BOINC "Compiling support for backfill with BOINC" OFF)
 option(SOFT_IS_HARD "Enable strict checking for WITH_<LIB>" OFF)
+option(CLIPPED "enable/disable the standard universe" ON)
 
 if (NOT HPUX)
 	option(HAVE_SHARED_PORT "Support for condor_shared_port" ON)
 	if (NOT WINDOWS)
 		set (HAVE_SCM_RIGHTS_PASSFD ON)
 	endif()
-endif()
+endif(NOT HPUX)
 
 if (NOT WINDOWS)
-	option(PROPER "If externals are not found it will error" ON)
 	option(BUILD_TESTS "Will build internal test applications" ON)
 	option(HAVE_SSH_TO_JOB "Support for condor_ssh_to_job" ON)
+	option(PROPER "Try to build using native env" ON)
+else()
+	option(PROPER "Try to build using native env" OFF)
 endif()
 
 if (BUILD_TESTS)
@@ -246,7 +264,6 @@ else(SCRATCH_EXTERNALS)
 	set (EXTERNAL_DL ${CONDOR_EXTERNAL_DIR}/stage/download)
 endif(SCRATCH_EXTERNALS)
 
-
 dprint("EXTERNAL_STAGE=${EXTERNAL_STAGE}")
 set (EXTERNAL_BUILD_PREFIX ${EXTERNAL_STAGE}/opt)
 
@@ -282,24 +299,45 @@ if (NOT WINDOWS)
 	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/gcb/1.5.6)
 	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/libxml2/2.7.3)
 	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/libvirt/0.6.2)
+
+	# globus is an odd *beast* which requires a bit more config.
 	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/globus/5.0.1)
 	if (PROPER AND GLOBUS_FOUND)
+		# locs for current rpm.
 		include_directories( /usr/include/globus /usr/lib64/globus/include/ )
 	else(PROPER AND GLOBUS_FOUND)
 		include_directories(${EXTERNAL_STAGE}/include/${GLOBUS_FLAVOR})
 	endif(PROPER AND GLOBUS_FOUND)
+
 	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/blahp/1.16.0)
 	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/voms/1.8.8_2-p2)
 	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/srb/3.2.1-p2)
 	#add_subdirectory(${CONDOR_SOURCE_DIR}/bundles/cream/1.10.1-p2)
+
+	# the following logic if for standard universe *only*
+	if (LINUX AND NOT CLIPPED AND GLIBC_VERSION AND NOT PROPER)
+
+		find_file (CRT1 
+		if (${BIT_MODE} STREQUAL "32")
+			# right now 
+			set (DOES_COMPRESS_CKPT ON)
+		endif()
+
+		add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/glibc)
+		message( STATUS "** Standard Universe Enabled **")
+	else()
+		message( STATUS "** Standard Universe Disabled **")
+	endif(LINUX NOT CLIPPED AND GLIBC_VERSION AND NOT PROPER)
+
 endif(NOT WINDOWS)
 
-### addition of a single externals target
 if (CONDOR_EXTERNALS AND NOT WINDOWS)
+	### addition of a single externals target which allows you to 
 	add_custom_target( externals DEPENDS ${EXTERNAL_MOD_DEP} )
 	add_dependencies( externals ${CONDOR_EXTERNALS} )
 endif(CONDOR_EXTERNALS AND NOT WINDOWS)
 
+message(STATUS "********* External configuration complete (dropping config.h) *********")
 dprint("CONDOR_EXTERNALS=${CONDOR_EXTERNALS}")
 
 ########################################################
@@ -349,7 +387,12 @@ if(MSVC)
 	set(CONDOR_WIN_LIBS "crypt32.lib;mpr.lib;psapi.lib;mswsock.lib;netapi32.lib;imagehlp.lib;ws2_32.lib;powrprof.lib;iphlpapi.lib;userenv.lib;Pdh.lib")
 else(MSVC)
 
-	add_definitions(-DGLIBC=GLIBC)
+	if (GLIBC_VERSION)
+		add_definitions(-DGLIBC=GLIBC)
+		add_definitions(-DGLIBC${GLIBC_VERSION}=GLIBC${GLIBC_VERSION})
+		set(GLIBC${GLIBC_VERSION} ON)
+	endif(GLIBC_VERSION)
+
 	check_cxx_compiler_flag(-Wall cxx_Wall)
 	if (cxx_Wall)
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
@@ -440,8 +483,155 @@ else(MSVC)
 
 endif(MSVC)
 
-dprint("CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
 message(STATUS "----- End compiler options/flags check -----")
-###########################################
+dprint("----- Begin CMake Var DUMP -----")
+# if you are building in-source, this is the same as CMAKE_SOURCE_DIR, otherwise 
+# this is the top level directory of your build tree 
+dprint ( "CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}" )
+
+# if you are building in-source, this is the same as CMAKE_CURRENT_SOURCE_DIR, otherwise this 
+# is the directory where the compiled or generated files from the current CMakeLists.txt will go to 
+dprint ( "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}" )
+
+# this is the directory, from which cmake was started, i.e. the top level source directory 
+dprint ( "CMAKE_SOURCE_DIR: ${CMAKE_SOURCE_DIR}" )
+
+# this is the directory where the currently processed CMakeLists.txt is located in 
+dprint ( "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}" )
+
+# contains the full path to the top level directory of your build tree 
+dprint ( "PROJECT_BINARY_DIR: ${PROJECT_BINARY_DIR}" )
+
+# contains the full path to the root of your project source directory,
+# i.e. to the nearest directory where CMakeLists.txt contains the PROJECT() command 
+dprint ( "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}" )
+
+# set this variable to specify a common place where CMake should put all executable files
+# (instead of CMAKE_CURRENT_BINARY_DIR)
+dprint ( "EXECUTABLE_OUTPUT_PATH: ${EXECUTABLE_OUTPUT_PATH}" )
+
+# set this variable to specify a common place where CMake should put all libraries 
+# (instead of CMAKE_CURRENT_BINARY_DIR)
+dprint ( "LIBRARY_OUTPUT_PATH: ${LIBRARY_OUTPUT_PATH}" )
+
+# tell CMake to search first in directories listed in CMAKE_MODULE_PATH
+# when you use FIND_PACKAGE() or INCLUDE()
+dprint ( "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}" )
+
+# this is the complete path of the cmake which runs currently (e.g. /usr/local/bin/cmake) 
+dprint ( "CMAKE_COMMAND: ${CMAKE_COMMAND}" )
+
+# this is the CMake installation directory 
+dprint ( "CMAKE_ROOT: ${CMAKE_ROOT}" )
+
+# this is the filename including the complete path of the file where this variable is used. 
+dprint ( "CMAKE_CURRENT_LIST_FILE: ${CMAKE_CURRENT_LIST_FILE}" )
+
+# this is linenumber where the variable is used
+dprint ( "CMAKE_CURRENT_LIST_LINE: ${CMAKE_CURRENT_LIST_LINE}" )
+
+# this is used when searching for include files e.g. using the FIND_PATH() command.
+dprint ( "CMAKE_INCLUDE_PATH: ${CMAKE_INCLUDE_PATH}" )
+
+# this is used when searching for libraries e.g. using the FIND_LIBRARY() command.
+dprint ( "CMAKE_LIBRARY_PATH: ${CMAKE_LIBRARY_PATH}" )
+
+# the complete system name, e.g. "Linux-2.4.22", "FreeBSD-5.4-RELEASE" or "Windows 5.1" 
+dprint ( "CMAKE_SYSTEM: ${CMAKE_SYSTEM}" )
+
+# the short system name, e.g. "Linux", "FreeBSD" or "Windows"
+dprint ( "CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}" )
+
+# only the version part of CMAKE_SYSTEM 
+dprint ( "CMAKE_SYSTEM_VERSION: ${CMAKE_SYSTEM_VERSION}" )
+
+# the processor name (e.g. "Intel(R) Pentium(R) M processor 2.00GHz") 
+dprint ( "CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}" )
+
+# is TRUE on all UNIX-like OS's, including Apple OS X and CygWin
+dprint ( "UNIX: ${UNIX}" )
+
+# is TRUE on Windows, including CygWin 
+dprint ( "WIN32: ${WIN32}" )
+
+# is TRUE on Apple OS X
+dprint ( "APPLE: ${APPLE}" )
+
+# is TRUE when using the MinGW compiler in Windows
+dprint ( "MINGW: ${MINGW}" )
+
+# is TRUE on Windows when using the CygWin version of cmake
+dprint ( "CYGWIN: ${CYGWIN}" )
+
+# is TRUE on Windows when using a Borland compiler 
+dprint ( "BORLAND: ${BORLAND}" )
+
+if (WINDOWS)
+	dprint ( "MSVC: ${MSVC}" )
+	dprint ( "MSVC_IDE: ${MSVC_IDE}" )
+	dprint ( "MSVC60: ${MSVC60}" )
+	dprint ( "MSVC70: ${MSVC70}" )
+	dprint ( "MSVC71: ${MSVC71}" )
+	dprint ( "MSVC80: ${MSVC80}" )
+	dprint ( "CMAKE_COMPILER_2005: ${CMAKE_COMPILER_2005}" )
+endif(WINDOWS)
+
+# set this to true if you don't want to rebuild the object files if the rules have changed, 
+# but not the actual source files or headers (e.g. if you changed the some compiler switches) 
+dprint ( "CMAKE_SKIP_RULE_DEPENDENCY: ${CMAKE_SKIP_RULE_DEPENDENCY}" )
+
+# since CMake 2.1 the install rule depends on all, i.e. everything will be built before installing. 
+# If you don't like this, set this one to true.
+dprint ( "CMAKE_SKIP_INSTALL_ALL_DEPENDENCY: ${CMAKE_SKIP_INSTALL_ALL_DEPENDENCY}" )
+
+# If set, runtime paths are not added when using shared libraries. Default it is set to OFF
+dprint ( "CMAKE_SKIP_RPATH: ${CMAKE_SKIP_RPATH}" )
+
+# set this to true if you are using makefiles and want to see the full compile and link 
+# commands instead of only the shortened ones 
+dprint ( "CMAKE_VERBOSE_MAKEFILE: ${CMAKE_VERBOSE_MAKEFILE}" )
+
+# this will cause CMake to not put in the rules that re-run CMake. This might be useful if 
+# you want to use the generated build files on another machine. 
+dprint ( "CMAKE_SUPPRESS_REGENERATION: ${CMAKE_SUPPRESS_REGENERATION}" )
+
+# A simple way to get switches to the compiler is to use ADD_DEFINITIONS(). 
+# But there are also two variables exactly for this purpose: 
+
+# the compiler flags for compiling C sources 
+dprint ( "CMAKE_C_FLAGS: ${CMAKE_C_FLAGS}" )
+
+# the compiler flags for compiling C++ sources
+dprint ( "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}" )
+
+# Choose the type of build.  Example: SET(CMAKE_BUILD_TYPE Debug) 
+dprint ( "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}" )
+
+# if this is set to ON, then all libraries are built as shared libraries by default.
+dprint ( "BUILD_SHARED_LIBS: ${BUILD_SHARED_LIBS}" )
+
+# the compiler used for C files 
+dprint ( "CMAKE_C_COMPILER: ${CMAKE_C_COMPILER}" )
+
+# version information about the compiler
+dprint ( "CMAKE_C_COMPILER_VERSION: ${CMAKE_C_COMPILER_VERSION}" )
+
+# the compiler used for C++ files 
+dprint ( "CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}" )
+
+# version information about the compiler
+dprint ( "CMAKE_CXX_COMPILER_VERSION: ${CMAKE_CXX_COMPILER_VERSION}" )
+
+# if the compiler is a variant of gcc, this should be set to 1 
+dprint ( "CMAKE_COMPILER_IS_GNUCC: ${CMAKE_COMPILER_IS_GNUCC}" )
+
+# if the compiler is a variant of g++, this should be set to 1 
+dprint ( "CMAKE_COMPILER_IS_GNUCXX : ${CMAKE_COMPILER_IS_GNUCXX}" )
+
+# the tools for creating libraries 
+dprint ( "CMAKE_AR: ${CMAKE_AR}" )
+dprint ( "CMAKE_RANLIB: ${CMAKE_RANLIB}" )
+
+dprint("----- Begin CMake Var DUMP -----")
 
 message(STATUS "********* ENDING CONFIGURATION *********")

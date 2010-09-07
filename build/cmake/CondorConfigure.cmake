@@ -204,7 +204,7 @@ option(WANT_QUILL "Enable quill functionality" OFF)
 option(HAVE_JOB_HOOKS "Enable job hook functionality" ON)
 option(NEEDS_KBDD "Enable KBDD functionality" ON)
 option(HAVE_BACKFILL "Compiling support for any backfill system" ON)
-option(HAVE_BOINC "Compiling support for backfill with BOINC" OFF)
+option(HAVE_BOINC "Compiling support for backfill with BOINC" ON)
 option(SOFT_IS_HARD "Enable strict checking for WITH_<LIB>" OFF)
 option(CLIPPED "enable/disable the standard universe" ON)
 
@@ -317,17 +317,16 @@ if (NOT WINDOWS)
 	# the following logic if for standard universe *only*
 	if (LINUX AND NOT CLIPPED AND GLIBC_VERSION AND NOT PROPER)
 
-		find_file (CRT1 
 		if (${BIT_MODE} STREQUAL "32")
 			# right now 
 			set (DOES_COMPRESS_CKPT ON)
-		endif()
+		endif(${BIT_MODE} STREQUAL "32")
 
 		add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/glibc)
 		message( STATUS "** Standard Universe Enabled **")
 	else()
 		message( STATUS "** Standard Universe Disabled **")
-	endif(LINUX NOT CLIPPED AND GLIBC_VERSION AND NOT PROPER)
+	endif()
 
 endif(NOT WINDOWS)
 

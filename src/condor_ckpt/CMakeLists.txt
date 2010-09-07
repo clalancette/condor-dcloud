@@ -28,7 +28,7 @@ if( LINUX AND NOT CLIPPED AND GLIBC_VERSION AND NOT PROPER )
 	stdu_extract_and_toupper(${EXT_GLIBC_FOUND} sigaction.o "sigaction;__sigaction")
 	if (NOT GLIBC25 AND NOT GLIBC27)
 		stdu_extract_and_toupper(${EXT_GLIBC_FOUND} sysdep.o "__syscall_error")
-	endif
+	endif(NOT GLIBC25 AND NOT GLIBC27)
 	
 	###########################################################################
 	# now define the actual targets, and copiler options

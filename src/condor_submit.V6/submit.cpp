@@ -446,6 +446,7 @@ int 	whitespace( const char *str);
 void 	delete_commas( char *ptr );
 void 	compress( MyString &path );
 char const*full_path(const char *name, bool use_iwd=true);
+void 	log_submit();
 void 	get_time_conv( int &hours, int &minutes );
 int	  SaveClassAd ();
 void	InsertJobExpr (const char *expr, bool clustercheck = true);
@@ -1044,6 +1045,15 @@ main( int argc, char *argv[] )
 		fprintf(stdout, "\n");
 	}
 
+	// CRUFT Before 7.5.4, condor_submit wrote the submit event to the
+	// user log. If the schedd is older than that, we need to write
+	// the submit event here.
+	if (!DumpClassAdToFile && UserLogSpecified && MySchedd->version()) {
+		CondorVersionInfo vers( MySchedd->version() );
+		if ( !vers.built_since_version( 7, 5, 4 ) ) {
+			log_submit();
+		}
+	}
 
 	if (Quiet) {
 		int this_cluster = -1, job_count=0;
@@ -1480,6 +1490,8 @@ SetExecutable()
 
 	if ( JobUniverse == CONDOR_UNIVERSE_PARALLEL) {
 		InsertJobExpr ("WantIOProxy = TRUE");
+		buffer.sprintf("%s = TRUE", ATTR_JOB_REQUIRES_SANDBOX);
+		InsertJobExpr (buffer);
 	}
 
 	InsertJobExpr ("CurrentHosts = 0");
@@ -2079,38 +2091,25 @@ SetImageSize()
 					executablesize);
 	InsertJobExpr (buffer);
 
-	if( JobUniverse == CONDOR_UNIVERSE_VM) {
+	tmp = condor_param( DiskUsage, ATTR_DISK_USAGE );
+
+	if( tmp ) {
+		disk_usage = atoi(tmp);
+
+		if( disk_usage < 1 ) {
+			fprintf( stderr, "\nERROR: disk_usage must be >= 1\n" );
+			DoCleanup(0,0,NULL);
+			exit( 1 );
+		}
+		free( tmp );
+	} else {
 		// In vm universe, when a VM is suspended, 
 		// memory being used by the VM will be saved into a file. 
 		// So we need as much disk space as the memory.
-		int vm_disk_space = executablesize + TransferInputSize + VMMemory*1024;
-
-		// In vmware vm universe, vmware disk may be a sparse disk or 
-		// snapshot disk. So we can't estimate the disk space in advanace 
-		// because the sparse disk or snapshot disk will grow up 
-		// as a VM runs. So we will add 100MB to disk space.
-		if( strcasecmp(VMType.Value(), CONDOR_VM_UNIVERSE_VMWARE) == MATCH ) {
-			vm_disk_space += 100*1024;
-		}
-		buffer.sprintf( "%s = %u", ATTR_DISK_USAGE, vm_disk_space);
-	}else {
-		tmp = condor_param( DiskUsage, ATTR_DISK_USAGE );
-
-		if( tmp ) {
-			disk_usage = atoi(tmp);
-
-			if( disk_usage < 1 ) {
-				fprintf( stderr, "\nERROR: disk_usage must be >= 1\n" );
-				DoCleanup(0,0,NULL);
-				exit( 1 );
-			}
-			free( tmp );
-		} else {
-			disk_usage = executablesize + TransferInputSize;
-		}
-
-		buffer.sprintf( "%s = %u", ATTR_DISK_USAGE, disk_usage );
+		// For non-vm jobs, VMMemory is 0.
+		disk_usage = executablesize + TransferInputSize + VMMemory*1024;
 	}
+	buffer.sprintf( "%s = %u", ATTR_DISK_USAGE, disk_usage );
 	InsertJobExpr (buffer);
 
 
@@ -3697,28 +3696,19 @@ SetDAGManJobId()
 void
 SetLogNotes()
 {
-	LogNotesVal = condor_param( LogNotesCommand );
-	// just in case the user forgets the underscores
-	if( !LogNotesVal ) {
-		LogNotesVal = condor_param( "SubmitEventNotes" );
-	}
-	if (LogNotesVal) {
-		MyString buffer;
-		(void) buffer.sprintf( "LogNotes = \"%s\"", LogNotesVal);
-		InsertJobExpr( buffer );
+	LogNotesVal = condor_param( LogNotesCommand, ATTR_SUBMIT_EVENT_NOTES );
+	if ( LogNotesVal ) {
+		InsertJobExprString( ATTR_SUBMIT_EVENT_NOTES, LogNotesVal );
 	}
 }
 
 void
 SetUserNotes()
 {
-	UserNotesVal = condor_param( UserNotesCommand, "SubmitEventUserNotes" );
-	if (UserNotesVal) {
-		MyString buffer;
-		(void) buffer.sprintf( "UserNotes = \"%s\"", UserNotesVal);
-		InsertJobExpr( buffer );
+	UserNotesVal = condor_param( UserNotesCommand, ATTR_SUBMIT_EVENT_USER_NOTES );
+	if ( UserNotesVal ) {
+		InsertJobExprString( ATTR_SUBMIT_EVENT_USER_NOTES, UserNotesVal );
 	}
-	
 }
 
 void
@@ -5040,14 +5030,6 @@ SetGridParams()
 		has_userdatafile = true;
 	}
 	
-	if (has_userdata && has_userdatafile) {
-		// two attributes appear in the same submit file
-		fprintf(stderr, "\nERROR: Parameters \"%s\" and \"%s\" exist in same Amazon job\n", 
-						AmazonUserData, AmazonUserDataFile);
-		DoCleanup( 0, 0, NULL );
-		exit(1);
-	}
-
 	// CREAM clients support an alternate representation for resources:
 	//   host.edu:8443/cream-batchname-queuename
 	// Transform this representation into our regular form:
@@ -5807,6 +5789,8 @@ queue(int num)
 		SetParallelStartupScripts(); //JDB
 		SetConcurrencyLimits();
 		SetVMParams();
+		SetLogNotes();
+		SetUserNotes();
 
 			// This must come after all things that modify the input file list
 		FixupTransferInputFiles();
@@ -5815,12 +5799,9 @@ queue(int num)
 			// set by normal submit attributes
 		SetForcedAttributes();
 		rval = 0; // assume success
-		SetLogNotes();
-		SetUserNotes();
 		if ( !DumpClassAdToFile ) {
 			rval = SaveClassAd();
 		}
-		
 
 		switch( rval ) {
 		case 0:			/* Success */
@@ -5891,8 +5872,6 @@ queue(int num)
 			job->fPrint ( DumpFile );
 			fprintf ( DumpFile, "\n" );
 		}
-		
-		
 
 		if ( job_ad_saved == false ) {
 			delete job;
@@ -6591,6 +6570,91 @@ delete_commas( char *ptr )
 
 extern "C" {
 int SetSyscalls( int foo ) { return foo; }
+}
+
+void
+log_submit()
+{
+	 char	 *simple_name;
+
+		// don't write to the EVENT_LOG in condor_submit; that is done by 
+		// the condor_schedd (since submit likely does not have permission).
+	 WriteUserLog usr_log(true);
+	 SubmitEvent jobSubmit;
+
+	 usr_log.setUseXML(UseXMLInLog);
+
+	if( Quiet ) {
+		fprintf(stdout, "Logging submit event(s)");
+	}
+
+	if ( DumpClassAdToFile ) {
+		// we just put some arbitrary string here: it doesn't actually mean 
+		// anything since we will never communicate the resulting ad to 
+		// to anyone (we make the name obviously unresolvable so we know
+		// this was a generated file).
+		strcpy (jobSubmit.submitHost, "localhost-used-to-dump");
+	} else {
+		strcpy (jobSubmit.submitHost, MySchedd->addr());
+	}
+
+	if( LogNotesVal ) {
+		jobSubmit.submitEventLogNotes = strnewp( LogNotesVal );
+		free( LogNotesVal );
+		LogNotesVal = NULL;
+	}
+
+	if( UserNotesVal ) {
+		jobSubmit.submitEventUserNotes = strnewp( UserNotesVal );
+		free( UserNotesVal );
+		UserNotesVal = NULL;
+	}
+
+	for (int i=0; i <= CurrentSubmitInfo; i++) {
+
+		if ((simple_name = SubmitInfo[i].logfile) != NULL) {
+			if( jobSubmit.submitEventLogNotes ) {
+				delete[] jobSubmit.submitEventLogNotes;
+			}
+			jobSubmit.submitEventLogNotes = strnewp( SubmitInfo[i].lognotes );
+
+			if( jobSubmit.submitEventUserNotes ) {
+				delete[] jobSubmit.submitEventUserNotes;
+			}
+			jobSubmit.submitEventUserNotes = strnewp( SubmitInfo[i].usernotes );
+			
+			// we don't know the gjid here, so pass in NULL as the last 
+			// parameter - epaulson 2/09/2007
+			if ( ! usr_log.initialize(owner, ntdomain, simple_name,
+									  0, 0, 0, NULL) ) {
+				fprintf(stderr, "\nERROR: Failed to log submit event.\n");
+			} else {
+				// Output the information
+				for (int j=SubmitInfo[i].firstjob; j<=SubmitInfo[i].lastjob;
+							j++) {
+					if ( ! usr_log.initialize(SubmitInfo[i].cluster,
+								j, 0, NULL) ) {
+						fprintf(stderr, "\nERROR: Failed to log submit event.\n");
+					} else {
+							// for efficiency, only fsync on the final event
+							// being written to this log
+						bool enable_fsync = j == SubmitInfo[i].lastjob;
+						usr_log.setEnableFsync( enable_fsync );
+
+						if( ! usr_log.writeEvent(&jobSubmit,job) ) {
+							fprintf(stderr, "\nERROR: Failed to log submit event.\n");
+						}
+						if( Quiet ) {
+							fprintf(stdout, ".");
+						}
+					}
+				}
+			}
+		}
+	}
+	if( Quiet ) {
+		fprintf( stdout, "\n" );
+	}
 }
 
 

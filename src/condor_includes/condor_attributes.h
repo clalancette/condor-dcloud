@@ -292,6 +292,7 @@ extern const char * const  ATTR_JOB_STATUS_ON_RELEASE;
 extern const char * const  ATTR_JOB_UNIVERSE;
 extern const char * const  ATTR_JOB_WALL_CLOCK_CKPT;
 extern const char * const  ATTR_JOB_QUEUE_BIRTHDATE;
+extern const char * const  ATTR_JOB_REQUIRES_SANDBOX;
 extern const char * const  ATTR_JOB_VM_TYPE;
 extern const char * const  ATTR_JOB_VM_MEMORY;
 extern const char * const  ATTR_JOB_VM_VCPUS;
@@ -470,6 +471,8 @@ extern const char * const  ATTR_STATUS;
 extern const char * const  ATTR_STREAM_INPUT;
 extern const char * const  ATTR_STREAM_OUTPUT;
 extern const char * const  ATTR_STREAM_ERROR;
+extern const char * const  ATTR_SUBMIT_EVENT_NOTES;
+extern const char * const  ATTR_SUBMIT_EVENT_USER_NOTES;
 extern const char * const  ATTR_SUBMITTER_ID;
 extern const char * const ATTR_SUBMITTER_TAG;
 extern const char * const  ATTR_SUBMITTOR_PRIO;  // old-style for ATTR_SUBMITTER_USER_PRIO
@@ -790,6 +793,8 @@ extern const char * const ATTR_JOB_MACHINE_ATTRS_HISTORY_LENGTH;
 extern const char * const ATTR_JOB_MACHINE_ATTR_SLOT_WEIGHT0;
 extern const char * const ATTR_CUMULATIVE_SLOT_TIME;
 extern const char * const ATTR_COMMITTED_SLOT_TIME;
+
+extern const char * const ATTR_HASH_NAME;
 
 // Enumerate the ones that can't be constant strings..
 typedef enum

@@ -79,6 +79,7 @@ Directory::Directory( const char *name, priv_state priv )
 
 Directory::Directory( StatInfo* info, priv_state priv ) 
 {
+	ASSERT(info);
 	initialize( priv );
 
 	curr_dir = strnewp( info->FullPath() );
@@ -169,6 +170,7 @@ Directory::GetDirectorySize()
 bool
 Directory::Find_Named_Entry( const char *name )
 {
+	ASSERT(name);
 	const char* entry = NULL;
 	bool ret_value = false;
 
@@ -195,7 +197,9 @@ Directory::Remove_Entire_Directory( void )
 
 	Set_Access_Priv();
 
-	Rewind();
+	if(!Rewind()) {
+		return_and_resetpriv(false);
+	}
 
 	while ( (thefile=Next()) ) {
 		if( ! Remove_Current_File() ) {
@@ -215,17 +219,6 @@ Directory::Recursive_Chown(uid_t src_uid, uid_t dst_uid, gid_t dst_gid,
 		src_uid, dst_uid, dst_gid, non_root_okay);
 }
 #endif /* ! defined(WIN32) */
-
-
-bool 
-Directory::Remove_Entry( const char* name )
-{
-	MyString path;
-	path = curr_dir;
-	path += DIR_DELIM_CHAR;
-	path += name;
-	return do_remove( path.Value(), false );
-}
 
 bool
 Directory::Remove_Full_Path( const char *path )
@@ -987,6 +980,8 @@ GetIds( const char *path, uid_t *owner, gid_t *group )
 char*
 dircat( const char *dirpath, const char *filename )
 {
+	ASSERT(dirpath);
+	ASSERT(filename);
 	bool needs_delim = true;
 	int extra = 2, dirlen = strlen(dirpath);
 	char* rval;

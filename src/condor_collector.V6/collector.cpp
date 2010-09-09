@@ -961,7 +961,9 @@ void CollectorDaemon::process_invalidation (AdTypes whichAds, ClassAd &query, St
 	// here we set up a network timeout of a longer duration
 	sock->timeout(QueryTimeout);
 
-    if ( 0 == ( __numAds__ = collector.remove( whichAds, query ) ) )
+	bool query_contains_hash_key = false;
+	__numAds__ = collector.remove( whichAds, query, &query_contains_hash_key );
+    if ( !query_contains_hash_key )
 	{
 		dprintf ( D_ALWAYS, "Walking tables to invalidate... O(n)\n" );
 
@@ -999,6 +1001,13 @@ void CollectorDaemon::process_invalidation (AdTypes whichAds, ClassAd &query, St
 	}
 
 	dprintf (D_ALWAYS, "(Invalidated %d ads)\n", __numAds__ );
+
+		// Suppose lots of ads are getting invalidated and we have no clue
+		// why.  That is what the following block of code tries to solve.
+	if( __numAds__ > 1 ) {
+		dprintf(D_ALWAYS, "The invalidation query was this:\n");
+		query.dPrint(D_ALWAYS);
+	}
 }	
 
 

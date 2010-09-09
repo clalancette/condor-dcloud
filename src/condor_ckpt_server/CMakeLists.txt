@@ -1,11 +1,10 @@
 
-condor_selective_glob("network2.*;server_interface.*" ServerAPISrcs )
+condor_selective_glob("server_interface.*" ServerAPISrcs )
 
-condor_static_lib( ckpt_server_api "${ServerAPISrcs}" )
+condor_static_lib( ckpt_server_api "network2.cpp;network2.h;${ServerAPISrcs}" )
 
-dprint("TSTCLAIR: TODO")
 
-# OBJ = network2.o gen_lib.o fileinfo2.o fileindex2.o imds2.o xferstat2.o \
-#	signal2.o alarm2.o server2.o xfer_summary.o replication.o protocol.o
-
-# public_c_plus_target($(NAME),sbin,$(OBJ),$(LIB))
+if(STD_UNIVERSE)
+	condor_glob( HeaderFiles SourceFiles "${ServerAPISrcs}" )
+	condor_exe( condor_ckpt_server "${HeaderFiles};${SourceFiles}" ${C_SBIN} "${TOOL_LINK_LIBS}")
+endif(STD_UNIVERSE)

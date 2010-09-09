@@ -48,6 +48,7 @@ include (CondorConfigure)     # will initiate the configure
 include (AddSubdirectories)
 include (CondorPLTest)
 include (CondorExeTest)
+include (SrcTargetRef)
 
 ##########################################################################
 # we only include the single sub to allow make at two levels.

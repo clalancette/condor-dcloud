@@ -304,7 +304,7 @@ if (NOT WINDOWS)
 	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/globus/5.0.1)
 	if (PROPER AND GLOBUS_FOUND)
 		# locs for current rpm.
-		include_directories( /usr/include/globus /usr/lib64/globus/include/ )
+		include_directories(/usr/include/globus /usr/lib64/globus/include/)
 	else(PROPER AND GLOBUS_FOUND)
 		include_directories(${EXTERNAL_STAGE}/include/${GLOBUS_FLAVOR})
 	endif(PROPER AND GLOBUS_FOUND)
@@ -317,12 +317,17 @@ if (NOT WINDOWS)
 	# the following logic if for standard universe *only*
 	if (LINUX AND NOT CLIPPED AND GLIBC_VERSION AND NOT PROPER)
 
+		add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/glibc)
+
 		if (${BIT_MODE} STREQUAL "32")
-			# right now 
-			set (DOES_COMPRESS_CKPT ON)
+			set (DOES_COMPRESS_CKPT ON) # this is total crap
 		endif(${BIT_MODE} STREQUAL "32")
 
-		add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/glibc)
+		if (DOES_SAVE_SIGSTATE)
+			append_var(STD_U_C_FLAGS -DSAVE_SIGSTATE)
+		endif(DOES_SAVE_SIGSTATE)
+
+		set (STD_UNIVERSE ON)
 		message( STATUS "** Standard Universe Enabled **")
 	else()
 		message( STATUS "** Standard Universe Disabled **")
@@ -470,7 +475,6 @@ else(MSVC)
 	endif(HAVE_DLOPEN)
 
 	if (NOT PROPER)
-		#b/c of the way the
 		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lresolv -lcrypt")
 	endif(NOT PROPER)
 

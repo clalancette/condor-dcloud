@@ -12,8 +12,8 @@ MACRO (CONDOR_GLOB CONDOR_HEADERS CONDOR_SRCS CONDOR_REMOVE)
 
 	string(TOUPPER "${CMAKE_SYSTEM_NAME}" TEMP_OS)
 
-	file(GLOB ${CONDOR_HEADERS} "*.h" ".hpp" ".hxx")
-	file(GLOB ${CONDOR_SRCS} "*.cpp" ".cxx")
+	file(GLOB ${CONDOR_HEADERS} "*.h" "*.hpp" "*.hxx")
+	file(GLOB ${CONDOR_SRCS} "*.cpp" "*.cxx")
 
 	file(GLOB WinSrcs "*WINDOWS*" "*windows*")
 	file(GLOB LinuxSrcs "*LINUX*" "*linux*")

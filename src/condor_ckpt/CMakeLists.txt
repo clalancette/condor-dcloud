@@ -20,10 +20,10 @@ if( STD_UNIVERSE )
 	condor_selective_glob( "*file*;signals*;image*;machdep.LINUX.cpp;tmp_*;syscall_*;fake_*;condor_error*;eprintf*;shared_*;malloc-user*;gto*;maps*" CommonCkptSrcs )
 
 	# this is kind of a red herring as it only works on 32-bit deb in current build
-	if (DOES_COMPRESS_CKPT)
-		add_definitions(-DCOMPRESS_CKPT -DMORECORE=condor_morecore -DHAVE_MMAP=0 -Dmalloc_getpagesize=8192)
-		condor_selective_glob("malloc-condor.cpp;malloc.cpp" CompressSrcs)
-	endif(DOES_COMPRESS_CKPT)
+	#if (DOES_COMPRESS_CKPT)
+	#	add_definitions(-DCOMPRESS_CKPT -DMORECORE=condor_morecore -DHAVE_MMAP=0 -Dmalloc_getpagesize=8192)
+	#	condor_selective_glob("malloc-condor.cpp;malloc.cpp" CompressSrcs)
+	#endif(DOES_COMPRESS_CKPT)
 
 	# we create a local lib, but it's never actually used
 	# instead condorsyscall will rip out the target refs.

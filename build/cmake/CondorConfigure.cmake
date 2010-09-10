@@ -8,9 +8,9 @@ message(STATUS "********* BEGINNING CONFIGURATION *********")
 include (FindThreads)
 include (GlibcDetect)
 
-add_definitions(-D${OS_NAME}=${OS_NAME}_${OS_VER})
+add_definitions(-D${OS_NAME}="${OS_NAME}_${OS_VER}")
 add_definitions(-D${SYS_ARCH}=${SYS_ARCH})
-add_definitions(-DPLATFORM=${CMAKE_SYSTEM})
+add_definitions(-DPLATFORM="${CMAKE_SYSTEM}")
 
 set( CONDOR_EXTERNAL_DIR ${CONDOR_SOURCE_DIR}/externals )
 set( CMAKE_VERBOSE_MAKEFILE TRUE )
@@ -301,7 +301,7 @@ if (NOT WINDOWS)
 	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/libvirt/0.6.2)
 
 	# globus is an odd *beast* which requires a bit more config.
-	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/globus/5.0.1)
+	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/globus/5.0.1-p1)
 	if (PROPER AND GLOBUS_FOUND)
 		# locs for current rpm.
 		include_directories(/usr/include/globus /usr/lib64/globus/include/)

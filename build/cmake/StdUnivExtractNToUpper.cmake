@@ -14,7 +14,7 @@ MACRO ( STDU_EXTRACT_AND_TOUPPER _LIB _OBJ_FILE _SYMBOL_LIST  )
 				ARGS -x ${_LIB} ${_OBJ_FILE} && ${_OBJCOPY_COMMAND} ${_OBJ_FILE}
 				DEPENDS glibc )
 
-	dprintf("Symbol extraction = ar -x ${_LIB} ${_OBJ_FILE} && ${_OBJCOPY_COMMAND} ${_OBJ_FILE}")
-	append_var(STDU_OBJS _OBJ_FILE)
+	dprint("Symbol extraction = ar -x ${_LIB} ${_OBJ_FILE} && ${_OBJCOPY_COMMAND} ${_OBJ_FILE}")
+	append_var(STDU_OBJS ${_OBJ_FILE})
 
 ENDMACRO ( STDU_EXTRACT_AND_TOUPPER )

@@ -19,7 +19,7 @@ if( STD_UNIVERSE )
 	# which can call the originals.
 	###########################################################################
 	exec_program ( gcc ARGS -print-file-name=crt1.o OUTPUT_VARIABLE CRT1 )
-	exec_program ( objcopy ARGS --redefine-sym main=MAIN ${CRT1} ./condor_rt0 )
+	exec_program ( objcopy ARGS --redefine-sym main=MAIN ${CRT1} ${CMAKE_CURRENT_SOURCE_DIR}/condor_rt0 )
 
 	##################################################
 	# rip from custom built glibc and uppercase the defined symbols

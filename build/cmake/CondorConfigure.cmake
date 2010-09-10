@@ -208,6 +208,10 @@ option(HAVE_BOINC "Compiling support for backfill with BOINC" ON)
 option(SOFT_IS_HARD "Enable strict checking for WITH_<LIB>" OFF)
 option(CLIPPED "enable/disable the standard universe" ON)
 
+if (NOT CLIPPED AND NOT LINUX)
+	message (FATAL_ERROR "standard universe is *only* supported on Linux")
+endif()
+
 if (NOT HPUX)
 	option(HAVE_SHARED_PORT "Support for condor_shared_port" ON)
 	if (NOT WINDOWS)
@@ -324,7 +328,7 @@ if (NOT WINDOWS)
 		endif(${BIT_MODE} STREQUAL "32")
 
 		if (DOES_SAVE_SIGSTATE)
-			append_var(STD_U_C_FLAGS -DSAVE_SIGSTATE)
+			set(STD_U_C_FLAGS -DSAVE_SIGSTATE)
 		endif(DOES_SAVE_SIGSTATE)
 
 		set (STD_UNIVERSE ON)

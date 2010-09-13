@@ -29,4 +29,6 @@ if( STD_UNIVERSE )
 	# instead condorsyscall will rip out the target refs.
 	condor_static_lib( ckpt "${CommonCkptSrcs};${CompressSrcs}")
 
+	add_dependencies( ckpt syscall_numbers ) 
+
 endif(STD_UNIVERSE)

@@ -11,8 +11,7 @@ MACRO ( STDU_EXTRACT_AND_TOUPPER _LIB _OBJ_FILE _SYMBOL_LIST  )
 	# with one command ar extract && objcopy redefine symbols ToUpper.
 	add_custom_command( OUTPUT ${_OBJ_FILE}
 				COMMAND ar
-				ARGS -x ${_LIB} ${_OBJ_FILE} && ${_OBJCOPY_COMMAND} ${_OBJ_FILE}
-				DEPENDS glibc )
+				ARGS -x ${_LIB} ${_OBJ_FILE} && ${_OBJCOPY_COMMAND} ${_OBJ_FILE} )
 
 	dprint("Symbol extraction = ar -x ${_LIB} ${_OBJ_FILE} && ${_OBJCOPY_COMMAND} ${_OBJ_FILE}")
 	append_var(STDU_OBJS ${_OBJ_FILE})

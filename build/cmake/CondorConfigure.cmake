@@ -9,8 +9,13 @@ include (FindThreads)
 include (GlibcDetect)
 
 add_definitions(-D${OS_NAME}="${OS_NAME}_${OS_VER}")
-add_definitions(-D${SYS_ARCH}=${SYS_ARCH})
 add_definitions(-DPLATFORM="${CMAKE_SYSTEM}")
+if ( ${SYS_ARCH} MATCHES "86" AND NOT ${SYS_ARCH} MATCHES "64" )
+	add_definitions( -DI386=${SYS_ARCH} )
+else()
+	add_definitions(-D${SYS_ARCH}=${SYS_ARCH})
+endif()
+
 
 set( CONDOR_EXTERNAL_DIR ${CONDOR_SOURCE_DIR}/externals )
 set( CMAKE_VERBOSE_MAKEFILE TRUE )
@@ -313,7 +318,7 @@ if (NOT WINDOWS)
 		include_directories(${EXTERNAL_STAGE}/include/${GLOBUS_FLAVOR})
 	endif(PROPER AND GLOBUS_FOUND)
 
-	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/blahp/1.16.0)
+	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/blahp/1.16.0-p2)
 	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/voms/1.8.8_2-p2)
 	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/srb/3.2.1-p2)
 	#add_subdirectory(${CONDOR_SOURCE_DIR}/bundles/cream/1.10.1-p2)
@@ -332,6 +337,9 @@ if (NOT WINDOWS)
 		endif(DOES_SAVE_SIGSTATE)
 
 		set (STD_UNIVERSE ON)
+		
+		include_directories( ${CONDOR_SOURCE_DIR}/src/condor_io.std )
+
 		message( STATUS "** Standard Universe Enabled **")
 	else()
 		message( STATUS "** Standard Universe Disabled **")

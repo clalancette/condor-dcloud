@@ -9,7 +9,9 @@
 if( STD_UNIVERSE )
 
 	include (StdUnivExtractNToUpper)
-	add_definitions(${STD_U_C_FLAGS} -DREMOTE_SYSCALLS -DSKIP_AUTHENTICATION -DHEADER_DES_LOCL_H )
+	add_definitions(${STD_U_C_FLAGS} -DREMOTE_SYSCALLS -DSKIP_AUTHENTICATION -DHEADER_DES_LOCL_H -DFILE_TABLE )
+	include_directories(${CONDOR_SOURCE_DIR}/src/condor_shadow.std ${CONDOR_SOURCE_DIR}/src/condor_ckpt)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions")
 
 	###########################################################################
 	# Begin symbol transformation.
@@ -54,10 +56,10 @@ if( STD_UNIVERSE )
 	# begin all the stub-gen targets
 	get_target_property(STUB_GEN stub_gen LOCATION)
 	dump_local_flags(COMP_DEFS)
-	command_target (switches ${CMAKE_CXX_COMPILER} "-DSWITCH;GlibCFlag;${COMP_DEFS};syscall.tmpl;|;${STUB_GEN};-mode;switches;-p;switches.prologue;-e;switches.epilogue;>;switches.cpp" switches.cpp)
-	command_target (senders ${CMAKE_CXX_COMPILER} "-DSENDER;GlibCFlag;${COMP_DEFS};syscall.tmpl;|;${STUB_GEN};-mode;senders;-p;senders.prologue;-e;senders.epilogue;>;senders.cpp" senders.cpp)
-	command_target (receivers ${CMAKE_CXX_COMPILER} "-DRECEIVER;GlibCFlag;${COMP_DEFS};syscall.tmpl;|;${STUB_GEN};-mode;receivers;-p;receivers.prologue;-e;receivers.epilogue;-n; syscheck;>;receivers.cpp" receivers.cpp)
-	command_target (sys-list ${CMAKE_CXX_COMPILER} "-DSWITCH;GlibCFlag;${COMP_DEFS};syscall.tmpl;|;${STUB_GEN};-mode;listcalls;>;syscall-list" syscall-list)
+	command_target (switches ${CMAKE_C_COMPILER} "-E;-x;c-header;-DSWITCH;${COMP_DEFS};syscall.tmpl;|;${STUB_GEN};-mode;switches;-p;switches.prologue;-e;switches.epilogue;>;switches.cpp" switches.cpp)
+	command_target (senders ${CMAKE_C_COMPILER} "-E;-x;c-header;-DSENDER;${COMP_DEFS};syscall.tmpl;|;${STUB_GEN};-mode;senders;-p;senders.prologue;-e;senders.epilogue;>;senders.cpp" senders.cpp)
+	command_target (receivers ${CMAKE_C_COMPILER} "-E;-x;c-header;-DRECEIVER;${COMP_DEFS};syscall.tmpl;|;${STUB_GEN};-mode;receivers;-p;receivers.prologue;-e;receivers.epilogue;-n; syscheck;>;receivers.cpp" receivers.cpp)
+	command_target (sys-list ${CMAKE_CXX_COMPILER} "-E;-x;c-header;-DSWITCH;${COMP_DEFS};syscall.tmpl;|;${STUB_GEN};-mode;listcalls;>;syscall-list" syscall-list)
 
 	##################################################
 	# finally add in the local sources, remove stale stubs if they exist so we don't have duplicates

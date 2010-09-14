@@ -27,18 +27,16 @@
 #include "condor_file_info.h"
 #include "internet.h"
 
-int open_tcp_stream( unsigned int ip_addr, unsigned short port );
-int open_file_stream( const char *file, int flags, size_t *len );
 
+extern "C" 
+{
 /* remote system call prototypes */
-extern int REMOTE_CONDOR_file_info(char *logical_name, int *fd, 
-	char **physical_name);
-extern int REMOTE_CONDOR_put_file_stream(char *file, size_t len, 
-	unsigned int *ip_addr, u_short *port_num);
-extern int REMOTE_CONDOR_get_file_stream(char *file, size_t *len, 
-	unsigned int *ip_addr, u_short *port_num);
+int REMOTE_CONDOR_file_info(char *logical_name, int *fd, char **physical_name);
+int REMOTE_CONDOR_put_file_stream(char *file, size_t len, unsigned int *ip_addr, u_short *port_num);
+int REMOTE_CONDOR_get_file_stream(char *file, size_t *len, unsigned int *ip_addr, u_short *port_num);
 
 
+int open_tcp_stream( unsigned int ip_addr, unsigned short port );
 int _condor_in_file_stream;
 
 /*
@@ -48,8 +46,7 @@ int _condor_in_file_stream;
   access is for reading or writing.  If we are to access the file
   some way other than remote system calls, just go ahead and do it.
 */
-int
-open_file_stream( const char *file, int flags, size_t *len )
+int open_file_stream( const char *file, int flags, size_t *len )
 {
 	unsigned int	addr;
 	unsigned short	port;
@@ -184,3 +181,5 @@ open_tcp_stream( unsigned int ip_addr, unsigned short port )
 
 	return fd;
 }
+
+}// end extern C

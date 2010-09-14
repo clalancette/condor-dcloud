@@ -1,10 +1,16 @@
-macro(add_subdirectories rootdir exclude)
+macro(add_subdirectories rootdir prio exclude)
  file(GLOB localsub "${rootdir}/*" )
+
+  foreach(_item ${prio})
+	message(STATUS "adding directory (${_item})")
+	add_subdirectory( ${_item} )
+	list(REMOVE_ITEM localsub ${_item})
+  endforeach(_item)
+
   foreach(dir ${localsub})
     if(IS_DIRECTORY ${dir})
         
 	foreach (exclude_var ${exclude})
-		#message(STATUS "exclud var (${exclude_var}) dir (${dir})")
 		if ( ${dir} STREQUAL ${exclude_var})
 			message(STATUS "excluding directory (${dir})")
         		set( ${dir}_exclude ON )

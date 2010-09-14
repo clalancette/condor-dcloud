@@ -26,10 +26,9 @@
 #include "condor_open.h"
 #include "util_lib_proto.h"
 
-double	get_time();
 extern int	Syscalls;
 
-extern int open_file_stream( const char *file, int flags, size_t *len );
+//extern int open_file_stream( const char *file, int flags, size_t *len );
 
 /* remote systems calls we use in this file */
 extern int REMOTE_CONDOR_extern_name(char *path, char *buf, int bufsize);
@@ -38,6 +37,11 @@ extern int REMOTE_CONDOR_getwd(char *path_name);
 
 #define CHUNK_SIZE 4096
 
+extern "C" 
+{
+
+int open_file_stream( const char *file, int flags, size_t *len );
+double  get_time();
 
 /*
 ** Transfer a local file to a remote machine.
@@ -114,8 +118,7 @@ send_a_file( const char *local, const char *remote, int perm )
 /*
 ** Transfer a remote file to the local machine.
 */
-int
-get_file( const char *remote, const char *local, int mode )
+int get_file( const char *remote, const char *local, int mode )
 {
 	int		remote_fd, local_fd;
 	char	buf[ CHUNK_SIZE + 50];
@@ -236,3 +239,5 @@ find_physical_host( const char *path, int flags )
 	}
 }
 #endif
+
+} // end of extern

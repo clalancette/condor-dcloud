@@ -732,7 +732,7 @@ get_ckpt_mode( int sig )
 	if( !do_remote_syscalls ) {
 		return 0;
 	} else {
-		return REMOTE_CONDOR_get_ckpt_mode( (condor_signal_t) sig );
+		return REMOTE_CONDOR_get_ckpt_mode( sig );
 	}
 }
 

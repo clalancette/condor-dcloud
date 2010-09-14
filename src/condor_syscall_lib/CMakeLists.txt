@@ -8,6 +8,7 @@
 ##############################################################
 if( STD_UNIVERSE )
 
+	##########################################################################
 	include (StdUnivExtractNToUpper)
 	add_definitions(${STD_U_C_FLAGS} -DREMOTE_SYSCALLS -DSKIP_AUTHENTICATION -DHEADER_DES_LOCL_H -DFILE_TABLE )
 	include_directories(${CONDOR_SOURCE_DIR}/src/condor_shadow.std ${CONDOR_SOURCE_DIR}/src/condor_ckpt)

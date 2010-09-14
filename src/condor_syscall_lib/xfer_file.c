@@ -37,9 +37,6 @@ extern int REMOTE_CONDOR_getwd(char *path_name);
 
 #define CHUNK_SIZE 4096
 
-extern "C" 
-{
-
 int open_file_stream( const char *file, int flags, size_t *len );
 double  get_time();
 
@@ -195,49 +192,4 @@ get_time()
 }
 
 
-#if 0
-char *
-find_physical_host( const char *path, int flags )
-{
-	static char answer[ MAXPATHLEN ];
-	char		dir[ MAXPATHLEN ];
-	char		*ptr, *strchr(), *strrchr(); /* 9/25 ..dhaval */
 
-		/* Try to find the pathname as given */
-	/* if( extern_name(path,answer,sizeof(answer)) >= 0 ) { */
-	if( REMOTE_CONDOR_extern_name(path,answer,sizeof(answer)) >= 0 ) {
-		if( ptr=strchr(answer,':') ) { /* dhaval 9/25 */
-			*ptr = '\0';
-		}
-		return answer;
-	}
-
-	if( !(flags & O_CREAT) ) {
-		return NULL;
-	}
-
-		/* He's trying to creat the file, look for the parent directory */
-	strcpy( dir, path );
-    if( ptr=strrchr(dir,'/') ) { /* dhaval 9/25 */
-		if( ptr == dir ) {
-			strcpy( dir, "/" );
-		} else {
-			*ptr = '\0';
-		}
-	} else {
-		REMOTE_CONDOR_getwd( dir );
-	}
-
-	/* if( extern_name(dir,answer,sizeof(answer)) >= 0 ) { */
-	if( REMOTE_CONDOR_extern_name(dir,answer,sizeof(answer)) >= 0 ) {
-		if( ptr=strchr(answer,':') ) { /* dhaval 9/25 */
-			*ptr = '\0';
-		}
-		return answer;
-	} else {
-		return NULL;
-	}
-}
-#endif
-
-} // end of extern

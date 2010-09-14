@@ -1,6 +1,7 @@
 
 ##################################################
-file( GLOB RmvSrcs y.tab* lex.yy* ckpt_server_api_stubs* libcondorapi_stubs* soap_helpers* test_* *.t.cpp *test.cpp cat_url.cpp *Test* )
+file( GLOB RmvSrcs y.tab* lex.yy* ckpt_server_api_stubs* libcondorapi_stubs*
+soap_helpers* test_* *.t.cpp *test.cpp cat_url.cpp *Test* param_info_init.c )
 
 condor_glob( HeaderFiles SourceFiles "${RmvSrcs}" )
 command_target( utils_genparams perl param_info_c_generator.pl param_info_init.c )

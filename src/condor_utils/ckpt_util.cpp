@@ -35,6 +35,8 @@
 #include "my_hostname.h"
 #include "condor_socket_types.h"
 
+extern "C" 
+{
 
 //function prototypes
 ssize_t stream_file_xfer( int src_fd, int dst_fd, size_t n_bytes );
@@ -234,4 +236,6 @@ wait_for_connections(int sock_fd, int count, int *return_list)
 		return_list[i] = tcp_accept_timeout(sock_fd, &from, &from_len, 300);
 	}
 	return i;
+}
+
 }

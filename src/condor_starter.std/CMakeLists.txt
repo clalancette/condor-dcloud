@@ -4,8 +4,7 @@ if(STD_UNIVERSE )
 	file( GLOB RmvElements test* driver.cpp)
         
 	src_target_ref(ckpt "syscall_mode;signals_control" CKPT_REFS)
-	src_target_ref(condorsyscall
-	"remote_syscall;syscall_connect;syscall_numbers;xfer_file;senders;file_stream" CNDRSYSCL_REFS)
+	src_target_ref(condorsyscall "remote_syscall;syscall_connect;syscall_numbers;xfer_file;senders;file_stream" CNDRSYSCL_REFS)
 
 	condor_glob(Hdrs Srcs "${RmvElements}")
 

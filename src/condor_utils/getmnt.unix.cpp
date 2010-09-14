@@ -23,7 +23,6 @@
 #include "condor_common.h"
 #include "condor_getmnt.h"
 
-/*char			*strdup(), *malloc(); */
 
 /*
  The function getmnt() is Ultrix specific and returns a different
@@ -33,6 +32,7 @@
  extent needed specifically by condor.  This is NOT a generally correct
  simulation.
 */
+
 
 #if defined(Darwin) || defined(CONDOR_FREEBSD)
 
@@ -201,9 +201,8 @@ int getmnt( int * start, struct fs_data buf[], unsigned bufsize, int mode, char 
 FILE			*setmntent();
 struct mntent	*getmntent();
 
-int
-getmnt( int* start, struct fs_data buf[], unsigned int bufsize, 
-		int	mode, char* path )
+// I believe this is *only* used by std::universe 
+extern "C" int getmnt( int* start, struct fs_data buf[], unsigned int bufsize, int mode, char* path )
 {
 	FILE			*tab;
 	struct mntent	*ent;

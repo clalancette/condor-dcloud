@@ -28,12 +28,10 @@
 #include "internet.h"
 
 
-extern "C" 
-{
 /* remote system call prototypes */
-int REMOTE_CONDOR_file_info(char *logical_name, int *fd, char **physical_name);
-int REMOTE_CONDOR_put_file_stream(char *file, size_t len, unsigned int *ip_addr, u_short *port_num);
-int REMOTE_CONDOR_get_file_stream(char *file, size_t *len, unsigned int *ip_addr, u_short *port_num);
+extern int REMOTE_CONDOR_file_info(char *logical_name, int *fd, char **physical_name);
+extern int REMOTE_CONDOR_put_file_stream(char *file, size_t len, unsigned int *ip_addr, u_short *port_num);
+extern int REMOTE_CONDOR_get_file_stream(char *file, size_t *len, unsigned int *ip_addr, u_short *port_num);
 
 
 int open_tcp_stream( unsigned int ip_addr, unsigned short port );
@@ -182,4 +180,3 @@ open_tcp_stream( unsigned int ip_addr, unsigned short port )
 	return fd;
 }
 
-}// end extern C

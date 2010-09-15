@@ -5,8 +5,8 @@
       <Dialog Id="CondorCfgDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
         <Control Id="CollectorLabel" Type="Text" X="45" Y="73" Width="220" Height="15" TabSkip="no" Text="&amp;Condor Central Manager IP:" />
         <Control Id="CollectorEdit" Type="Edit" X="45" Y="85" Width="220" Height="18" Property="CONDOR_HOST" Text="{80}" />
-        <Control Id="BrokerLabel" Type="Text" X="45" Y="110" Width="220" Height="15" TabSkip="no" Text="&amp;QMF Broker Host IP:" />
-        <Control Id="BrokerEdit" Type="Edit" X="45" Y="122" Width="220" Height="18" Property="BROKER_HOST" Text="{80}" />
+        <Control Id="BrokerLabel" Type="Text" X="45" Y="110" Width="220" Height="15" TabSkip="no" Text="&amp;Z-Change Me:" />
+        <Control Id="BrokerEdit" Type="Edit" X="45" Y="122" Width="220" Height="18" Property="Z_CHANGE_ME" Text="{80}" />
         <Control Id="AdminLabel" Type="Text" X="45" Y="147" Width="220" Height="15" TabSkip="no" Text="&amp;Condor Admin Email Address:" />
         <Control Id="AdminEdit" Type="Edit" X="45" Y="159" Width="220" Height="16" Property="ADMIN_EMAIL" Text="{80}"/>
         <Control Id="SMTPLabel" Type="Text" X="45" Y="184" Width="220" Height="15" TabSkip="no" Text="&amp;Outgoing SMTP server:" />

@@ -13,7 +13,7 @@
        Manufacturer="@CPACK_PACKAGE_VENDOR@" UpgradeCode="@CPACK_WIX_UPGRADE_GUID@">
         <Package InstallerVersion="300" Compressed="yes"/>
         <Media Id="1" Cabinet="media1.cab" EmbedCab="yes"/>
-		<!-- Always force the root drive to be C: -->
+        <!-- Always force the root drive to be C: -->
         <Property Id="ROOTDRIVE"><![CDATA[C:\]]></Property>
         <Directory Id="TARGETDIR" Name="SourceDir">
           <Directory Id="INSTALLLOCATION" Name="@CPACK_PACKAGE_FILE_NAME@">
@@ -28,27 +28,16 @@
                  <RegistryValue Type="string" Name="CONDOR_CONFIG" Value="[INSTALLLOCATION]condor_config" KeyPath="yes" />
                  <RegistryValue Type="string" Name="RELEASE_DIR" Value="[INSTALLLOCATION]"/>
              </RegistryKey>
-             <Environment Id="PythonUpdatePath" Action="set" Name="PYTHONPATH" Part="last" Permanent="no" System="yes" Value="[INSTALLLOCATION]bin\site-packages"/>
              <Environment Id="CondorBin" Action="set" Name="PATH" Part="last" Permanent="no" System="yes" Value="[INSTALLLOCATION]bin\"/>
-             <!-- This should be removed and is temporary hackery. -->
-             <!-- <FirewallException Id="FWX0" Name="python" Program="[PYTHONSEARCHPATH]python.exe" Scope="any" xmlns="http://schemas.microsoft.com/wix/FirewallExtension" /> -->
            </Component>
 
           </Directory>
         </Directory>
 
-        <!-- Begin checking for prereqs -->
-        <Property Id="PYTHONSEARCHPATH">
-          <RegistrySearch Id="RegSearch_PythonVer" Key="SOFTWARE\Python\PythonCore\2.6\InstallPath" Root="HKLM" Type="raw" Win64="yes"/>
-        </Property>
-
         <Condition Message="This application is only supported on Windows XP(SP2) or higher">
           <![CDATA[(VersionNT >= 501)]]>
         </Condition>
 
-        <Condition Message="This application requires Python 2.6 to be installed, please install and try again">
-          Installed OR PYTHONSEARCHPATH
-        </Condition>
 
         <!-- Begin custom actions and install sequence -->
         <CustomAction Id="CondorConfigLocal"
@@ -65,9 +54,12 @@
             if Not fso.FolderExists(path & "execute") Then
                  Set objFolderExec = fso.CreateFolder(path & "execute")
             End if
+             if Not fso.FolderExists(path & "config") Then
+                 Set objFolderExec = fso.CreateFolder(path & "config")
+            End if
+
             Set Myfh = fso.OpenTextFile(path & "config\\00wininstaller.config", 2, True)
             Myfh.WriteLine("CONDOR_HOST=" & Session.Property("CONDOR_HOST") )
-            Myfh.WriteLine("QMF_BROKER_HOST=" & Session.Property("BROKER_HOST") )
             Myfh.WriteLine("CONDOR_ADMIN=" & Session.Property("ADMIN_EMAIL"))
             Myfh.WriteLine("SMTP_SERVER=" & Session.Property("SMTP"))
             Myfh.Close

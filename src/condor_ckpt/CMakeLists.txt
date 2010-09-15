@@ -19,7 +19,7 @@ if( STD_UNIVERSE )
 	add_definitions( ${STD_U_C_FLAGS} -DFILE_TABLE -DIN_CKPT_LIB)
 	condor_selective_glob( "*file*;signals*;image*;machdep.LINUX.cpp;tmp_*;syscall_*;fake_*;condor_error*;eprintf*;shared_*;malloc-user*;gto*;maps*" CommonCkptSrcs )
 
-	# this is kind of a red herring as it only works on 32-bit deb in current build
+	# from what I can tell this doesn't even work.
 	#if (DOES_COMPRESS_CKPT)
 	#	add_definitions(-DCOMPRESS_CKPT -DMORECORE=condor_morecore -DHAVE_MMAP=0 -Dmalloc_getpagesize=8192)
 	#	condor_selective_glob("malloc-condor.cpp;malloc.cpp" CompressSrcs)
@@ -28,7 +28,6 @@ if( STD_UNIVERSE )
 	# we create a local lib, but it's never actually used
 	# instead condorsyscall will rip out the target refs.
 	condor_static_lib( ckpt "${CommonCkptSrcs};${CompressSrcs}")
-
-	add_dependencies( ckpt syscall_numbers ) 
+	add_dependencies( ckpt syscall_numbers )
 
 endif(STD_UNIVERSE)

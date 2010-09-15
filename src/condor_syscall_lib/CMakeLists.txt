@@ -53,8 +53,12 @@ if( STD_UNIVERSE )
 	src_target_ref( cedar "stream;sig_num;open_flags;fcntl_cmd;errno_num;condor_rw" IO_REFS)
 	src_target_ref( stdunivio "std_univ_sock;std_univ_buffers" STDIO_REF )
 
+	# local references used by condor_shadow.std & condor_starter.std
+	src_target_ref(ckpt "syscall_mode;signals_control" CKPT_LOCAL_REFS)
+	condor_selective_glob("remote_syscall*;syscall_connect*;syscall_numbers*;xfer_file*;file_stream*;extern_path*" SYSCALL_LOCAL_REFS)
+
 	##################################################
-	# begin all the stub-gen targets
+	# begin all the stub-gen targets ; == " "
 	get_target_property(STUB_GEN stub_gen LOCATION)
 	dump_local_flags(COMP_DEFS)
 	command_target (switches ${CMAKE_C_COMPILER} "-E;-x;c-header;-DSWITCH;${COMP_DEFS};syscall.tmpl;|;${STUB_GEN};-mode;switches;-p;switches.prologue;-e;switches.epilogue;>;switches.cpp" switches.cpp)
@@ -70,6 +74,8 @@ if( STD_UNIVERSE )
 	##################################################
 	# now create the glorious syscall lib various sources.
 	condor_static_lib( condorsyscall "senders.cpp;receivers.cpp;switches.cpp;${SyscallHdrs};${SyscallSrcs};${STDU_OBJS};${CKPT_REFS};${UTIL_REFS};${IO_REFS};${STDIO_REF}")
+	# local library which the daemons can link 
+	condor_static_lib( std_local_ref "senders.cpp;receivers.cpp;${CKPT_LOCAL_REFS};${SYSCALL_LOCAL_REFS}" )
 
 	##################################################
 	# part 2:

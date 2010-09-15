@@ -18,11 +18,17 @@
  ***************************************************************/
 
 #include "condor_common.h" 
+#ifdef WIN32
+        #define __ATTRIBUTE__WEAK__
+#else
+        #define __ATTRIBUTE__WEAK__ __attribute__ ((weak))
+#endif
+
 
 /* Dummy definition of SetSyscalls to be included in Condor libraries
    where needed. */
 extern "C" {
 
-int SetSyscalls( int mode ) { return mode; }
+int __ATTRIBUTE__WEAK__ SetSyscalls( int mode ) { return mode; }
 
 }

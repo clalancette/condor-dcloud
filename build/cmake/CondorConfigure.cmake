@@ -47,6 +47,7 @@ else()
 	set( CMAKE_SUPPRESS_REGENERATION FALSE )
 
 	# when we want to distro dynamic libraries only with localized rpaths.
+	set (CMAKE_SKIP_RPATH TRUE)
 	# set (CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 	# set (CMAKE_INSTALL_RPATH YOUR_LOC)
 	# set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
@@ -495,6 +496,9 @@ else(MSVC)
 	endif(HAVE_PTHREADS)
 
 	check_cxx_compiler_flag(-shared HAVE_CC_SHARED)
+
+	# b/c we don't do anything c++ specific copy flags for c-compilation
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CXX_FLAGS}")
 
 endif(MSVC)
 

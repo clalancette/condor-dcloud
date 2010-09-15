@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsl:stylesheet version="1.0"
+   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+   xmlns:wix="http://schemas.microsoft.com/wix/2006/wi"
+   xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension">
+  <xsl:output indent="yes" method="xml"/>
+
+  <xsl:template match="/wix:Wix">
+    <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+      <Product xmlns="http://schemas.microsoft.com/wix/2006/wi"
+       Id="@CPACK_WIX_PRODUCT_GUID@" Name="@CPACK_PACKAGE_FILE_NAME@"
+       Language="1033" Version="@CPACK_PACKAGE_VERSION@"
+       Manufacturer="@CPACK_PACKAGE_VENDOR@" UpgradeCode="@CPACK_WIX_UPGRADE_GUID@">
+        <Package InstallerVersion="300" Compressed="yes"/>
+        <Media Id="1" Cabinet="media1.cab" EmbedCab="yes"/>
+		<!-- Always force the root drive to be C: -->
+        <Property Id="ROOTDRIVE"><![CDATA[C:\]]></Property>
+        <Directory Id="TARGETDIR" Name="SourceDir">
+          <Directory Id="INSTALLLOCATION" Name="@CPACK_PACKAGE_FILE_NAME@">
+
+           <!-- Merge module used to bind VC runtime *do not* copy in the files using include (InstallRequiredSystemLibraries) -->
+           <Merge Id="VC90CRT" Language="1033" DiskId="1" SourceFile="C:\Program Files\Common Files\Merge Modules\Microsoft_VC90_CRT_x86.msm"/>
+           <Merge Id="VC90Policy" Language="1033" DiskId="1" SourceFile="C:\Program Files\Common Files\Merge Modules\policy_9_0_Microsoft_VC90_CRT_x86.msm"/>
+
+            <!-- Update the registry, ENV, and FW -->
+           <Component Id="CondorRegNEnv" Guid="E282D017-976B-4685-A330-5180B27277C0">
+             <RegistryKey Root="HKLM" Key="SOFTWARE\Condor" Action="createAndRemoveOnUninstall" >
+                 <RegistryValue Type="string" Name="CONDOR_CONFIG" Value="[INSTALLLOCATION]condor_config" KeyPath="yes" />
+                 <RegistryValue Type="string" Name="RELEASE_DIR" Value="[INSTALLLOCATION]"/>
+             </RegistryKey>
+             <Environment Id="PythonUpdatePath" Action="set" Name="PYTHONPATH" Part="last" Permanent="no" System="yes" Value="[INSTALLLOCATION]bin\site-packages"/>
+             <Environment Id="CondorBin" Action="set" Name="PATH" Part="last" Permanent="no" System="yes" Value="[INSTALLLOCATION]bin\"/>
+             <!-- This should be removed and is temporary hackery. -->
+             <!-- <FirewallException Id="FWX0" Name="python" Program="[PYTHONSEARCHPATH]python.exe" Scope="any" xmlns="http://schemas.microsoft.com/wix/FirewallExtension" /> -->
+           </Component>
+
+          </Directory>
+        </Directory>
+
+        <!-- Begin checking for prereqs -->
+        <Property Id="PYTHONSEARCHPATH">
+          <RegistrySearch Id="RegSearch_PythonVer" Key="SOFTWARE\Python\PythonCore\2.6\InstallPath" Root="HKLM" Type="raw" Win64="yes"/>
+        </Property>
+
+        <Condition Message="This application is only supported on Windows XP(SP2) or higher">
+          <![CDATA[(VersionNT >= 501)]]>
+        </Condition>
+
+        <Condition Message="This application requires Python 2.6 to be installed, please install and try again">
+          Installed OR PYTHONSEARCHPATH
+        </Condition>
+
+        <!-- Begin custom actions and install sequence -->
+        <CustomAction Id="CondorConfigLocal"
+                 Script="vbscript">
+          <![CDATA[
+            Set fso = CreateObject("Scripting.FileSystemObject")
+            path = Session.Property("INSTALLLOCATION")
+            if Not fso.FolderExists(path & "log") Then
+                Set objFolderLog = fso.CreateFolder(path & "log")
+            End if
+            if Not fso.FolderExists(path & "spool") Then
+                Set objFolderSpool = fso.CreateFolder(path & "spool")
+            End if
+            if Not fso.FolderExists(path & "execute") Then
+                 Set objFolderExec = fso.CreateFolder(path & "execute")
+            End if
+            Set Myfh = fso.OpenTextFile(path & "config\\00wininstaller.config", 2, True)
+            Myfh.WriteLine("CONDOR_HOST=" & Session.Property("CONDOR_HOST") )
+            Myfh.WriteLine("QMF_BROKER_HOST=" & Session.Property("BROKER_HOST") )
+            Myfh.WriteLine("CONDOR_ADMIN=" & Session.Property("ADMIN_EMAIL"))
+            Myfh.WriteLine("SMTP_SERVER=" & Session.Property("SMTP"))
+            Myfh.Close
+           ]]>
+        </CustomAction>
+
+        <InstallExecuteSequence>
+          <Custom Action="CondorConfigLocal" After="InstallFinalize">Not Installed</Custom>
+          <ScheduleReboot After="CondorConfigLocal" />
+        </InstallExecuteSequence>
+        <!-- End custom actions and install sequence -->
+
+        <!-- Feature Block e.g. ComponentRef's -->
+        <Feature Id="CondorWindows" Title="Condor Installation" Level="1" Display="expand">
+          <Feature Id="Installation" Title="Condor Installation Files" Level="1">
+            <xsl:apply-templates select="wix:Fragment" mode="CompRef"/>
+            <MergeRef Id="VC90CRT"/>
+            <MergeRef Id="VC90Policy"/>
+            <ComponentRef Id="CondorRegNEnv" />
+          </Feature>
+          <!-- Typical/Complete/Custom, below is complete. 
+          <Feature Id="Debugging Symbols" Title="Condor Debug Symbol Files" Description="Files used to debug Condor" Level='1000'>
+            <xsl:apply-templates select="wix:Fragment" mode="CompRef">
+              <xsl:with-param name="ftype">pdb</xsl:with-param>
+            </xsl:apply-templates>
+          </Feature> -->
+        </Feature>
+
+        <!-- UI Flow + our custom dialogs -->
+        <UI Id="MyWixUI_FeatureTree">
+            <UIRef Id="WixUI_FeatureTree" />
+            <DialogRef Id="CondorCfgDlg" />
+            <Publish Dialog="LicenseAgreementDlg" Control="Next" Event="NewDialog" Value="CondorCfgDlg" Order="2">LicenseAccepted = "1"</Publish>
+            <Publish Dialog="CustomizeDlg" Control="Back" Event="NewDialog" Value="CondorCfgDlg">1</Publish>
+        </UI>
+
+        <!--<UIRef Id="WixUI_FeatureTree" />-->
+        <UIRef Id="WixUI_ErrorProgressText" />
+
+        <!-- Update  -->
+        <WixVariable Id="WixUIBannerBmp" Overridable="yes" Value="@CPACK_WIX_BITMAP_FOLDER@/bannrbmp.bmp"/>
+        <WixVariable Id="WixUIDialogBmp" Overridable="yes" Value="@CPACK_WIX_BITMAP_FOLDER@/dlgbmp.bmp"/>
+
+      </Product>
+
+      <!--Output the fragment info which heat generates-->
+      <xsl:apply-templates select="wix:Fragment" mode="CopyOf"/>
+
+    </Wix>
+  </xsl:template>
+
+  <!-- ************************* Begin Templates ************************* -->
+  <!-- Begin CompRef Templates -->
+  <xsl:template match="wix:Component" mode="CompRef">
+    <xsl:element name="ComponentRef" xmlns="http://schemas.microsoft.com/wix/2006/wi" >
+      <xsl:attribute name="Id">
+        <xsl:value-of select="@Id" />
+      </xsl:attribute>
+    </xsl:element>
+  </xsl:template>
+
+  <xsl:template match="wix:Directory" mode="CompRef" >
+    <xsl:apply-templates select="wix:Component" mode="CompRef"/>
+    <xsl:apply-templates select="wix:Directory" mode="CompRef"/>
+  </xsl:template>
+
+  <xsl:template match="wix:DirectoryRef" mode="CompRef">
+    <xsl:apply-templates select="wix:Component" mode="CompRef"/>
+    <xsl:apply-templates select="wix:Directory" mode="CompRef"/>
+  </xsl:template>
+
+  <xsl:template match="wix:Fragment" mode="CompRef">
+    <xsl:param name="ftype"/>
+    <xsl:apply-templates select="wix:DirectoryRef" mode="CompRef"/>
+  </xsl:template>
+
+  <!-- Begin CopyOf Templates -->
+  <xsl:template match="wix:File" mode="CopyOf">    
+    <xsl:choose>
+       <xsl:when test="@Source = '$(var.Source)\bin\condor_master.exe'">
+          <xsl:copy>
+            <xsl:copy-of select="@*"/>
+            <FirewallException Id="FWX1" Name="condor_master.exe" Scope="any" xmlns="http://schemas.microsoft.com/wix/FirewallExtension" />
+          </xsl:copy>
+          <ServiceInstall Id="CondorService" Description="condor" DisplayName="condor" ErrorControl="normal"  Name="condor" Start="auto" Type="ownProcess" xmlns="http://schemas.microsoft.com/wix/2006/wi" />
+          <ServiceControl Id="StartCondorService" Name="condor" Start="install" Wait="no" xmlns="http://schemas.microsoft.com/wix/2006/wi" />
+          <ServiceControl Id="StopCondorService" Name="condor" Stop="both" Wait="yes" Remove="uninstall" xmlns="http://schemas.microsoft.com/wix/2006/wi" />
+       </xsl:when>
+      <xsl:otherwise>
+        <xsl:copy>
+          <xsl:copy-of select="@*"/>
+        </xsl:copy> 
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template match="wix:Component" mode="CopyOf">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates select="wix:File" mode="CopyOf"/>
+    </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="wix:Directory" mode="CopyOf" >
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates select="wix:Component" mode="CopyOf"/>
+      <xsl:apply-templates select="wix:Directory" mode="CopyOf"/>
+    </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="wix:DirectoryRef" mode="CopyOf">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates select="wix:Component" mode="CopyOf"/>
+      <xsl:apply-templates select="wix:Directory" mode="CopyOf"/>
+    </xsl:copy>
+  </xsl:template>
+
+  <xsl:template match="wix:Fragment" mode="CopyOf">
+    <xsl:copy>
+      <xsl:copy-of select="@*"/>
+      <xsl:apply-templates select="wix:DirectoryRef" mode="CopyOf"/>
+    </xsl:copy>
+  </xsl:template>
+
+</xsl:stylesheet>

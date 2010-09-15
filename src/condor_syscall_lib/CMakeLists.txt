@@ -9,6 +9,7 @@
 if( STD_UNIVERSE )
 
 	##########################################################################
+	# localized std:u compilation flags and settings
 	include (StdUnivExtractNToUpper)
 	add_definitions(${STD_U_C_FLAGS} -DREMOTE_SYSCALLS -DSKIP_AUTHENTICATION -DHEADER_DES_LOCL_H -DFILE_TABLE )
 	include_directories(${CONDOR_SOURCE_DIR}/src/condor_shadow.std ${CONDOR_SOURCE_DIR}/src/condor_ckpt)
@@ -25,7 +26,7 @@ if( STD_UNIVERSE )
 	exec_program ( objcopy ARGS --redefine-sym main=MAIN ${CRT1} ${CMAKE_CURRENT_SOURCE_DIR}/condor_rt0 )
 
 	##################################################
-	# rip from custom built glibc and uppercase the defined symbols
+	# rip from custom built glibc and uppercase the defined symbols, yeah you read that correctly :-/
 	stdu_extract_and_toupper(${EXT_GLIBC_FOUND} getcwd.o "getcwd;__getcwd")
 	stdu_extract_and_toupper(${EXT_GLIBC_FOUND} mmap.o "mmap;__mmap")
 	stdu_extract_and_toupper(${EXT_GLIBC_FOUND} syscall.o "syscall")
@@ -43,10 +44,12 @@ if( STD_UNIVERSE )
 
 	##################################################
 	# part 1:
-	# now the below section is some clever magic to
-	# elim the need of shuffling objs instead find
-	# matching refs in other libs and ensure the are built
-	# prior this target running.
+	# Below is some clever magic to
+	# elim the need of shuffling objs, instead find
+	# matching refs in other libs, build locally with
+	# the previously declared compilation flags/definitions and
+	# slam into archive.  Uber pandantic b/c std:u
+	# is concentrated evil.
 	##################################################
 	src_target_ref( ckpt "^.*$" CKPT_REFS)
 	src_target_ref( utils "flock;dprintf_common;except;update_rusage;internet;mkargv;filename_tools;strupr;mark_thread;condor_version;condor_ver_info;stat_wrapper;stat_wrapper_internal;condor_open;selector;MyString;subsystem_info;HashTable" UTIL_REFS)
@@ -58,30 +61,30 @@ if( STD_UNIVERSE )
 	condor_selective_glob("remote_syscall*;syscall_connect*;syscall_numbers*;xfer_file*;file_stream*;extern_path*" SYSCALL_LOCAL_REFS)
 
 	##################################################
-	# begin all the stub-gen targets ; == " "
+	# begin all the stub-gen targets fyi - cmake's ";" == " "
 	get_target_property(STUB_GEN stub_gen LOCATION)
 	dump_local_flags(COMP_DEFS)
 	command_target (switches ${CMAKE_C_COMPILER} "-E;-x;c-header;-DSWITCH;${COMP_DEFS};syscall.tmpl;|;${STUB_GEN};-mode;switches;-p;switches.prologue;-e;switches.epilogue;>;switches.cpp" switches.cpp)
 	command_target (senders ${CMAKE_C_COMPILER} "-E;-x;c-header;-DSENDER;${COMP_DEFS};syscall.tmpl;|;${STUB_GEN};-mode;senders;-p;senders.prologue;-e;senders.epilogue;>;senders.cpp" senders.cpp)
 	command_target (receivers ${CMAKE_C_COMPILER} "-E;-x;c-header;-DRECEIVER;${COMP_DEFS};syscall.tmpl;|;${STUB_GEN};-mode;receivers;-p;receivers.prologue;-e;receivers.epilogue;-n; syscheck;>;receivers.cpp" receivers.cpp)
-	command_target (sys-list ${CMAKE_CXX_COMPILER} "-E;-x;c-header;-DSWITCH;${COMP_DEFS};syscall.tmpl;|;${STUB_GEN};-mode;listcalls;>;syscall-list" syscall-list)
+	command_target (sys-list ${CMAKE_C_COMPILER} "-E;-x;c-header;-DSWITCH;${COMP_DEFS};syscall.tmpl;|;${STUB_GEN};-mode;listcalls;>;syscall-list" syscall-list)
 
 	##################################################
-	# finally add in the local sources, remove stale stubs if they exist so we don't have duplicates
+	# finally add in the local sources, remove stale stubs if they exist
+	# so we don't have duplicates in the glob from previous cmake runs.
 	file( GLOB StubRmvSrcs switches.cpp senders.cpp receivers.cpp )
 	condor_glob( SyscallHdrs SyscallSrcs "${StubRmvSrcs}" )
 
 	##################################################
-	# now create the glorious syscall lib various sources.
+	# now create the glorious syscall lib from various refs.
+	# behold the birth of frankenstein.
 	condor_static_lib( condorsyscall "senders.cpp;receivers.cpp;switches.cpp;${SyscallHdrs};${SyscallSrcs};${STDU_OBJS};${CKPT_REFS};${UTIL_REFS};${IO_REFS};${STDIO_REF}")
-	# local library which the daemons can link 
+	# local library which the daemons can link without glibc tainting.
 	condor_static_lib( std_local_ref "senders.cpp;receivers.cpp;${CKPT_LOCAL_REFS};${SYSCALL_LOCAL_REFS}" )
 
 	##################################################
 	# part 2:
-	# the dependencies will ensure build dep order
-	# it will also ensure that the .o's are up to date
-	# and built with it's local flags
+	# set dependencies to ensure build dep order
 	##################################################
 	add_dependencies( condorsyscall ckpt utils cedar stdunivio stub_gen )
 

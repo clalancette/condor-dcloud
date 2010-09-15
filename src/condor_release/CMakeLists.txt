@@ -1,0 +1,9 @@
+
+if (NOT WINDOWS)
+
+	install ( DIRECTORY examples
+			DESTINATION ${C_ETC_EXAMPLES} )
+
+	install(FILES DOC INSTALL ../../LICENSE-2.0.txt README DESTINATION ${C_DOC})
+
+endif (NOT WINDOWS)

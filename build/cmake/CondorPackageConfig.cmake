@@ -70,8 +70,8 @@ set( C_ETC			etc/examples )
 set( C_CONFIGD		etc/condor/config.d )
 set( C_SYSCONFIG	etc/sysconfig )
 
-set( C_ETC_EXAMPLES	etc/examples)
-set( C_DOC			.)
+set( C_ETC_EXAMPLES	. ) #etc/examples)
+set( C_DOC			. )
 
 set( C_LOCAL_DIR	var/lib/condor )
 set( C_LOG_DIR		var/log/condor )
@@ -93,19 +93,21 @@ elseif ( ${OS_NAME} MATCHES "WIN" )
 	set( C_SBIN bin )
 	set( C_ETC etc )
 
+	set (CONDOR_WIX_LOC ${CONDOR_SOURCE_DIR}/msconfig/WiX)
 	set (CPACK_PACKAGE_INSTALL_DIRECTORY "${CONDOR_VER}")
 	set (CPACK_PACKAGE_FILE_NAME "${CONDOR_VER}")
 	set (CPACK_PACKAGE_INSTALL_REGISTRY_KEY "${CONDOR_VER}")
-	set (CPACK_PACKAGE_ICON ${CONDOR_SOURCE_DIR}/build/backstage/win/Bitmaps/dlgbmp.bmp) # A branding image that will be displayed inside the installer.
+	set (CPACK_PACKAGE_ICON ${CONDOR_WIX_LOC}/Bitmaps/dlgbmp.bmp) # A branding image that will be displayed inside the installer.
 
-	set (CPACK_GENERATOR "ZIP")#;WIX")
+	set (CPACK_GENERATOR "ZIP;WIX")
 	set (CPACK_WIX_PRODUCT_GUID "ea9608e1-9a9d-4678-800c-645df677094a")
 	set (CPACK_WIX_UPGRADE_GUID "ef96d7c4-29df-403c-8fab-662386a089a4")
-	#set (CPACK_WIX_BITMAP_FOLDER ${CONDOR_SOURCE_DIR}/build/backstage/win/Bitmaps)
-	#set (CPACK_WIX_WXS_FILES ${CONDOR_SOURCE_DIR}/build/backstage/win/CondorCfgDlg.wxs)
+	set (CPACK_WIX_BITMAP_FOLDER ${CONDOR_WIX_LOC}/Bitmaps)
+	set (CPACK_WIX_WXS_FILES ${CONDOR_WIX_LOC}/xml/CondorCfgDlg.wxs)
 
-	#configure_file(${CONDOR_SOURCE_DIR}/build/backstage/win/win.xsl.in ${CONDOR_SOURCE_DIR}/build/backstage/win/win.xsl @ONLY)
-	#set (CPACK_WIX_XSL ${CONDOR_SOURCE_DIR}/build/backstage/win/win.xsl)
+	# the configure file f(n) will replace @CMAKE_XYZ@ with their value
+	configure_file(${CONDOR_WIX_LOC}/xml/win.xsl.in ${CONDOR_WIX_LOC}/xml/win.xsl @ONLY)
+	set (CPACK_WIX_XSL ${CONDOR_WIX_LOC}/xml/win.xsl)
 
 	option(WIN_EXEC_NODE_ONLY "Minimal Package Win exec node only" OFF)
 

@@ -12,15 +12,8 @@ if (NOT WINDOWS)
 
 	install ( FILES condor_configure DESTINATION ${C_SBIN} RENAME condor_install )
 
-	if (NOT CLIPPED)
-		install ( FILES condor_compile DESTINATION ${C_BIN} )
-		install ( FILES ld DESTINATION ${C_LIB} )
-		install ( FILES ld DESTINATION ${C_LIB} RENAME real-ld )
-	endif(NOT CLIPPED)
-
 	install ( FILES condor_ssh
 				sshd.sh
-				
 			DESTINATION ${C_LIBEXEC} )
 
 	install ( FILES condorc-advertiser
@@ -32,5 +25,11 @@ if (NOT WINDOWS)
 			DESTINATION ${C_LIBEXEC}/glite )
 
 	install ( FILES Condor.pm DESTINATION ${C_LIB} )
+
+	if (STD_UNIVERSE)
+		install ( FILES condor_compile DESTINATION ${C_BIN} )
+		install ( FILES ld DESTINATION ${C_LIB} )
+		install ( FILES ld DESTINATION ${C_LIB} RENAME real-ld )
+	endif(STD_UNIVERSE)
 
 endif (NOT WINDOWS)

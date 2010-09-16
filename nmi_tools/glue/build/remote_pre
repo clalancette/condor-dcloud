@@ -37,7 +37,7 @@ my $BaseDir = getcwd();
 my $SrcDir = "$BaseDir/src";
 my $buildid_file = "BUILD-ID";
 my $buildid;
-my $externals_loc="/scratch/externals/cmake"
+my $externals_loc="/scratch/externals/cmake";
 
 # autoflush our STDOUT
 $| = 1;
@@ -94,7 +94,7 @@ if ( defined($opt_clear_externals_cache)||defined($opt_clear_externals_cache_wee
 my $configexecstr =
 			"cmake . " .
 			$buildid .
-			" join(' ', @ARGV);
+			" join(' ', @ARGV)";
 
 print "$configexecstr\n";
 $exit_status = system($configexecstr);

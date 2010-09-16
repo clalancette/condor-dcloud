@@ -59,7 +59,7 @@ our %build_and_test_sets = (
 	# Occasionally, NMI would like a port on a bunch of odd platforms. These
 	# are those platforms.
 	'nmi_one_offs' => [
-		#'sun4u_sol_5.8',  <-- no longer in new dev phase.
+		#'sun4u_sol_5.8',  <-- no longer in new dev phase, support only
 		'x86_suse_10.2',
 		'x86_suse_10.0',
 		'ia64_sles_9',
@@ -116,14 +116,12 @@ my @minimal_build_configure_args =
 		'-DWITH_GLOBUS:BOOL=OFF' 	=> undef,
 		'-DWITH_KRB5:BOOL=OFF'		=> undef,
 		'-DWITH_VOMS:BOOL=OFF'		=> undef,
-		'-DWITH_SRB:BOOL=OFF'		=> undef,
 		'-DWITH_HADOOP:BOOL=OFF'	=> undef,
 		'-DWITH_POSTGRESQL:BOOL=OFF'=> undef,
 		'-DWITH_CURL:BOOL=OFF'		=> undef,
 		'-DWITH_PCRE:BOOL=ON'		=> undef,
 		'-DWITH_GSOAP:BOOL=OFF'		=> undef,
 		'-DWITH_CREAM:BOOL=OFF'		=> undef,
-		'-DWITH_SRB:BOOL=OFF'		=> undef,
 	);
 
 ###############################################################################
@@ -160,7 +158,6 @@ my @default_build_configure_args =
 	'-D_DEBUG:BOOL=ON'		=> undef,
 	'-DPROPER:BOOL=OFF' 	=> undef,
 	'-DWITH_CREAM:BOOL=OFF'	=> undef,
-	'-DWITH_SRB:BOOL=OFF'	=> undef,
 	'-DSCRATCH_EXTERNALS:BOOL=ON'	=> undef,
 	);
 
@@ -391,7 +388,9 @@ our %submit_info = (
 	##########################################################################
 	'x86_64_deb_5.0'	=> {
 		'build' => {
-			'configure_args' => { @default_build_configure_args },
+			'configure_args' => { @default_build_configure_args,
+				'-DCLIPPED:BOOL=OFF' => undef
+			 },
 			'prereqs'	=> [ 'libtool-1.5.26', 'cmake-2.8.0' ],
 			'xtests'	=> undef,
 		},
@@ -410,7 +409,7 @@ our %submit_info = (
 	'x86_64_rhap_5'	=> {
 		'build' => {
 			'configure_args' => { '-DPROPER:BOOL=OFF' => undef,
-				'-DWITH_SRB:BOOL=OFF' => undef,
+				'-DCLIPPED:BOOL=OFF' => undef,
 				'-DSCRATCH_EXTERNALS:BOOL=ON'	=> undef,
 			 },
 			'prereqs'	=> [ @default_prereqs ],
@@ -430,7 +429,9 @@ our %submit_info = (
 	##########################################################################
 	'x86_64_rhas_3'	=> {
 		'build' => {
-			'configure_args' => { @default_build_configure_args },
+			'configure_args' => { @default_build_configure_args,
+				'-DCLIPPED:BOOL=OFF' => undef
+			},
 			'prereqs'	=> [ @default_prereqs ],
 			'xtests'	=> [ 'x86_64_rhas_4' ],
 		},
@@ -465,7 +466,9 @@ our %submit_info = (
 	##########################################################################
 	'x86_deb_5.0'	=> {
 		'build' => {
-			'configure_args' => { @default_build_configure_args },
+			'configure_args' => { @default_build_configure_args,
+				'-DCLIPPED:BOOL=OFF' => undef
+			 },
 			'prereqs'	=> [ 'libtool-1.5.26', 'cmake-2.8.0' ],
 			'xtests'	=> undef,
 		},
@@ -557,7 +560,6 @@ our %submit_info = (
 	'x86_rhap_5'	=> {
 		'build' => {
 			'configure_args' => { '-DPROPER:BOOL=OFF' => undef,
-				'-DWITH_SRB:BOOL=OFF' => undef,
 				'-DSCRATCH_EXTERNALS:BOOL=ON'	=> undef,
 			},
 			'prereqs'	=> [ @default_prereqs ],
@@ -597,7 +599,6 @@ our %submit_info = (
 	'x86_rhas_3'	=> {
 		'build' => {
 			'configure_args' => { '-DPROPER:BOOL=OFF' => undef,
-				'-DWITH_SRB:BOOL=OFF' => undef,
 				'-DSCRATCH_EXTERNALS:BOOL=ON'	=> undef,
 			},
 			'prereqs'	=> [ 

@@ -32,7 +32,6 @@ set(CPACK_DEBIAN_DESCRIPTION_SUMMARY "workload management system
  to run the jobs based upon a policy, carefully monitors their progress,
  and ultimately informs the user upon completion.")
 
-
 set(CPACK_RESOURCE_FILE_LICENSE "${CONDOR_SOURCE_DIR}/LICENSE-2.0.txt")
 #set(CPACK_RESOURCE_FILE_README "${CONDOR_SOURCE_DIR}/build/backstage/release_notes/README")
 #set(CPACK_RESOURCE_FILE_WELCOME "${CONDOR_SOURCE_DIR}/build/backstage/release_notes/DOC") # this should be more of a Hiya welcome.
@@ -41,7 +40,7 @@ set(CPACK_SYSTEM_NAME "${OS_NAME}-${SYS_ARCH}" )
 set(CPACK_TOPLEVEL_TAG "${OS_NAME}-${SYS_ARCH}" )
 set(CPACK_PACKAGE_ARCHITECTURE ${SYS_ARCH} ) 
 
-#set(CPACK_SOURCE_STRIP_FILES "") #ouput files to strip from source dump, if we do out of src builds we elim this need. (typically would be .svn dirs etc.)
+#set(CPACK_SOURCE_STRIP_FILES "")
 set (CPACK_STRIP_FILES TRUE)
 
 set (CPACK_PACKAGE_FILE_NAME "${CONDOR_VER}-${OS_NAME}-${SYS_ARCH}" )
@@ -178,11 +177,6 @@ elseif( ${OS_NAME} STREQUAL "LINUX" AND CONDOR_PACKAGE_BUILD )
 		# Processing control files
 		add_subdirectory(build/packaging/debian)
 
-		#set (CPACK_DEBIAN_PACKAGE_DEPENDS)
-		#if (PROPER)
-		#	set (CPACK_DEBIAN_PACKAGE_DEPENDS)
-		#endif()
-
 	elseif ( RPM_SYSTEM_NAME )
 		# This variable will be defined if the platfrom support RPM
 		message (STATUS "Configuring RPM package on ${LINUX_NAME}-${LINUX_VER}-${SYS_ARCH}")
@@ -236,13 +230,6 @@ elseif( ${OS_NAME} STREQUAL "LINUX" AND CONDOR_PACKAGE_BUILD )
 		#This might break as we move to newer version of CMake
 		set(CMAKE_INSTALL_PREFIX "")
 		set(CPACK_SET_DESTDIR "ON")
-
-		#Set lib dir according to architecture
-		#if (${BIT_MODE} STREQUAL "32")
-		#	set( C_LIB		usr/lib/condor )
-		#elseif (${BIT_MODE} STREQUAL "64")
-		#	set( C_LIB		usr/lib64/condor )
-		#endif()
 
 	endif()
 

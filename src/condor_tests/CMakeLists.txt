@@ -40,13 +40,11 @@ if (BUILD_TESTS)
 	condor_exe_test(x_write_joblog_events.exe "x_write_joblog_events.cpp" "condorapi")
 	condor_exe_test(lib_eventlog_base.exe "lib_eventlog_base.cpp" "condorapi")
 	condor_exe_test(job_core_bigenv.exe "job_core_bigenv.cpp" "")
-	if (NOT CLIPPED)
+	if (STD_UNIVERSE)
 		condor_exe_test(job_core_compressfiles.exe "job_core_compressfiles.cpp" "")
 		condor_exe_test(job_core_coredump.exe "job_core_coredump.cpp" "")
 		condor_exe_test(job_rsc_binary-io_std.exe "job_rsc_binary-io_std.cpp" "")
-
-		#condor_exe_test(job_ckpt_dup_std.exe "job_ckpt_dup_std.cpp" "")
-	endif(NOT CLIPPED)
+	endif(STD_UNIVERSE)
 
 	##########################################################
 	# platform specific tests
@@ -97,12 +95,12 @@ if (BUILD_TESTS)
 		condor_pl_test(lib_lease_manager-get_rel_5 "Lease manager: get/relesae test 5" "core;quick;full")
 	endif(WANT_QUILL AND HAV_EXT_POSTGRESS)
 
-	if (NOT CLIPPED)
+	if (STD_UNIVERSE)
 		condor_pl_test(job_core_compressfiles_std "Do we handle compressed files made by standard jobs?" "core;quick;full;quicknolink")
 		condor_pl_test(job_core_coredump_std "Do we handle core files made by standard jobs?" "framework;quick;full;quicknolink")
 		condor_pl_test(job_rsc_binary-io_std "Do we handle binary io in standard jobs?" "framework;quick;full;quicknolink")
 		#condor_pl_test(job_core_coredump_van "Do we handle core files made by vanilla jobs?" "framework;quick")
-	endif(NOT CLIPPED)
+	endif(STD_UNIVERSE)
 
 	##########################################################
 	# now all the common tests.
@@ -164,13 +162,14 @@ if (BUILD_TESTS)
 	condor_pl_test(lib_eventlog "Basic Event Log Test" "core;quick;full")
 	condor_pl_test(lib_eventlog-xml "Basic XML Event Log Test" "core;quick;full")
 	condor_pl_test(lib_eventlog_base "Test re-initialization of eventlog reader does not cause seg faults" "lib;quick;full")
+
 	#if defined(IS_IA64_LINUX_RHEL3) || defined(IS_CONDOR_PPC_LINUX_SLES9) || defined(IS_PPC_OSX_10_4) || defined(IS_CONDOR_PPC_LINUX_YD50) || defined(IS_X86_64_LINUX_RHEL5)  || defined(IS_X86_64_LINUX_RHEL3) || defined(IS_I386_OSX_10_4) || defined(IS_I386_LINUX_RHEL5) || defined(IS_I386_LINUX_RHEL51)
 	# condor_pl_test(lib_eventlog_build "Test building of eventlog program" "lib;quick;full")
 	# condor_pl_test(job_quill_basic "Basic Quill Test" "core;quick;full;quicknolink")
 	# alread built as part of make tests prior to running batch_test
 
-	dprint("TODO: Need to fix this test")
-	condor_pl_test(lib_eventlog_rotation-defaults "Event Log Rotation: Default settings" "core;quick;full")
+	dprint("TODO: Need to fix lib_eventlog_rotation-defaults test")
+	#condor_pl_test(lib_eventlog_rotation-defaults "Event Log Rotation: Default settings" "core;quick;full")
 	condor_pl_test(lib_chirpio_van "Exercise the chirp I/O library using the C client library" "lib;quick;full")
 	condor_pl_test(lib_eventlog_rotation-no_rotations_1 "Event Log Rotation: no rotations/1" "core;quick;full")
 	condor_pl_test(lib_eventlog_rotation-no_rotations_2 "Event Log Rotation: no rotations/2" "core;quick;full")

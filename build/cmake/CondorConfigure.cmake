@@ -10,12 +10,6 @@ include (GlibcDetect)
 
 add_definitions(-D${OS_NAME}="${OS_NAME}_${OS_VER}")
 add_definitions(-DPLATFORM="${CMAKE_SYSTEM}")
-if ( ${SYS_ARCH} MATCHES "86" AND NOT ${SYS_ARCH} MATCHES "64" )
-	add_definitions( -DI386=${SYS_ARCH} )
-else()
-	add_definitions(-D${SYS_ARCH}=${SYS_ARCH})
-endif()
-
 
 set( CONDOR_EXTERNAL_DIR ${CONDOR_SOURCE_DIR}/externals )
 set( CMAKE_VERBOSE_MAKEFILE TRUE )
@@ -496,6 +490,19 @@ else(MSVC)
 	endif(HAVE_PTHREADS)
 
 	check_cxx_compiler_flag(-shared HAVE_CC_SHARED)
+
+	if ( NOT PROPER AND ${SYS_ARCH} MATCHES "86")
+
+		if (NOT ${SYS_ARCH} MATCHES "64" )
+			add_definitions( -DI386=${SYS_ARCH} )
+		endif()
+
+		# this will ensure UW builds have maximum level of binary compatibility for the platform it is compiling on.
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mtune=generic")
+
+	endif()
+
+	add_definitions(-D${SYS_ARCH}=${SYS_ARCH})
 
 	# b/c we don't do anything c++ specific copy flags for c-compilation
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CXX_FLAGS}")

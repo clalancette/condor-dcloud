@@ -94,7 +94,7 @@ if ( defined($opt_clear_externals_cache)||defined($opt_clear_externals_cache_wee
 my $configexecstr =
 			"cmake . " .
 			$buildid .
-			" join(' ', @ARGV)";
+			join(' ', @ARGV);
 
 print "$configexecstr\n";
 $exit_status = system($configexecstr);

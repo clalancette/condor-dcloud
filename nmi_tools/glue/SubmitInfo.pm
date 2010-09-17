@@ -389,7 +389,7 @@ our %submit_info = (
 	'x86_64_deb_5.0'	=> {
 		'build' => {
 			'configure_args' => { @default_build_configure_args,
-				'-DCLIPPED:BOOL=OFF' => undef
+				'-DCLIPPED:BOOL=OFF' => undef,
 			 },
 			'prereqs'	=> [ 'libtool-1.5.26', 'cmake-2.8.0' ],
 			'xtests'	=> undef,
@@ -411,6 +411,7 @@ our %submit_info = (
 			'configure_args' => { '-DPROPER:BOOL=OFF' => undef,
 				'-DCLIPPED:BOOL=OFF' => undef,
 				'-DSCRATCH_EXTERNALS:BOOL=ON'	=> undef,
+				'-D_DEBUG:BOOL=ON'		=> undef,
 			 },
 			'prereqs'	=> [ @default_prereqs ],
 			'xtests'	=> undef,
@@ -430,7 +431,7 @@ our %submit_info = (
 	'x86_64_rhas_3'	=> {
 		'build' => {
 			'configure_args' => { @default_build_configure_args,
-				'-DCLIPPED:BOOL=OFF' => undef
+				'-DCLIPPED:BOOL=OFF' => undef,
 			},
 			'prereqs'	=> [ @default_prereqs ],
 			'xtests'	=> [ 'x86_64_rhas_4' ],
@@ -561,6 +562,7 @@ our %submit_info = (
 		'build' => {
 			'configure_args' => { '-DPROPER:BOOL=OFF' => undef,
 				'-DSCRATCH_EXTERNALS:BOOL=ON'	=> undef,
+				'-D_DEBUG:BOOL=ON'		=> undef,
 			},
 			'prereqs'	=> [ @default_prereqs ],
 			'xtests'	=> [ 'unmanaged-x86_rhap_5' ],
@@ -600,6 +602,8 @@ our %submit_info = (
 		'build' => {
 			'configure_args' => { '-DPROPER:BOOL=OFF' => undef,
 				'-DSCRATCH_EXTERNALS:BOOL=ON'	=> undef,
+				'-D_DEBUG:BOOL=ON'		=> undef,
+				
 			},
 			'prereqs'	=> [ 
 				@default_prereqs,

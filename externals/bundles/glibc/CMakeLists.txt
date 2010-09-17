@@ -26,9 +26,7 @@ if (NOT CLIPPED)
 			set (GLIBC_PATCH  ${GLIBC_PATCH} && patch --binary -p1 < ${CMAKE_CURRENT_SOURCE_DIR}/${VER}/gcc-4-fixes.patch )
 		endif()
 
-		set (GLIBC_CONFIGURE ./configure --enable-static-nss
-		--enable-add-ons=linuxthreads,c_stubs,glibc-compat
-		--disable-shared --prefix=${GLIBC_PREFIX} --without-cvs)
+		set (GLIBC_CONFIGURE ./configure --enable-static-nss --enable-add-ons=linuxthreads,c_stubs,glibc-compat --disable-shared --prefix=${GLIBC_PREFIX} --without-cvs)
 
 		set (GLIBC_MAKE make )
 
@@ -38,16 +36,14 @@ if (NOT CLIPPED)
 
 			set (VER 2.5-20061008T1257-x86_64-p0)
 
-			set (GLIBC_CONFIGURE ./configure
-			--prefix=${GLIBC_PREFIX} --enable-add-ons=nptl,rtkaio,c_stubs,libidn --without-cvs --enable-kernel=2.6.9 --with-headers=$HOME/junk/glibc-2.5-20061008T1257/override_headers:/usr/include --enable-bind-now --with-tls --with-__thread --build x86_64-redhat-linux --host x86_64-redhat-linux --disable-profile --enable-static-nss)
+			set (GLIBC_CONFIGURE ./configure --prefix=${GLIBC_PREFIX} --enable-add-ons=nptl,rtkaio,c_stubs,libidn --without-cvs --enable-kernel=2.6.9 --with-headers=$HOME/junk/glibc-2.5-20061008T1257/override_headers:/usr/include --enable-bind-now --with-tls --with-__thread --build x86_64-redhat-linux --host x86_64-redhat-linux --disable-profile --enable-static-nss)
 
 			set (GLIBC_MAKE make -j2 -r 'CFLAGS=-mtune=generic -DNDEBUG=1 -g -O3 ' PARALLELMFLAGS=-s)
 
 		else()
 			set (VER 2.5-20061008T1257-p0)
 
-			set (GLIBC_CONFIGURE ./configure
-			--prefix=${GLIBC_PREFIX} --enable-add-ons=nptl,rtkaio,c_stubs,libidn --without-cvs --enable-kernel=2.6.9 --with-headers=$HOME/junk/glibc-2.5-20061008T1257/override_headers:/usr/include --enable-bind-now --with-tls --with-__thread --build i486-redhat-linux --host i486-redhat-linux --disable-profile --enable-static-nss)
+			set (GLIBC_CONFIGURE ./configure --prefix=${GLIBC_PREFIX} --enable-add-ons=nptl,rtkaio,c_stubs,libidn --without-cvs --enable-kernel=2.6.9 --with-headers=$HOME/junk/glibc-2.5-20061008T1257/override_headers:/usr/include --enable-bind-now --with-tls --with-__thread --build i486-redhat-linux --host i486-redhat-linux --disable-profile --enable-static-nss)
 
 			set (GLIBC_MAKE make -j2 -r 'CFLAGS=-march=i386 -mtune=generic -mno-tls-direct-seg-refs -DNDEBUG=1 -g -O3 ' PARALLELMFLAGS=-s )
 		endif()
@@ -59,21 +55,13 @@ if (NOT CLIPPED)
 		if (${SYS_ARCH} STREQUAL "X86_64")
 			set (VER 2.7-18-x86_64)
 
-			set (GLIBC_CONFIGURE CC="gcc-4.3" CXX="g++-4.3"
-			AUTOCONF=false MAKEINFO=: CFLAGS="-pipe -O2
-			-fstrict-aliasing -g" ./configure
-			--host=x86_64-linux-gnu --build=x86_64-linux-gnu
-			--prefix=${GLIBC_PREFIX} --without-cvs --enable-add-ons=libidn,nptl --without-selinux --enable-kernel=2.6.8 --disable-profile --with-headers=./debian/include --enable-bind-now --with-tls --with-__thread --enable-static-nss)
+			set (GLIBC_CONFIGURE CC="gcc-4.3" CXX="g++-4.3" AUTOCONF=false MAKEINFO=: CFLAGS="-pipe -O2 -fstrict-aliasing -g" ./configure --host=x86_64-linux-gnu --build=x86_64-linux-gnu --prefix=${GLIBC_PREFIX} --without-cvs --enable-add-ons=libidn,nptl --without-selinux --enable-kernel=2.6.8 --disable-profile --with-headers=./debian/include --enable-bind-now --with-tls --with-__thread --enable-static-nss)
 
 			set (GLIBC_MAKE make -j2 -r)
 		else()
 			set (VER 2.7-18)
 
-			set (GLIBC_CONFIGURE CC="gcc-4.3" CXX="g++-4.3"
-			AUTOCONF=false MAKEINFO=: CFLAGS="-pipe -O2
-			-fstrict-aliasing -g -march=i686 -mtune=i686 -O3"
-			./configure --host=i686-linux --build=i486-linux-gnu
-			--prefix=${GLIBC_PREFIX}--without-cvs --enable-add-ons=libidn,nptl --without-selinux --enable-kernel=2.6.8 --disable-profile --with-headers=./debian/include --enable-bind-now --with-tls --with-__thread --enable-static-nss)
+			set (GLIBC_CONFIGURE CC="gcc-4.3" CXX="g++-4.3" AUTOCONF=false MAKEINFO=: CFLAGS="-pipe -O2 -fstrict-aliasing -g -march=i686 -mtune=i686 -O3" ./configure --host=i686-linux --build=i486-linux-gnu --prefix=${GLIBC_PREFIX}--without-cvs --enable-add-ons=libidn,nptl --without-selinux --enable-kernel=2.6.8 --disable-profile --with-headers=./debian/include --enable-bind-now --with-tls --with-__thread --enable-static-nss)
 
 			set (GLIBC_MAKE make -j2 -r 'CFLAGS=-pipe -O2 -fstrict-aliasing -g -march=i686 -mtune=i686 -O3 ' PARALLELMFLAGS=-s)
 		endif()

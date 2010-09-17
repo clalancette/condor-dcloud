@@ -497,8 +497,11 @@ else(MSVC)
 			add_definitions( -DI386=${SYS_ARCH} )
 		endif()
 
-		# this will ensure UW builds have maximum level of binary compatibility for the platform it is compiling on.
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mtune=generic")
+		# set for maximum binary compatibility based on current machine arch.
+		check_cxx_compiler_flag(-mtune=generic cxx_mtune)
+		if (cxx_mtune)
+			set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mtune=generic")
+		endif(cxx_mtune)
 
 	endif()
 

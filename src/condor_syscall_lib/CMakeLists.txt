@@ -84,9 +84,13 @@ if( STD_UNIVERSE )
 
 	##################################################
 	# part 2:
-	# set dependencies to ensure build dep order
+	# set dependencies to ensure build dep order for parallel builds
 	##################################################
 	add_dependencies( condorsyscall ckpt utils cedar stdunivio stub_gen )
+	add_dependencies( switches stub_gen )
+	add_dependencies( senders stub_gen )
+	add_dependencies( receivers stub_gen )
+	add_dependencies( sys-list stub_gen )
 
 	#################################################
 	# here we begin the install target section 

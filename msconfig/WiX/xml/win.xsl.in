@@ -38,6 +38,9 @@
           <![CDATA[(VersionNT >= 501)]]>
         </Condition>
 
+        <Property Id="JVMLOCATION">
+          <RegistrySearch Id="JavaSearch" Root="HKLM" Type="directory" Key="SOFTWARE\JavaSoft\Java Runtime Environment" Name="JavaHome" />
+        </Property>
 
         <!-- Begin custom actions and install sequence -->
         <CustomAction Id="CondorConfigLocal"
@@ -91,9 +94,13 @@
         <!-- UI Flow + our custom dialogs -->
         <UI Id="MyWixUI_FeatureTree">
             <UIRef Id="WixUI_FeatureTree" />
-            <DialogRef Id="CondorCfgDlg" />
-            <Publish Dialog="LicenseAgreementDlg" Control="Next" Event="NewDialog" Value="CondorCfgDlg" Order="2">LicenseAccepted = "1"</Publish>
-            <Publish Dialog="CustomizeDlg" Control="Back" Event="NewDialog" Value="CondorCfgDlg">1</Publish>
+            <DialogRef Id="CondorPoolCfgDlg" />
+            <DialogRef Id="CondorExecCfgDlg" />
+            <DialogRef Id="CondorDomainCfgDlg" />
+            <DialogRef Id="CondorEmailCfgDlg" />
+            <DialogRef Id="CondorJavaCfgDlg" />
+            <Publish Dialog="LicenseAgreementDlg" Control="Next" Event="NewDialog" Value="CondorPoolCfgDlg" Order="2">LicenseAccepted = "1"</Publish>
+            <Publish Dialog="CustomizeDlg" Control="Back" Event="NewDialog" Value="CondorJavaCfgDlg">1</Publish>
         </UI>
 
         <!--<UIRef Id="WixUI_FeatureTree" />-->

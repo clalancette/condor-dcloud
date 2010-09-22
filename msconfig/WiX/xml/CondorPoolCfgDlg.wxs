@@ -3,18 +3,18 @@
   <Fragment>
     <UI>
       <Dialog Id="CondorPoolCfgDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
-        <Control Id="DialogNEWPOOL" Type="RadioButtonGroup" X="15" Y="23" Width="290" Height="75" TabSkip="no" Property="NEWPOOL" Text="When the machine becomes no longer idle, jobs are suspended.  After 10 minutes:">
+        <Control Id="DialogNEWPOOL" Type="RadioButtonGroup" X="15" Y="73" Width="290" Height="75" TabSkip="no" Property="NEWPOOL" Text="New or Existing Condor Pool?">
           <RadioButtonGroup Property="NEWPOOL">
             <RadioButton Value="Y" X="0" Y="10" Width="290" Height="10" Text="Create a new Condor Pool."/>
             <RadioButton Value="N" X="0" Y="20" Width="290" Height="10" Text="Join an existing Condor Pool."/>
           </RadioButtonGroup>
         </Control>
-        <Control Id="PoolName" Type="Text" X="45" Y="35" Width="220" Height="15" TabSkip="no" Text="&amp;Name of New Pool:" />
-        <Control Id="PoolNameEdit" Type="Edit" X="45" Y="46" Width="220" Height="18" Property="POOLNAME" Text="{80}">
+        <Control Id="PoolName" Type="Text" X="45" Y="103" Width="220" Height="15" TabSkip="no" Text="&amp;Name of New Pool:" />
+        <Control Id="PoolNameEdit" Type="Edit" X="45" Y="115" Width="220" Height="18" Property="POOLNAME" Text="{80}">
           <Condition Action="enable">NEWPOOL="Y"</Condition>
         </Control>
-        <Control Id="ManagerName" Type="Text" X="45" Y="35" Width="220" Height="15" TabSkip="no" Text="&amp;Hostname of Central Manager:" />
-        <Control Id="ManagerNameEdit" Type="Edit" X="45" Y="50" Width="220" Height="18" Property="POOLHOSTNAME" Text="{80}">
+        <Control Id="ManagerName" Type="Text" X="45" Y="130" Width="220" Height="15" TabSkip="no" Text="&amp;Hostname of Central Manager:" />
+        <Control Id="ManagerNameEdit" Type="Edit" X="45" Y="142" Width="220" Height="18" Property="POOLHOSTNAME" Text="{80}">
           <Condition Action="enable">NEWPOOL="N"</Condition>
         </Control>
         <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">

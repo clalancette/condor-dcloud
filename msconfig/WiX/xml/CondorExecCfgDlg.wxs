@@ -3,8 +3,8 @@
   <Fragment>
     <UI>
       <Dialog Id="CondorExecCfgDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
-        <Control Id="DialogSUBMITJOBS" Type="CheckBox" X="15" Y="23" Width="290" Height="15" TabSkip="no" Property="SUBMITJOBS" Text="Submit jobs to Condor Pool" />
-        <Control Id="DialogRUNJOBS" Type="RadioButtonGroup" X="15" Y="35" Width="290" Height="75" TabSkip="no" Property="RUNJOBS" Text="When should Condor run jobs?">
+        <Control Id="DialogSUBMITJOBS" Type="CheckBox" X="15" Y="73" Width="290" Height="15" TabSkip="no" Property="SUBMITJOBS" Text="Submit jobs to Condor Pool" />
+        <Control Id="DialogRUNJOBS" Type="RadioButtonGroup" X="15" Y="88" Width="290" Height="50" TabSkip="no" Property="RUNJOBS" Text="When should Condor run jobs?">
           <RadioButtonGroup Property="RUNJOBS">
             <RadioButton Value="N" X="0" Y="0" Width="290" Height="10" Text="Do not run jobs on this machine."/>
             <RadioButton Value="A" X="0" Y="10" Width="290" Height="10" Text="Always run jobs and never suspend them."/>
@@ -12,7 +12,7 @@
             <RadioButton Value="C" X="0" Y="30" Width="290" Height="10" Text="When keyboard has been idle for 15 minutes and CPU is idle."/>
           </RadioButtonGroup>
         </Control>
-        <Control Id="DialogVACATEJOBS" Type="RadioButtonGroup" X="15" Y="35" Width="290" Height="75" TabSkip="no" Property="VACATEJOBS" Text="When the machine becomes no longer idle, jobs are suspended.  After 10 minutes:">
+        <Control Id="DialogVACATEJOBS" Type="RadioButtonGroup" X="0" Y="138" Width="290" Height="75" TabSkip="no" Property="VACATEJOBS" Text="When the machine becomes no longer idle, jobs are suspended.  After 10 minutes:">
           <RadioButtonGroup Property="VACATEJOBS">
             <RadioButton Value="N" X="0" Y="10" Width="290" Height="10" Text="Keep the job in memory and restart it when you leave."/>
             <RadioButton Value="Y" X="0" Y="20" Width="290" Height="10" Text="Restart the job on a different machine."/>

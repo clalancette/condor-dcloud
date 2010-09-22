@@ -3,10 +3,10 @@
   <Fragment>
     <UI>
       <Dialog Id="CondorEmailCfgDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
-        <Control Id="Instruction1" Type="Text" X="45" Y="50" Width="220" Height="15" TabSkip="no" Text="&amp;Hostname of SMTP Server." />
-        <Control Id="DomainNameEdit" Type="Edit" X="45" Y="62" Width="220" Height="18" Property="SMTPSERVER" Text="{80}" />
-        <Control Id="DomainName" Type="Text" X="45" Y="77" Width="220" Height="15" TabSkip="no" Text="&amp;Email address of administrator:" />
-        <Control Id="DomainNameEdit" Type="Edit" X="45" Y="89" Width="220" Height="18" Property="CONDOREMAIL" Text="{80}" />
+        <Control Id="SMTPServer" Type="Text" X="45" Y="73" Width="50" Height="15" TabSkip="no" Text="&amp;Hostname of SMTP Server:" />
+        <Control Id="SMTPServerEdit" Type="Edit" X="55" Y="73" Width="80" Height="15" Property="SMTPSERVER" Text="{80}" />
+        <Control Id="Email" Type="Text" X="35" Y="88" Width="60" Height="15" TabSkip="no" Text="&amp;Email address of administrator:" />
+        <Control Id="EmailEdit" Type="Edit" X="55" Y="88" Width="80" Height="15" Property="CONDOREMAIL" Text="{80}" />
         <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
           <Publish Event="NewDialog" Value="CondorDomainCfgDlg">1</Publish>
         </Control>
@@ -18,7 +18,7 @@
         </Control>
         <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" TabSkip="no" Text="WixUI_Bmp_Banner" />
         <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>Please enter the following condor config data</Text>
+          <Text>From where and to whom should Condor send email?</Text>
         </Control>
         <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
         <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">

@@ -8,6 +8,7 @@
             <RadioButton Value="Y" X="0" Y="10" Width="290" Height="10" Text="Create a new Condor Pool."/>
             <RadioButton Value="N" X="0" Y="20" Width="290" Height="10" Text="Join an existing Condor Pool."/>
           </RadioButtonGroup>
+          <Property Id="NEWPOOL" Value="N" />
         </Control>
         <Control Id="PoolName" Type="Text" X="45" Y="103" Width="220" Height="15" TabSkip="no" Text="&amp;Name of New Pool:" />
         <Control Id="PoolNameEdit" Type="Edit" X="45" Y="115" Width="220" Height="18" Property="POOLNAME" Text="{80}">

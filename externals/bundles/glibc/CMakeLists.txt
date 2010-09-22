@@ -55,13 +55,17 @@ if (NOT CLIPPED)
 		if (${SYS_ARCH} STREQUAL "X86_64")
 			set (VER 2.7-18-x86_64)
 
-			set (GLIBC_CONFIGURE CC="gcc-4.3" CXX="g++-4.3" AUTOCONF=false MAKEINFO=: CFLAGS="-pipe -O2 -fstrict-aliasing -g" ./configure --host=x86_64-linux-gnu --build=x86_64-linux-gnu --prefix=${GLIBC_PREFIX} --without-cvs --enable-add-ons=libidn,nptl --without-selinux --enable-kernel=2.6.8 --disable-profile --with-headers=./debian/include --enable-bind-now --with-tls --with-__thread --enable-static-nss)
+			set (GLIBC_FLAGS CC=gcc-4.3 CXX=g++-4.3 AUTOCONF=false MAKEINFO=: CFLAGS='-pipe -O2 -fstrict-aliasing -g ')
+
+            set (GLIBC_CONFIGURE ./configure --host=x86_64-linux-gnu --build=x86_64-linux-gnu --prefix=${GLIBC_PREFIX} --without-cvs --enable-add-ons=libidn,nptl --without-selinux --enable-kernel=2.6.8 --disable-profile --with-headers=${EXTERNAL_BUILD_PREFIX}/glibc-${VER}/src/glibc/glibc-${VER}/debian/include --enable-bind-now --with-tls --with-__thread --enable-static-nss)
 
 			set (GLIBC_MAKE make -j2 -r)
 		else()
 			set (VER 2.7-18)
 
-			set (GLIBC_CONFIGURE CC="gcc-4.3" CXX="g++-4.3" AUTOCONF=false MAKEINFO=: CFLAGS="-pipe -O2 -fstrict-aliasing -g -march=i686 -mtune=i686 -O3" ./configure --host=i686-linux --build=i486-linux-gnu --prefix=${GLIBC_PREFIX}--without-cvs --enable-add-ons=libidn,nptl --without-selinux --enable-kernel=2.6.8 --disable-profile --with-headers=./debian/include --enable-bind-now --with-tls --with-__thread --enable-static-nss)
+			set (GLIBC_FLAGS CC=gcc-4.3 CXX=g++-4.3 AUTOCONF=false MAKEINFO=: CFLAGS='-pipe -O2 -fstrict-aliasing -g -march=i686 -mtune=i686 -O3 ')
+
+			set (GLIBC_CONFIGURE ./configure --host=i686-linux --build=i486-linux-gnu --prefix=${GLIBC_PREFIX}--without-cvs --enable-add-ons=libidn,nptl --without-selinux --enable-kernel=2.6.8 --disable-profile --with-headers=${EXTERNAL_BUILD_PREFIX}/glibc-${VER}/src/glibc/glibc-${VER}/debian/include --enable-bind-now --with-tls --with-__thread --enable-static-nss)
 
 			set (GLIBC_MAKE make -j2 -r 'CFLAGS=-pipe -O2 -fstrict-aliasing -g -march=i686 -mtune=i686 -O3 ' PARALLELMFLAGS=-s)
 		endif()
@@ -85,7 +89,7 @@ if (NOT CLIPPED)
 					#--Patch step ----------
 					PATCH_COMMAND cd ${GLIBC_VER} && ${GLIBC_PATCH}
 				    #--Configure step ----------
-				    CONFIGURE_COMMAND ${GLIBC_VER}/${GLIBC_CONFIGURE}
+				    CONFIGURE_COMMAND ${GLIBC_FLAGS} ${GLIBC_VER}/${GLIBC_CONFIGURE}
 				    #--Build Step ----------
 				    BUILD_COMMAND ${GLIBC_MAKE}
 				    BUILD_IN_SOURCE 1

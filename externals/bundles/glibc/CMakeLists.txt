@@ -65,7 +65,7 @@ if (NOT CLIPPED)
 
 			set (GLIBC_FLAGS CC=gcc-4.3 CXX=g++-4.3 AUTOCONF=false MAKEINFO=: CFLAGS='-pipe -O2 -fstrict-aliasing -g -march=i686 -mtune=i686 -O3 ')
 
-			set (GLIBC_CONFIGURE ./configure --host=i686-linux --build=i486-linux-gnu --prefix=${GLIBC_PREFIX}--without-cvs --enable-add-ons=libidn,nptl --without-selinux --enable-kernel=2.6.8 --disable-profile --with-headers=${EXTERNAL_BUILD_PREFIX}/glibc-${VER}/src/glibc/glibc-${VER}/debian/include --enable-bind-now --with-tls --with-__thread --enable-static-nss)
+			set (GLIBC_CONFIGURE ./configure --host=i686-linux --build=i486-linux-gnu --prefix=${GLIBC_PREFIX} --without-cvs --enable-add-ons=libidn,nptl --without-selinux --enable-kernel=2.6.8 --disable-profile --with-headers=${EXTERNAL_BUILD_PREFIX}/glibc-${VER}/src/glibc/glibc-${VER}/debian/include --enable-bind-now --with-tls --with-__thread --enable-static-nss)
 
 			set (GLIBC_MAKE make -j2 -r 'CFLAGS=-pipe -O2 -fstrict-aliasing -g -march=i686 -mtune=i686 -O3 ' PARALLELMFLAGS=-s)
 		endif()

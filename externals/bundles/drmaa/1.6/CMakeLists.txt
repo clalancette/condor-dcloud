@@ -9,7 +9,7 @@ if ( NOT PROPER AND WITH_DRMAA )
 		set (DRMAA_MAKE make)
 		set (DRMAA_INSTALL cp drmaa.h ${EXTERNAL_STAGE}/include/ )
 
-		if(${OS_NAME} MATCHES "DARWIN")
+		if(DARWIN)
 			set (DRMAA_INSTALL cp libdrmaa.dylib ${EXTERNAL_STAGE}/lib/ && ${DRMAA_INSTALL})
 			set( DRMAA_FOUND "${EXTERNAL_STAGE}/lib/libdrmaa.dylib" )
 		else()

@@ -38,6 +38,7 @@ if (WITH_GLOBUS)
 							INSTALL_COMMAND cp -r gt42-java ${EXTERNAL_STAGE}/lib/gt42 )
 
 		set (GLOBUS_PATCH patch -i ${CMAKE_CURRENT_SOURCE_DIR}/xio-plugins.patch -p0 &&
+						patch -i ${CMAKE_CURRENT_SOURCE_DIR}/rfc_proxy.patch -p0 &&
 						cd gt5.0.1-all-source-installer/source-trees/xio/src/builtins &&
 						mkdir -p gsi popen &&
 						sed -e 's/globus_xio_gsi.h/globus_xio_gsi_driver.h/' ../../drivers/gsi/globus_i_xio_gsi.h >gsi/globus_i_xio_gsi.h &&
@@ -63,9 +64,9 @@ if (WITH_GLOBUS)
 						ln -f -s ../../../../../source-trees/xio/src/builtins/popen/globus_xio_popen_driver.c . &&
 						ln -f -s ../../../../../source-trees/xio/src/builtins/popen/globus_xio_popen_driver.h . )
 
-		if(${OS_NAME} MATCHES "SUNOS")
+		if(SOLARIS)
 			set ( GLOBUS_PATCH patch -i ${CMAKE_CURRENT_SOURCE_DIR}/putenv.patch -p0 && ${GLOBUS_PATCH} )
-		elseif(${OS_NAME} MATCHES "DARWIN")
+		elseif(DARWIN)
 			set ( GLOBUS_PATCH ${GLOBUS_PATCH} && patch -i  ${CMAKE_CURRENT_SOURCE_DIR}/xio-plugins-2.patch -p0 )
 		endif()
 
@@ -74,9 +75,9 @@ if (WITH_GLOBUS)
 						OPENSSL_CFLAGS=-I${EXTERNAL_STAGE}/include && export OPENSSL_CFLAGS &&
 						OPENSSL_LDFLAGS=-L${EXTERNAL_STAGE}/lib && export OPENSSL_LDFLAGS  )
 
-		if( ${OS_NAME} MATCHES "SUNOS" OR ${OS_NAME} MATCHES "LINUX")
+		if( SOLARIS OR LINUX)
 			set (GLOBUS_FLAGS ${GLOBUS_FLAGS} && OPENSSL_LIBS='-lssl -lcrypto -ldl' && export OPENSSL_LIBS)
-		elseif(${OS_NAME} MATCHES "DARWIN")
+		elseif(DARWIN)
 			set (GLOBUS_FLAGS ${GLOBUS_FLAGS} &&
 							OPENSSL_LIBS="-lssl -lcrypto" && export OPENSSL_LIBS &&
 							OPENSSL_LDFLAGS="-L${EXTERNAL_STAGE}/lib -Wl,-search_paths_first" && export OPENSSL_LDFLAGS)
@@ -89,7 +90,7 @@ if (WITH_GLOBUS)
 
 		if(${SYS_ARCH} MATCHES "IA64|X86_64")
 			set( GLOBUS_FLAVOR gcc64dbg )
-		elseif(${OS_NAME} MATCHES "AIX")
+		elseif(AIX)
 			set( GLOBUS_FLAVOR vendorcc32dbg )
 		else ()
 			set( GLOBUS_FLAVOR gcc32dbg )

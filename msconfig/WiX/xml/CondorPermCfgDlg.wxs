@@ -3,12 +3,12 @@
   <Fragment>
     <UI>
       <Dialog Id="CondorPermCfgDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
-        <Control Id="HostRead" Type="Text" X="10" Y="73" Width="50" Height="15" TabSkip="no" Text="Host with &amp;Read access." />
-        <Control Id="HostReadEdit" Type="Edit" X="60" Y="73" Width="170" Height="18" Property="HOSTALLOWREAD" Text="{80}" />
-        <Control Id="HostWrite" Type="Text" X="10" Y="88" Width="50" Height="15" TabSkip="no" Text="Host with &amp;Write access." />
-        <Control Id="HostWriteEdit" Type="Edit" X="45" Y="89" Width="220" Height="18" Property="HOSTALLOWWRITE" Text="{80}" />
-        <Control Id="HostAdmin" Type="Text" X="45" Y="104" Width="220" Height="15" TabSkip="no" Text="Host with &amp;Administrator access." />
-        <Control Id="HostAdminEdit" Type="Edit" X="45" Y="119" Width="220" Height="18" Property="HOSTALLOWADMINISTRATOR" Text="{80}" />
+        <Control Id="HostRead" Type="Text" X="80" Y="60" Width="90" Height="15" TabSkip="no" Text="Host with &amp;Read access:" />
+        <Control Id="HostReadEdit" Type="Edit" X="180" Y="58" Width="120" Height="18" Property="HOSTALLOWREAD" Text="{80}" />
+        <Control Id="HostWrite" Type="Text" X="80" Y="80" Width="90" Height="15" TabSkip="no" Text="Host with &amp;Write access:" />
+        <Control Id="HostWriteEdit" Type="Edit" X="180" Y="78" Width="120" Height="18" Property="HOSTALLOWWRITE" Text="{80}" />
+        <Control Id="HostAdmin" Type="Text" X="51" Y="100" Width="138" Height="15" TabSkip="no" Text="Host with &amp;Administrator access:" />
+        <Control Id="HostAdminEdit" Type="Edit" X="180" Y="98" Width="120" Height="18" Property="HOSTALLOWADMINISTRATOR" Text="{80}" />
         <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
           <Publish Event="NewDialog" Value="CondorJavaCfgDlg">1</Publish>
         </Control>
@@ -24,7 +24,7 @@
         </Control>
         <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
         <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>{\WixUI_Font_Title}Email Settings</Text>
+          <Text>{\WixUI_Font_Title}Host Permission Settings</Text>
         </Control>
         <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
       </Dialog>

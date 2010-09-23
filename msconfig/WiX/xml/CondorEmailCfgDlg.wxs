@@ -3,10 +3,10 @@
   <Fragment>
     <UI>
       <Dialog Id="CondorEmailCfgDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
-        <Control Id="SMTPServer" Type="Text" X="45" Y="73" Width="50" Height="15" TabSkip="no" Text="&amp;Hostname of SMTP Server:" />
-        <Control Id="SMTPServerEdit" Type="Edit" X="55" Y="73" Width="80" Height="15" Property="SMTPSERVER" Text="{80}" />
-        <Control Id="Email" Type="Text" X="35" Y="88" Width="60" Height="15" TabSkip="no" Text="&amp;Email address of administrator:" />
-        <Control Id="EmailEdit" Type="Edit" X="55" Y="88" Width="80" Height="15" Property="CONDOREMAIL" Text="{80}" />
+        <Control Id="SMTPServer" Type="Text" X="50" Y="60" Width="100" Height="18" TabSkip="no" Text="&amp;Hostname of SMTP Server:" />
+        <Control Id="SMTPServerEdit" Type="Edit" X="150" Y="58" Width="140" Height="18" Property="SMTPSERVER" Text="{80}" />
+        <Control Id="Email" Type="Text" X="36" Y="78" Width="112" Height="18" TabSkip="no" Text="&amp;Email address of administrator:" />
+        <Control Id="EmailEdit" Type="Edit" X="150" Y="76" Width="140" Height="18" Property="CONDOREMAIL" Text="{80}" />
         <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
           <Publish Event="NewDialog" Value="CondorDomainCfgDlg">1</Publish>
         </Control>

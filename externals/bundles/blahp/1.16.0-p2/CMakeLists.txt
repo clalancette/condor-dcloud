@@ -22,7 +22,7 @@ if ( NOT PROPER AND WITH_BLAHP )
 						INSTALL_DIR ${EXTERNAL_STAGE}
 						INSTALL_COMMAND cd ${POPT_VER} && make install )
 
-	message(STATUS "we ingore the return param from bootstrap.. there are errors!")
+	dprint("we ingore the return param from bootstrap.. there are errors!")
 
 	ExternalProject_Add(blahp
 						DEPENDS classads openssl globus popt

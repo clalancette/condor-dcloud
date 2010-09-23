@@ -87,14 +87,13 @@ if( STD_UNIVERSE )
 	# set dependencies to ensure build dep order for parallel builds
 	##################################################
 	add_dependencies( condorsyscall ckpt utils cedar stdunivio stub_gen )
-	add_dependencies( switches stub_gen )
-	add_dependencies( senders stub_gen )
-	add_dependencies( receivers stub_gen )
-	add_dependencies( sys-list stub_gen )
+	add_dependencies( switches syscall_numbers stub_gen )
+	add_dependencies( senders syscall_numbers stub_gen )
+	add_dependencies( receivers syscall_numbers stub_gen )
+	add_dependencies( sys-list syscall_numbers stub_gen )
 
 	#################################################
 	# here we begin the install target section 
 	install ( FILES condor_rt0 DESTINATION ${C_LIB} )
 	
-
 endif( STD_UNIVERSE )

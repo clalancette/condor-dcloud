@@ -3,8 +3,8 @@
   <Fragment>
     <UI>
       <Dialog Id="CondorExecCfgDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
-        <Control Id="DialogSUBMITJOBS" Type="CheckBox" X="130" Y="55" Width="290" Height="18" TabSkip="no" Property="SUBMITJOBS" Text="Submit jobs to Condor Pool" />
-        <Control Id ="InstructionRUNJOBS" Type="Text" X="10" Y="73" Width="120" Height="15" Text="When should Condor run jobs?" />
+        <Control Id="DialogSUBMITJOBS" Type="CheckBox" X="130" Y="55" Width="290" Height="18" TabSkip="no" CheckBoxValue="Y" Property="SUBMITJOBS" Text="Submit jobs to Condor Pool" />
+        <Control Id ="InstructionRUNJOBS" Type="Text" X="10" Y="72" Width="120" Height="15" Text="When should Condor run jobs?" />
         <Control Id="RadioRUNJOBS" Type="RadioButtonGroup" X="130" Y="72" Width="290" Height="50" TabSkip="no" Property="RUNJOBS" Text="When should Condor run jobs?">
           <RadioButtonGroup Property="RUNJOBS">
             <RadioButton Value="N" X="0" Y="0" Width="290" Height="12" Text="Do not run jobs on this machine."/>

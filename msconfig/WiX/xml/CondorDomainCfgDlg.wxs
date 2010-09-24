@@ -5,7 +5,7 @@
       <Dialog Id="CondorDomainCfgDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
         <Control Id="Instruction1" Type="Text" X="10" Y="60" Width="270" Height="15" TabSkip="no" Text="Usually a DNS domain can be the accounting domain (e.g. cs.wisc.edu)." />
         <Control Id="Instruction2" Type="Text" X="10" Y="75" Width="270" Height="15" TabSkip="no" Text="Leave it blank if you are unsure." />
-        <Control Id="DomainName" Type="Text" X="45" Y="95" Width="79" Height="18" TabSkip="no" Text="&amp;Accounting Domain:" />
+        <Control Id="DomainName" Type="Text" X="47" Y="95" Width="79" Height="18" TabSkip="no" Text="&amp;Accounting Domain:" />
         <Control Id="DomainNameEdit" Type="Edit" X="124" Y="93" Width="100" Height="18" Property="POOLHOSTNAME" Text="{80}" />
         <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
           <Publish Event="NewDialog" Value="CondorExecCfgDlg">1</Publish>

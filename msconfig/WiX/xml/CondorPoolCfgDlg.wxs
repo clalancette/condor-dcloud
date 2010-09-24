@@ -3,7 +3,7 @@
   <Fragment>
     <UI>
       <Dialog Id="CondorPoolCfgDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
-        <Control Id="InstructionNEWPOOL" Type="Text" X="55" Y="55" Width="75" Height="15" Text="Choose install type:"/>
+        <Control Id="InstructionNEWPOOL" Type="Text" X="55" Y="53" Width="75" Height="15" Text="Choose install type:"/>
         <Control Id="RadioNEWPOOL" Type="RadioButtonGroup" X="130" Y="53" Width="290" Height="26" TabSkip="no" Property="NEWPOOL" Text="New or Existing Condor Pool?">
           <RadioButtonGroup Property="NEWPOOL">
             <RadioButton Value="Y" X="0" Y="0" Width="120" Height="13" Text="Create a new Condor Pool."/>
@@ -11,12 +11,12 @@
           </RadioButtonGroup>
           <Property Id="NEWPOOL" Value="N" />
         </Control>
-        <Control Id="PoolName" Type="Text" X="57" Y="108" Width="73" Height="15" TabSkip="no" Text="&amp;Name of New Pool:" />
+        <Control Id="PoolName" Type="Text" X="57" Y="109" Width="73" Height="15" TabSkip="no" Text="&amp;Name of New Pool:" />
         <Control Id="PoolNameEdit" Type="Edit" X="130" Y="107" Width="90" Height="18" Property="POOLNAME" Text="{80}">
           <Condition Action="disable">NEWPOOL="N"</Condition>
           <Condition Action="enable">NEWPOOL="Y"</Condition>
         </Control>
-        <Control Id="ManagerName" Type="Text" X="14" Y="126" Width="120" Height="15" TabSkip="no" Text="&amp;Hostname of Central Manager:" />
+        <Control Id="ManagerName" Type="Text" X="15" Y="127" Width="120" Height="15" TabSkip="no" Text="&amp;Hostname of Central Manager:" />
         <Control Id="ManagerNameEdit" Type="Edit" X="130" Y="125" Width="90" Height="18" Property="POOLHOSTNAME" Text="{80}">
           <Condition Action="disable">NEWPOOL="Y"</Condition>
           <Condition Action="enable">NEWPOOL="N"</Condition>

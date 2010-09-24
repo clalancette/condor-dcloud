@@ -3,35 +3,45 @@
   <Fragment>
     <UI>
       <Dialog Id="CondorVMCfgDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
-        <Control Id="DialogVM" Type="RadioButtonGroup" X="15" Y="73" Width="290" Height="75" TabSkip="no" Property="USEVMUNIVERSE" Text="Enable VM Universe">
+        <Control Id="InstructionVM" Type="Text" X="70" Y="60" Width="100" Height="15" TabSkip="no" Text="Enable VM Universe:"/>
+        <Control Id="RadioVM" Type="RadioButtonGroup" X="160" Y="60" Width="290" Height="75" TabSkip="no" Property="USEVMUNIVERSE">
           <RadioButtonGroup Property="USEVMUNIVERSE">
-            <RadioButton Value="N" X="0" Y="0" Width="290" Height="10" Text="&amp;No."/>
-            <RadioButton Value="Y" X="0" Y="10" Width="290" Height="10" Text="&amp;Yes (Requires VMware Server and Perl)"/>
+            <RadioButton Value="N" X="0" Y="0" Width="290" Height="15" Text="&amp;No"/>
+            <RadioButton Value="Y" X="0" Y="15" Width="290" Height="15" Text="&amp;Yes (Requires VMware Server and Perl)"/>
           </RadioButtonGroup>
+          <Property Id="USEVMUNIVERSE" Value="N"/>
         </Control>
-        <Control Id="VMMem" Type="Text" X="45" Y="93" Width="50" Height="15" TabSkip="no" Text="Maximum &amp;Memory (in MB):" />
-        <Control Id="VMMemEdit" Type="Edit" X="95" Y="93" Width="170" Height="15" Property="VMMEMORY" Text="{10}">
+        <Control Id="VMMem" Type="Text" X="40" Y="102" Width="120" Height="15" TabSkip="no" Text="Maximum &amp;Memory (in MB):" />
+        <Control Id="VMMemEdit" Type="Edit" X="160" Y="100" Width="50" Height="18" Property="VMMEMORY" Text="{10}" Integer="yes">
+          <Condition Action="disable">USEVMUNIVERSE="N"</Condition>
           <Condition Action="enable">USEVMUNIVERSE="Y"</Condition>
         </Control>
-        <Control Id="VMNum" Type="Text" X="45" Y="108" Width="50" Height="15" TabSkip="no" Text="Maximum number of VMs." />
-        <Control Id="VMNumEdit" Type="Edit" X="95" Y="108" Width="170" Height="15" Property="VMMAXNUMBER" Text="$(NUM_CPUS)">
+        <Control Id="VMNum" Type="Text" X="46" Y="128" Width="118" Height="15" TabSkip="no" Text="Maximum number of VMs:" />
+        <Control Id="VMNumEdit" Type="Edit" X="160" Y="126" Width="100" Height="18" Property="VMMAXNUMBER" Text="$$(NUM_CPUS)">
+          <Condition Action="disable">USEVMUNIVERSE="N"</Condition>
           <Condition Action="enable">USEVMUNIVERSE="Y"</Condition>
         </Control>
-        <Control Id="VMNet" Type="Text" X="15" Y="123" Width="290" Height="75" TabSkip="no"  Text="Enable VM Universe">
-          <ListBox Property="VMNETWORKING">
+        <Control Id="VMNet" Type="ComboBox" X="160" Y="148" Width="80" Height="20" TabSkip="no" Property="VMNETWORKING"  Text="Networking Support:" Sorted="yes" ComboList="yes">
+          <ComboBox Property="VMNETWORKING">
             <ListItem Text="None" Value="N"/>
             <ListItem Text="NAT" Value="A"/>
             <ListItem Text="Bridged" Value="B"/>
             <ListItem Text="NAT and Bridged" Value="C"/>
-          </ListBox>
+          </ComboBox>
+          <Property Id="VMNETWORKING" Value="N"/>
+          <Condition Action="disable">USEVMUNIVERSE="N"</Condition>
+          <Condition Action="enable">USEVMUNIVERSE="Y"</Condition>
         </Control>
-        <Control Id="PerlPath" Type="Text" X="15" Y="138" Width="50" Height="15" TabSkip="no" Text="Path to &amp;Perl Executable." />
-        <Control Id="PerlPathEdit" Type="Edit" X="55" Y="138" Width="170" Height="18" Property="PERLLOCATION" Text="PERL.EXE" />
+        <Control Id="PerlPath" Type="Text" X="50" Y="172" Width="90" Height="15" TabSkip="no" Text="Path to &amp;Perl Executable:"/>
+        <Control Id="PerlPathEdit" Type="Edit" X="160" Y="170" Width="170" Height="18" Property="PERLLOCATION" Text="PERL.EXE">
+          <Condition Action="disable">USEVMUNIVERSE="N"</Condition>
+          <Condition Action="enable">USEVMUNIVERSE="Y"</Condition>
+        </Control>
         <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
-          <Publish Event="NewDialog" Value="CondorJavaCfgDlg">1</Publish>
+          <Publish Event="NewDialog" Value="CondorPermCfgDlg">1</Publish>
         </Control>
         <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="&amp;Next">
-          <Publish Event="NewDialog" Value="CustomizeDlg">1</Publish>
+          <Publish Event="NewDialog" Value="CondorHDFSCfgDlg">1</Publish>
         </Control>
         <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel">
           <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>

@@ -319,8 +319,10 @@ if (NOT WINDOWS)
 
 	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/blahp/1.16.0-p2)
 	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/voms/1.8.8_2-p2)
-	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/srb/3.2.1-p2)
-	#add_subdirectory(${CONDOR_SOURCE_DIR}/bundles/cream/1.10.1-p2)
+
+	dprintf("stork is the only thing to use SRB, I'm commenting out")
+	# add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/srb/3.2.1-p2)
+	add_subdirectory(${CONDOR_SOURCE_DIR}/bundles/cream/1.10.1-p6)
 
 	# the following logic if for standard universe *only*
 	if (LINUX AND NOT CLIPPED AND GLIBC_VERSION AND NOT PROPER)

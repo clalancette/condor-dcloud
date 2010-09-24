@@ -100,8 +100,10 @@
             <DialogRef Id="CondorEmailCfgDlg" />
             <DialogRef Id="CondorJavaCfgDlg" />
             <DialogRef Id="CondorPermCfgDlg" />
+            <DialogRef Id="CondorVMCfgDlg" />
+            <DialogRef Id="CondorHDFSCfgDlg" />
             <Publish Dialog="LicenseAgreementDlg" Control="Next" Event="NewDialog" Value="CondorPoolCfgDlg" Order="2">LicenseAccepted = "1"</Publish>
-            <Publish Dialog="CustomizeDlg" Control="Back" Event="NewDialog" Value="CondorPermCfgDlg">1</Publish>
+            <Publish Dialog="CustomizeDlg" Control="Back" Event="NewDialog" Value="CondorHDFSCfgDlg">1</Publish>
         </UI>
 
         <!--<UIRef Id="WixUI_FeatureTree" />-->

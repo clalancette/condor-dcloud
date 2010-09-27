@@ -40,9 +40,14 @@ set(CPACK_SYSTEM_NAME "${OS_NAME}-${SYS_ARCH}" )
 set(CPACK_TOPLEVEL_TAG "${OS_NAME}-${SYS_ARCH}" )
 set(CPACK_PACKAGE_ARCHITECTURE ${SYS_ARCH} ) 
 
-#set(CPACK_SOURCE_STRIP_FILES "")
-set (CPACK_STRIP_FILES TRUE)
+# always strip the source files.
+set(CPACK_SOURCE_STRIP_FILES TRUE)
 
+# you can enable/disable file stripping.
+option(CONDOR_STRIP_PACKAGES "Enables a package build" ON)
+set(CPACK_STRIP_FILES ${CONDOR_STRIP_PACKAGES})
+
+# here is where we can
 set (CPACK_PACKAGE_FILE_NAME "${CONDOR_VER}-${OS_NAME}-${SYS_ARCH}" )
 
 ##################################################################

@@ -42,24 +42,23 @@ our %build_and_test_sets = (
 	'official_ports' => [
 		'ia64_rhas_3',
 		'ppc64_sles_9',
-		#'sun4u_sol_5.9', # bug on binutils
+		'sun4u_sol_5.9', # bug on binutils nmi Ticket #7475
 		'x86_64_deb_5.0',
 		'x86_64_rhap_5',
 		'x86_64_rhas_3',
 		'x86_deb_4.0',
 		'x86_deb_5.0',
-		#'x86_macos_10.4', # requires cmake 2.8.2 install
+		'x86_macos_10.4',
 		'x86_rhap_5',
 		'x86_rhas_3',
-		#'x86_winnt_5.1', #cygwin path issue
+		'ppc_aix_5.2-pl5',
+		'x86_winnt_5.1', #cygwin path issue
 		#the below are commented out for speed.
-		#'ppc_aix_5.2-pl5', # cmake not present
 	],
 
 	# Occasionally, NMI would like a port on a bunch of odd platforms. These
 	# are those platforms.
 	'nmi_one_offs' => [
-		#'sun4u_sol_5.8',  <-- no longer in new dev phase, support only
 		'x86_suse_10.2',
 		'x86_suse_10.0',
 		'ia64_sles_9',
@@ -69,8 +68,9 @@ our %build_and_test_sets = (
 		'x86_64_macos_10.5',
 		'x86_64_macos_10.6',
 		'hppa_hpux_11',
-		#'x86_64_fedora_12-updated',  <-- no longer supported
-		#'ps3_ydl_5.0',   <- no longer supported
+		# 'sun4u_sol_5.8',  <-- support only phase? why are we building latest against?
+		# 'x86_64_fedora_12-updated',  <-- no longer supported in 11/2010, and nmi fails why are we doing this?
+		# 'ps3_ydl_5.0',   <- no longer supported, and sony has eliminated the ability to install, why are we doing this?
 	],
 
 	'psilord' => [
@@ -92,7 +92,7 @@ our %build_and_test_sets = (
 my @default_prereqs = (
 	'tar-1.14',
 	'patch-2.5.4',
-	'cmake-2.8.0',
+	'cmake-2.8.2',
 	'flex-2.5.4a',
 	'make-3.80',
 	'byacc-1.9',

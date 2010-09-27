@@ -57,56 +57,6 @@ print "------------------------- ENV DUMP ------------------------\n";
 if( ! -d $pub_dir ) {
     mkdir( "$pub_dir", 0777 ) || die("Can't mkdir($pub_dir): $!\n");
 }
-if( ! -d $pub_logs ) {
-    mkdir( "$pub_logs", 0777 ) || die("Can't mkdir($pub_logs): $!\n");
-}
-if( ! -d $pub_testbin ) {
-    mkdir( "$pub_testbin", 0777 ) || die("Can't mkdir($pub_testbin): $!\n");
-}
-
-my $ext_build = "$BaseDir/externals/build";
-if( -d "$ext_build" ) {
-    # package up the externals build logs if they exist, even on 
-    # success.
-    my $pub_logs_ext = "$pub_logs/externals";
-    if( ! -d "$pub_logs_ext" ) {
-        mkdir( "$pub_logs_ext", 0777 ) || 
-            die("Can't mkdir($pub_logs_ext): $!\n");
-    }
-    opendir( DIR, "$ext_build" ) || 
-        die("Failed to opendir($ext_build): $!\n");
-    @files = readdir(DIR);
-    closedir DIR;
-    foreach $file ( @files ) {
-        if( $file =~ /log\..*/ ) {
-            system( "cp $ext_build/$file $pub_logs_ext" );
-            if( $? >> 8 ) {
-                die("Can't cp $ext_build/$file $pub_logs_ext\n");
-            }
-        }
-    }
-}
-
-
-# we don't care about autoconf stuff on windoze...
-if( $ENV{NMI_PLATFORM} ne "x86_winnt_5.1" ) {
-    my $pub_logs_ac = "$pub_logs/autoconf";
-    if( ! -d "$pub_logs_ac" ) {
-        mkdir( "$pub_logs_ac", 0777 ) || 
-            die("Can't mkdir($pub_logs_ac): $!\n");
-    }
-    @files = ( "config.h", "config.log", "config.status", "Makefile" );
-    foreach $file ( @files ) {
-        # don't die if one of these isn't there...
-        system( "cp $SrcDir/$file $pub_logs_ac" );
-    }
-}
-
-# move test unix binaries to public/testbin
-if( $ENV{NMI_PLATFORM} ne "x86_winnt_5.1" ) {
-        system( "cp -r $SrcDir/testbin_dir $pub_testbin" );
-}
-
 
 ######################################################################
 # tar up build results

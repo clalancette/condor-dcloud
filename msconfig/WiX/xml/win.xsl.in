@@ -38,9 +38,25 @@
           <![CDATA[(VersionNT >= 501)]]>
         </Condition>
 
-        <Property Id="JVMLOCATION">
-          <RegistrySearch Id="JavaSearch" Root="HKLM" Type="directory" Key="SOFTWARE\JavaSoft\Java Runtime Environment" Name="JavaHome" />
+        <Property Id="JVMVERSION">
+          <RegistrySearch Id="JavaVersionSearch" Root="HKLM" Type="raw" Key="SOFTWARE\JavaSoft\Java Runtime Environment" Name="CurrentVersion" />
         </Property>
+        <Property Id="JVMDIR">
+          <RegistrySearch Id="JavaDirSearch" Root="HKLM" Type="directory" Key="SOFTWARE\JavaSoft\Java Runtime Environment\[JVMVERSION]" Name="JavaHome" />
+        </Property>
+        <CustomAction Id="CopyJVMDIR" Property="JVMLOCATION" Value="[JVMDIR]\bin\java.exe" />
+
+        <!--Permissions properties-->
+        <Property Id="HOSTALLOWREAD" Value="*" />
+        <Property Id="HOSTALLOWWRITE" Value="your.domain.com, *.cs.wisc.edu" />
+        <Property Id="HOSTALLOWADMINISTRATOR" Value="$$(FULL_HOSTNAME)" />
+        <!--VM Universe properties-->
+        <Property Id="VMMEMORY" Value="256" />
+        <Property Id="VMMAXNUMBER" Value="$$(NUM_CPUS)" />
+        <Property Id="PERLLOCATION" Value="PERL.EXE" />
+        <!--HDFS properties-->
+        <Property Id="HDFSPORT" Value="9000" />
+        <Property Id="HDFSWEBPORT" Value="8000" />
 
         <!-- Begin custom actions and install sequence -->
         <CustomAction Id="CondorConfigLocal"

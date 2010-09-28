@@ -17,7 +17,7 @@
           <Condition Action="enable">USEVMUNIVERSE="Y"</Condition>
         </Control>
         <Control Id="VMNum" Type="Text" X="55" Y="122" Width="95" Height="15" TabSkip="no" Text="Maximum number of VMs:" />
-        <Control Id="VMNumEdit" Type="Edit" X="160" Y="120" Width="100" Height="18" Property="VMMAXNUMBER" Text="$$(NUM_CPUS)">
+        <Control Id="VMNumEdit" Type="Edit" X="160" Y="120" Width="100" Height="18" Property="VMMAXNUMBER">
           <Condition Action="disable">USEVMUNIVERSE="N"</Condition>
           <Condition Action="enable">USEVMUNIVERSE="Y"</Condition>
         </Control>
@@ -34,7 +34,7 @@
           <Condition Action="enable">USEVMUNIVERSE="Y"</Condition>
         </Control>
         <Control Id="PerlPath" Type="Text" X="65" Y="164" Width="90" Height="15" TabSkip="no" Text="Path to &amp;Perl Executable:"/>
-        <Control Id="PerlPathEdit" Type="Edit" X="160" Y="162" Width="170" Height="18" Property="PERLLOCATION" Text="PERL.EXE">
+        <Control Id="PerlPathEdit" Type="Edit" X="160" Y="162" Width="170" Height="18" Property="PERLLOCATION">
           <Condition Action="disable">USEVMUNIVERSE="N"</Condition>
           <Condition Action="enable">USEVMUNIVERSE="Y"</Condition>
         </Control>

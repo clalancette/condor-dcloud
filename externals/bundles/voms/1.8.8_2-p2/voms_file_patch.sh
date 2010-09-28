@@ -89,7 +89,7 @@ funcs="oldgaa_globus_allocate_rights \
 cd org.glite.security.voms/src/sslutils/oldgaa
 for func in $funcs ; do
   for file in $files ; do
-    sed -e "s/$func/voms_$func/" <$file >$file.new
-    mv $file.new $file
+    echo "altering $file -> voms_$func \n"
+    sed -i -e "s/$func/voms_$func/" $file 
   done
 done

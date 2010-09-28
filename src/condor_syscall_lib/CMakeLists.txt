@@ -8,6 +8,10 @@
 ##############################################################
 if( STD_UNIVERSE )
 
+	###########################################################################
+	# set the local build to debug only *no optimizations*
+	set( CMAKE_BUILD_TYPE Debug )
+
 	##########################################################################
 	# localized std:u compilation flags and settings
 	include (StdUnivExtractNToUpper)

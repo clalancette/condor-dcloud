@@ -7,7 +7,7 @@ if ( NOT PROPER AND LINUX )
 		set (VOMS_VER voms-1.8.8_2)
 
 		ExternalProject_Add(voms
-							DEPENDS expat openssl globus
+							DEPENDS expat openssl globus zlib
 							PREFIX ${EXTERNAL_BUILD_PREFIX}/${VOMS_VER}
 							#-- Download Step ----------
 							DOWNLOAD_COMMAND wget -N http://parrot.cs.wisc.edu/externals/${VOMS_VER}.tar.gz ${CMD_TERM}
@@ -20,7 +20,13 @@ if ( NOT PROPER AND LINUX )
 								${CMAKE_CURRENT_SOURCE_DIR}/voms_file_patch.sh
 							#--Configure step ----------
 							CONFIGURE_COMMAND cd org.glite.security.voms &&
-								./configure --prefix=${EXTERNAL_STAGE} --with-api-only --with-openssl-prefix=${EXTERNAL_STAGE} --with-expat-prefix=${EXTERNAL_STAGE} --with-globus-prefix=${EXTERNAL_STAGE} --disable-java --disable-docs --disable-glite
+								./configure
+								--prefix=${EXTERNAL_STAGE}
+								--with-api-only
+								--with-openssl-prefix=${EXTERNAL_STAGE}
+								--with-expat-prefix=${EXTERNAL_STAGE}
+								--with-globus-prefix=${EXTERNAL_STAGE}
+								--with-globus-flavor=${GLOBUS_FLAVOR} --disable-java --disable-docs --disable-glite
 							#--Build Step ----------
 							BUILD_COMMAND cd org.glite.security.voms && make
 							BUILD_IN_SOURCE 1

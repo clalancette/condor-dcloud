@@ -42,7 +42,7 @@ our %build_and_test_sets = (
 	'official_ports' => [
 		'ia64_rhas_3',
 		'ppc64_sles_9',
-		'sun4u_sol_5.9', # bug on binutils nmi Ticket #7475
+		'sun4u_sol_5.9', 
 		'x86_64_deb_5.0',
 		'x86_64_rhap_5',
 		'x86_64_rhas_3',
@@ -52,7 +52,7 @@ our %build_and_test_sets = (
 		'x86_rhap_5',
 		'x86_rhas_3',
 		'ppc_aix_5.2-pl5',
-		'x86_winnt_5.1', #cygwin path issue
+		'x86_winnt_5.1-tst', 
 		#the below are commented out for speed.
 	],
 
@@ -226,10 +226,10 @@ our %submit_info = (
 	# Microsoft Windows 5.1/2000/xp/whatever on x86
 	# This probably doesn't work--glue scripts do funky things with it.
 	##########################################################################
-	'x86_winnt_5.1'	=> {
+	'x86_winnt_5.1-tst'	=> {
 		'build' => {
 			'configure_args' => { '-G \"Visual Studio 9 2008\"' },
-			'prereqs'	=> [ 'cmake-2.8.0' ],
+			'prereqs'	=> undef,
 			# when it works add x86_64_winnt_5.1 to the x_tests
 			'xtests'	=> undef,
 		},
@@ -563,6 +563,7 @@ our %submit_info = (
 			'configure_args' => { '-DPROPER:BOOL=OFF' => undef,
 				'-DSCRATCH_EXTERNALS:BOOL=ON'	=> undef,
 				'-D_DEBUG:BOOL=ON'		=> undef,
+				'-DWANT_CREAM:BOOL=ON'	=> undef,
 			},
 			'prereqs'	=> [ @default_prereqs ],
 			'xtests'	=> [ 'unmanaged-x86_rhap_5' ],
@@ -603,7 +604,7 @@ our %submit_info = (
 			'configure_args' => { '-DPROPER:BOOL=OFF' => undef,
 				'-DSCRATCH_EXTERNALS:BOOL=ON'	=> undef,
 				'-D_DEBUG:BOOL=ON'		=> undef,
-				
+				'-DWANT_CREAM:BOOL=ON'	=> undef,
 			},
 			'prereqs'	=> [ 
 				@default_prereqs,

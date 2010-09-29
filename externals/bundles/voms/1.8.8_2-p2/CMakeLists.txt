@@ -1,7 +1,7 @@
 
 if ( NOT PROPER AND LINUX )
 
-	option( WITH_VOMS "Compiling with support for VOMS" OFF )
+	option( WITH_VOMS "Compiling with support for VOMS" ON )
 
 	if (WITH_VOMS)
 		set (VOMS_VER voms-1.8.8_2)
@@ -44,6 +44,6 @@ if ( NOT PROPER AND LINUX )
 
 endif()
 
-if(NOT WITH_VOMS)
+if(NOT HAVE_EXT_VOMS)
 	message ( STATUS "external skiped (voms)" )
 endif()

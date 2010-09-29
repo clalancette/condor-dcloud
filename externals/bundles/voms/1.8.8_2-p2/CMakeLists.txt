@@ -1,9 +1,10 @@
 
-if ( NOT PROPER AND LINUX )
+option( WITH_VOMS "Compiling with support for VOMS" ON )
 
-	option( WITH_VOMS "Compiling with support for VOMS" ON )
+if ( LINUX AND WITH_VOMS )
 
-	if (WITH_VOMS)
+	if (NOT PROPER)
+
 		set (VOMS_VER voms-1.8.8_2)
 
 		ExternalProject_Add(voms
@@ -35,15 +36,24 @@ if ( NOT PROPER AND LINUX )
 							INSTALL_COMMAND cd org.glite.security.voms && make install
 				)
 
-		set( VOMS_FOUND "${EXTERNAL_STAGE}/lib/libvomsapi_${GLOBUS_FLAVOR}.a" )
+		set( VOMS_FOUND "libvomsapi_${GLOBUS_FLAVOR}.a" )
+
+	else(NOT PROPER)
+
+		find_multiple( "vomsapi" VOMS_FOUND)
+
+	endif(NOT PROPER)
+
+	if (VOMS_FOUND)
 		message ( STATUS "external configured (VOMS_FOUND=${VOMS_FOUND})" )
 		set( HAVE_EXT_VOMS ON PARENT_SCOPE )
 		set( VOMS_FOUND ${VOMS_FOUND} PARENT_SCOPE )
 		append_var(CONDOR_EXTERNALS voms)
-	endif(WITH_VOMS)
+		append_var(EXTERNAL_INCLUDES ${EXTERNAL_STAGE}/include/glite/security)
+	endif()
 
 endif()
 
-if(NOT HAVE_EXT_VOMS)
+if(NOT VOMS_FOUND)
 	message ( STATUS "external skiped (voms)" )
 endif()

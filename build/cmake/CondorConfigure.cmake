@@ -364,7 +364,7 @@ add_definitions(-DHAVE_CONFIG_H)
 
 ###########################################
 # include and link locations
-include_directories(${EXTERNAL_STAGE}/include)
+include_directories(${EXTERNAL_STAGE}/include ${EXTERNAL_INCLUDES} )
 link_directories(${EXTERNAL_STAGE}/lib)
 
 if ( $ENV{JAVA_HOME} )

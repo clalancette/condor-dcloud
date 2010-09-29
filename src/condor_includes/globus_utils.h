@@ -34,7 +34,7 @@
 #if defined(HAVE_EXT_VOMS)
 extern "C"
 {
-	#include "glite/security/voms/voms_apic.h"
+	#include "voms/voms_apic.h"
 }
 #endif
 

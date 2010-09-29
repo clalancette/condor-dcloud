@@ -4,7 +4,7 @@
     <UI>
       <Dialog Id="CondorJavaCfgDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
         <Control Id="JavaPath" Type="Text" X="10" Y="73" Width="110" Height="15" TabSkip="no" Text="Path to &amp;Java Virtual Machine:" />
-        <Control Id="JavaPathEdit" Type="Edit" X="120" Y="71" Width="220" Height="18" Property="JVMLOCATION" Text="[JVMLOCATION]\bin\java.exe" />
+        <Control Id="JavaPathEdit" Type="Edit" X="120" Y="71" Width="200" Height="18" Property="JVMLOCATION" />
         <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="&amp;Back">
           <Publish Event="NewDialog" Value="CondorEmailCfgDlg">1</Publish>
         </Control>

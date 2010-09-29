@@ -4,7 +4,7 @@ option( WITH_CREAM "Compiling with support for CREAM" OFF )
 if ( NOT PROPER AND WITH_CREAM AND LINUX )
 
 		# ok, much like globus the is a goble-dy-guk monstrosity that needs to die.
-		dprintf("CREAM BUILD IS UNHOLY!!!")
+		dprint("CREAM BUILD IS UNHOLY!!!")
 
 		# i feel dirty
 		set (CREAM_STAGE ${EXTERNAL_STAGE}/opt/cream)
@@ -13,7 +13,7 @@ if ( NOT PROPER AND WITH_CREAM AND LINUX )
 		ExternalProject_Add(cream_soap
 				    PREFIX ${EXTERNAL_BUILD_PREFIX}/${GSOAP_VER}
 				    #-- Download Step ----------
-					DOWNLOAD_COMMAND wget -N http://parrot.cs.wisc.edu/externals/${GSOAP_VER}.tar.gz ${CMD_TERM}
+				    DOWNLOAD_COMMAND wget -N http://parrot.cs.wisc.edu/externals/${GSOAP_VER}.tar.gz ${CMD_TERM}
 				    DOWNLOAD_DIR ${EXTERNAL_DL}
 				    URL http://parrot.cs.wisc.edu/externals/${GSOAP_VER}.tar.gz
 				    #--Configure step ----------
@@ -34,13 +34,15 @@ if ( NOT PROPER AND WITH_CREAM AND LINUX )
 				    DOWNLOAD_DIR ${EXTERNAL_DL}
 				    URL http://parrot.cs.wisc.edu/externals/${BOOST_VER}.tar.gz
 				    #--Configure step ----------
-				    CONFIGURE_COMMAND cd ${BOOST_VER}/tools/build/jam_src && ./build.sh
+				    CONFIGURE_COMMAND cd ${BOOST_VER}/tools/build/jam_src && 
+				    	./build.sh &&
+					mv `find . | grep bjam` ../../../
 				    #--Build Step ----------
-				    BUILD_COMMAND cd ${BOOST_VER} && export PATH=`pwd`/tools/build/jam_src/`ls -d bin.*/`:$PATH && bjam -sNO_COMPRESSION=1 -sTOOLS=gcc --prefix=${CREAM_STAGE}
+				    BUILD_COMMAND cd ${BOOST_VER} && bjam -sNO_COMPRESSION=1 -sTOOLS=gcc --prefix=${CREAM_STAGE} install 
 				    BUILD_IN_SOURCE 1
 				    #--install Step ----------
 				    INSTALL_DIR ${CREAM_STAGE}
-				    INSTALL_COMMAND cd ${BOOST_VER} && mv ${CREAM_STAGE}/include/boost-*/boost ${CREAM_STAGE}/include )
+				    INSTALL_COMMAND cd ${CREAM_STAGE}/include && ln -s -f boost-1_33_1/boost . )
 
 		set (LOG4CPP_VER log4cpp-1.0-3)
 		ExternalProject_Add(log4cpp
@@ -63,9 +65,9 @@ if ( NOT PROPER AND WITH_CREAM AND LINUX )
 		ExternalProject_Add(gridsite
 				    PREFIX ${EXTERNAL_BUILD_PREFIX}/${GRIDSITE_VER}
 				    #-- Download Step ----------
-					DOWNLOAD_COMMAND wget -N http://parrot.cs.wisc.edu/externals/${GRIDSITE_VER}.tar.gz ${CMD_TERM}
+				    DOWNLOAD_COMMAND wget -N http://parrot.cs.wisc.edu/externals/${GRIDSITE_VER}.src.tar.gz ${CMD_TERM}
 				    DOWNLOAD_DIR ${EXTERNAL_DL}
-				    URL http://parrot.cs.wisc.edu/externals/${GRIDSITE_VER}.tar.gz
+				    URL http://parrot.cs.wisc.edu/externals/${GRIDSITE_VER}.src.tar.gz
 				    #--Configure step ----------
 				    CONFIGURE_COMMAND echo "no config"
 				    #--Build Step ----------
@@ -102,9 +104,7 @@ if ( NOT PROPER AND WITH_CREAM AND LINUX )
 				    URL http://parrot.cs.wisc.edu/externals/org.glite.security.gsoap-plugin.tar.gz
 				    #--Configure step ----------
 				    CONFIGURE_COMMAND cd org.glite.security.gsoap-plugin/src &&
-						ln -s stdsoap2_2.7.6b.c stdsoap2.c &&
-						ln -s stdsoap2_2.7.6b.h stdsoap2.h &&
-						head stdsoap2.h | perl -ne '/^\\s*stdsoap2.h\\s+([0-9])\\.([0-9])\\.(\\S+)\\s.*/ && printf \"#define GSOAP_VERSION %d%02d%02d\n#define GSOAP_MIN_VERSION \"$3\"\n#ident \"soap_version.h $1.$2.$3\"\n\",$1,$2,$3' >soap_version.h
+				    	${CMAKE_CURRENT_SOURCE_DIR}/cream_soap_plugin_patch.sh
 				    #--Build Step ----------
 				    BUILD_COMMAND cd org.glite.security.gsoap-plugin/src &&
 						gcc ${CSP_CC_FLAGS} -o glite_gss.thr.o -c glite_gss.c &&
@@ -157,19 +157,18 @@ if ( NOT PROPER AND WITH_CREAM AND LINUX )
 				    #--install Step ----------
 				    INSTALL_DIR ${EXTERNAL_STAGE}
 				    INSTALL_COMMAND cd org.glite.ce.cream-client-api-c &&
-						make install &&
-						cd ${CREAM_STAGE} && 
-						cp -r include/boost include/glite include/log4cpp include/stdsoap2.h ${EXTERNAL_STAGE}/include &&
-						cp -r lib/libares.a lib/libboost_thread*.a lib/libglite_ce_cream_client_soap.a lib/libglite_ce_cream_client_util.a lib/libglite_security_gsoap_plugin_${GLOBUS_FLAVOR}pthr.a lib/libgridsite.a lib/liblog4cpp.a ${EXTERNAL_STAGE}/lib
+						make install
 				)
 
 		# Set the target dependencies which the rest of condor depends on.
-	set(CREAM_FOUND "ADD DEP LIBS! + Walk through TARGETS")
+	set(CREAM_FOUND
+	"${CREAM_STAGE}/lib/libglite_ce_cream_client_soap.a;${CREAM_STAGE}/lib/libglite_security_gsoap_plugin_${GLOBUS_FLAVOR}pthr.a;;${CREAM_STAGE}/lib/libglite_ce_cream_client_util.a;${CREAM_STAGE}/lib/liblog4cpp.a;${CREAM_STAGE}/lib/libgridsite.a;${CREAM_STAGE}/lib/libboost_thread-gcc-mt-d.a;${CREAM_STAGE}/lib/libares.a;${CREAM_STAGE}/lib/libboost_regex-gcc-mt-d.a")
 	append_var(CONDOR_EXTERNALS cream)
 
 	message (STATUS "external configured (CREAM_FOUND=${CREAM_FOUND})")
 	set( CREAM_FOUND ${CREAM_FOUND} PARENT_SCOPE )
 	set( HAVE_EXT_CREAM ON PARENT_SCOPE )
+	set( CREAM_STAGE ${CREAM_STAGE} PARENT_SCOPE )
 
 else()
 	message (STATUS "external skiped (cream)")

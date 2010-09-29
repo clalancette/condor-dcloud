@@ -127,6 +127,12 @@ if (WITH_GLOBUS)
 
 			## Set all the config information
 			set (GLOBUS_FOUND "${EXTERNAL_STAGE}/lib/libglobus_gss_assist_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_gssapi_gsi_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_gsi_proxy_core_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_gsi_credential_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_gsi_callback_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_gsi_sysconfig_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_oldgaa_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_gsi_cert_utils_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_openssl_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_openssl_error_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_proxy_ssl_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_callout_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_common_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libltdl_${GLOBUS_FLAVOR}.a")
+			
+			# primarily used by cream 
+			foreach (_glob_lib ${GLOBUS_FOUND})
+				string(REPLACE "${GLOBUS_FLAVOR}" "${GLOBUS_FLAVOR}pthr" _glob_thr_lib ${_glob_lib} )
+				append_var(GLOBUS_THR_FOUND "${_glob_thr_lib}")
+			endforeach(_glob_lib)
 
 			set (GLOBUS_GRID_UNIVERSE_COMMON
 			"${EXTERNAL_STAGE}/lib/libglobus_gssapi_error_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_xio_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_io_${GLOBUS_FLAVOR}.a;${EXTERNAL_STAGE}/lib/libglobus_rsl_${GLOBUS_FLAVOR}.a")

@@ -365,6 +365,7 @@ our %submit_info = (
 				'-DWITH_LIBVIRT:BOOL=OFF' => undef,
 				'-DWITH_LIBXML2:BOOL=OFF' => undef,
 				'-DWITH_VOMS:BOOL=OFF' => undef,
+				'-DCONDOR_CXX_FLAGS:STRING=-B$PATH' => undef,
 			},
 			'prereqs'	=> [ 
 				@default_prereqs, 
@@ -413,15 +414,7 @@ our %submit_info = (
 				'-DSCRATCH_EXTERNALS:BOOL=ON'	=> undef,
 				'-D_DEBUG:BOOL=ON'		=> undef,
 			 },
-			'prereqs'	=> ['tar-1.14',
-				'patch-2.5.4',
-				'cmake-2.8.0',
-				'flex-2.5.4a',
-				'make-3.80',
-				'byacc-1.9',
-				'bison-1.25',
-				'wget-1.9.1',
-				'm4-1.4.1' ],
+			'prereqs'	=> [ @default_prereqs ],
 			'xtests'	=> undef,
 		},
 
@@ -615,19 +608,8 @@ our %submit_info = (
 				'-DWANT_CREAM:BOOL=ON'	=> undef,
 			},
 			'prereqs'	=> [ 
-				'tar-1.14',
-				'patch-2.5.4',
-				'cmake-2.8.0',
-				'flex-2.5.4a',
-				'make-3.80',
-				'byacc-1.9',
-				'bison-1.25',
-				'wget-1.9.1',
-				'm4-1.4.1',
-				#'binutils-2.15',
-				'perl-5.8.5',
-				'gzip-1.3.3',
-				'autoconf-2.59'
+				@default_prereqs,
+				'binutils-2.15', 'perl-5.8.5', 'gzip-1.3.3', 'autoconf-2.59'
 			],
 			# I've removed x86_64_rhas_3 for now, as per git trac #482
 			'xtests'	=> [ 

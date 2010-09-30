@@ -37,7 +37,6 @@ my $BaseDir = getcwd();
 my $SrcDir = "$BaseDir/src";
 my $buildid_file = "BUILD-ID";
 my $buildid;
-my $buildflags="-DEXTRA_BUILD_FLAGS:BOOL=OFF";
 my $externals_loc="/scratch/externals/cmake";
 
 # autoflush our STDOUT
@@ -54,7 +53,7 @@ if ($ENV{NMI_PLATFORM} =~ /winnt/) {
     system("env");
 
 	#for gcc in nmi to use pre-reqs.
-	$buildflags = "-DCONDOR_CXX_FLAGS:STRING=\"-B$ENV{PATH}\"";
+	#$buildflags = "-DCONDOR_CXX_FLAGS:STRING=\"-B$ENV{PATH}\"";
 }
 print "------------------------- ENV DUMP ------------------------\n";
 print "Configure args: " . join(' ', @ARGV) . "\n";
@@ -105,7 +104,6 @@ if ( defined($opt_clear_externals_cache)||defined($opt_clear_externals_cache_wee
 my $configexecstr =
 			"cmake . " .
 			$buildid .
-			$buildflags .
 			join(' ', @ARGV);
 
 print "$configexecstr\n";

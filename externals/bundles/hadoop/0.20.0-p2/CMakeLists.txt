@@ -30,7 +30,10 @@ if ( NOT PROPER )
 		set( HADOOP_TARGET ${HADOOP_TARGET} PARENT_SCOPE )
 		set( HAVE_EXT_HADOOP ON PARENT_SCOPE )
 		append_var(CONDOR_EXTERNALS hadoop)
-		message (STATUS "external configured (hadoop)")
+		message (STATUS "external configured (HADOOP_FOUND=${EXTERNAL_STAGE}/hdfs)")
+
+		install ( DIRECTORY ${EXTERNAL_STAGE}/hdfs DESTINATION . )
+
 	else()
 		message (STATUS "external skiped (hadoop)")
 	endif()

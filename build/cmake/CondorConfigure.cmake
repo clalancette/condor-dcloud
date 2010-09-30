@@ -161,6 +161,9 @@ if (${OS_NAME} STREQUAL "SUNOS")
 	set(HAS_INET_NTOA ON)
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lkstat -lelf -lsocket")
 
+	#update for solaris builds to use pre-reqs namely binutils in this case
+	#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -B$ENV{PATH}")
+
 elseif(${OS_NAME} STREQUAL "LINUX")
 
 	set(LINUX ON)

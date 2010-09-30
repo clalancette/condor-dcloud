@@ -37,6 +37,7 @@ my $BaseDir = getcwd();
 my $SrcDir = "$BaseDir/src";
 my $buildid_file = "BUILD-ID";
 my $buildid;
+my $buildflags="-DEXTRA_BUILD_FLAGS:BOOL=OFF";
 my $externals_loc="/scratch/externals/cmake";
 
 # autoflush our STDOUT
@@ -44,12 +45,16 @@ $| = 1;
 
 print "------------------------- ENV DUMP ------------------------\n";
 if ($ENV{NMI_PLATFORM} =~ /winnt/) {
-	$ENV{PATH} ="$ENV{PATH};./msconfig";
+	$ENV{PATH} ="$BaseDir/msconfig;$ENV{PATH}";
     system("set");
-	my $externals_loc="C:/temp/scratch/externals/cmake"
+	# temporarily disabled.
+	# my $externals_loc="C:/temp/scratch/externals/cmake"
 } else {
 	$ENV{PATH} ="$ENV{PATH}:/sw/bin:/sw/sbin:/usr/kerberos/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/usr/bin/X11:/usr/X11R6/bin:/usr/local/condor/bin:/usr/local/condor/sbin:/usr/local/bin:/bin:/usr/bin:/usr/X11R6/bin:/usr/ccs/bin:/usr/lib/java/bin";
     system("env");
+
+	#for gcc in nmi to use pre-reqs.
+	$buildflags = "-DCONDOR_CXX_FLAGS:STRING=\"-B$ENV{PATH}\"";
 }
 print "------------------------- ENV DUMP ------------------------\n";
 print "Configure args: " . join(' ', @ARGV) . "\n";
@@ -100,6 +105,7 @@ if ( defined($opt_clear_externals_cache)||defined($opt_clear_externals_cache_wee
 my $configexecstr =
 			"cmake . " .
 			$buildid .
+			$buildflags .
 			join(' ', @ARGV);
 
 print "$configexecstr\n";

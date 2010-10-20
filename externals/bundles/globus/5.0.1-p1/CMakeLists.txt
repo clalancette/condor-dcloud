@@ -67,7 +67,7 @@ if (WITH_GLOBUS)
 		if(SOLARIS)
 			set ( GLOBUS_PATCH patch -i ${CMAKE_CURRENT_SOURCE_DIR}/putenv.patch -p0 && ${GLOBUS_PATCH} )
 		elseif(DARWIN)
-			set ( GLOBUS_PATCH ${GLOBUS_PATCH} && patch -i  ${CMAKE_CURRENT_SOURCE_DIR}/xio-plugins-2.patch -p0 )
+			set ( GLOBUS_PATCH patch -i  ${CMAKE_CURRENT_SOURCE_DIR}/xio-plugins-2.patch -p0 && ${GLOBUS_PATCH} )
 		endif()
 
 		set (GLOBUS_FLAGS CFLAGS=-I${EXTERNAL_STAGE}/include && export CFLAGS &&
@@ -79,8 +79,9 @@ if (WITH_GLOBUS)
 			set (GLOBUS_FLAGS ${GLOBUS_FLAGS} && OPENSSL_LIBS='-lssl -lcrypto -ldl' && export OPENSSL_LIBS)
 		elseif(DARWIN)
 			set (GLOBUS_FLAGS ${GLOBUS_FLAGS} &&
-							OPENSSL_LIBS="-lssl -lcrypto" && export OPENSSL_LIBS &&
-							OPENSSL_LDFLAGS="-L${EXTERNAL_STAGE}/lib -Wl,-search_paths_first" && export OPENSSL_LDFLAGS)
+							OPENSSL_LIBS='-lssl -lcrypto' && export OPENSSL_LIBS &&
+							OPENSSL_LDFLAGS='-L${EXTERNAL_STAGE}/lib -Wl,-search_paths_first' && export OPENSSL_LDFLAGS &&
+							LT_MULTI_MODULE=1 && export LT_MULTI_MODULE)
 		endif()
 
 		set (GLOBUS_DEPENDS openssl gt4 gt42)

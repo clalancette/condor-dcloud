@@ -51,7 +51,7 @@ our %build_and_test_sets = (
 		'x86_macos_10.4',
 		'x86_rhap_5',
 		'x86_rhas_3',
-		'ppc_aix_5.2-pl5',
+		#'ppc_aix_5.2-pl5', # cmake install does not work
 		'x86_winnt_5.1-tst', 
 		#the below are commented out for speed.
 	],
@@ -92,7 +92,7 @@ our %build_and_test_sets = (
 my @default_prereqs = (
 	'tar-1.14',
 	'patch-2.5.4',
-	'cmake-2.8.2',
+	'cmake-2.8.0',
 	'flex-2.5.4a',
 	'make-3.80',
 	'byacc-1.9',
@@ -236,7 +236,7 @@ our %submit_info = (
 
 		'test' => {
 			'configure_args' => { @default_test_configure_args },
-			'prereqs'	=> [ 'cmake-2.8.0' ],
+			'prereqs'	=> undef,
 			'testclass'	=> [ @default_testclass ],
 		},
 	},

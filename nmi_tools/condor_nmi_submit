@@ -802,7 +802,7 @@ sub createSubmitFilesNew
 		# in the first attempt to run the job and then prevent the job
 		# from matching in the second attempt.
 		print CMDFILE 
-		"append_requirements = Disk =!= UNDEFINED && TotalDisk >= 18000000\n";
+		"append_requirements = Disk =!= UNDEFINED && TotalDisk >= 10000000\n";
 
     } else {
 

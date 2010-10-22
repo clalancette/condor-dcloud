@@ -2359,6 +2359,14 @@ AC_ARG_ENABLE([hdfs],
 AS_IF([test "x$enable_hdfs" = xyes],
   [AC_DEFINE([WANT_HDFS], [1], [Define if enabling HDFS])])
 
+AC_ARG_ENABLE([ipv6],
+  AC_HELP_STRING([--enable-ipv6],
+    [enable IPv6 for TCP/UDP connection (default: no)]),
+  [],
+  [enable_ipv6=no])
+AS_IF([test "x$enable_ipv6" = xyes],
+  [AC_DEFINE([CONDOR_IPV6], [1], [Define if enabling IPV6])])
+
 # Here we figure out whether or not the circumstances are correct for us
 # to be able to separate the debugging symbols from the executables and
 # package them into a tarball. for example, if say objcopy's debuglink flag
@@ -2582,6 +2590,8 @@ else
   AC_MSG_RESULT([no])
 fi
 rm -f affinity_test.cpp affinity_test.o
+
+AC_CHECK_MEMBERS([struct sockaddr_in.sin_len], , ,[[#include <netinet/in.h>]])
 
 # If we can't find clone() on linux (for fast forking from large
 # processes), then somebody better understand why; so produce a fatal
@@ -3078,7 +3088,7 @@ else
 fi
 
 if test "x$_cv_linux_distro" = "xRHEL5" -o "x$_cv_linux_distro" = "xRHEL3" -a "x$_cv_arch" = "xI386" ; then
-  CHECK_EXTERNAL([cream],[1.10.1-p6], [soft])
+  CHECK_EXTERNAL([cream],[1.10.1-p7], [soft])
 fi
 
 CHECK_EXTERNAL([pcre], [7.6], [hard],
@@ -3206,7 +3216,7 @@ CHECK_EXTERNAL([curl],[7.19.6-p1],[soft])
 #Look for hadoop jars, required by HDFS daemon as well by hdfs file plugin
 # Only build hadoop external if hdfs is enabled
 AS_IF([test "x$enable_hdfs" = xyes], 
-  [CHECK_EXTERNAL([hadoop],[0.20.2],[soft])])
+  [CHECK_EXTERNAL([hadoop],[0.21.0],[soft])])
 
 if test "x$_cv_opsys" = "xLINUX" ; then
   CHECK_EXTERNAL([libxml2],[2.7.3],[soft],

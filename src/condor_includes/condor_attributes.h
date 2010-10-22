@@ -404,6 +404,7 @@ extern const char * const  ATTR_PREEMPTING_RANK;
 extern const char * const  ATTR_PREEMPTING_OWNER;
 extern const char * const  ATTR_PREEMPTING_USER;
 extern const char * const  ATTR_PREFERENCES;
+extern const char * const  ATTR_PREFER_PARALLEL_SCHEDULING_GROUP;
 extern const char * const  ATTR_PREV_SEND_ESTIMATE;
 extern const char * const  ATTR_PREV_RECV_ESTIMATE;
 extern const char * const  ATTR_PRIO;
@@ -460,6 +461,7 @@ extern const char * const  ATTR_START_LOCAL_UNIVERSE;
 extern const char * const  ATTR_START_SCHEDULER_UNIVERSE;
 extern const char * const  ATTR_STARTD_IP_ADDR;
 extern const char * const  ATTR_STARTD_PRINCIPAL;
+extern const char * const  ATTR_STARTD_SENDS_ALIVES;
 extern const char * const  ATTR_STATE;
 extern const char * const  ATTR_STARTER_IP_ADDR;
 extern const char * const  ATTR_STARTER_ABILITY_LIST;
@@ -795,6 +797,7 @@ extern const char * const ATTR_CUMULATIVE_SLOT_TIME;
 extern const char * const ATTR_COMMITTED_SLOT_TIME;
 
 extern const char * const ATTR_HASH_NAME;
+extern const char * const ATTR_AUTHENTICATED_IDENTITY;
 
 // Enumerate the ones that can't be constant strings..
 typedef enum

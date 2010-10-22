@@ -42,7 +42,7 @@ BaseShadow* BaseShadow::myshadow_ptr = NULL;
 
 
 // this appears at the bottom of this file:
-extern "C" int display_dprintf_header(FILE *fp);
+extern "C" int display_dprintf_header(char **buf,int *bufpos,int *buflen);
 extern bool sendUpdatesToSchedd;
 
 // some helper functions
@@ -1217,14 +1217,14 @@ BaseShadow::publishShadowAttrs( ClassAd* ad )
 }
 
 
-void BaseShadow::dprintf_va( int flags, char* fmt, va_list args )
+void BaseShadow::dprintf_va( int flags, const char* fmt, va_list args )
 {
 		// Print nothing in this version.  A subclass like MPIShadow
 		// might like to say ::dprintf( flags, "(res %d)"
 	::_condor_dprintf_va( flags, fmt, args );
 }
 
-void BaseShadow::dprintf( int flags, char* fmt, ... )
+void BaseShadow::dprintf( int flags, const char* fmt, ... )
 {
 	va_list args;
 	va_start( args, fmt );
@@ -1241,7 +1241,7 @@ extern BaseShadow *Shadow;
 // and pid in our log entries. 
 extern "C" 
 int
-display_dprintf_header(FILE *fp)
+display_dprintf_header(char **buf,int *bufpos,int *buflen)
 {
 	static pid_t mypid = 0;
 	int mycluster = -1;
@@ -1257,12 +1257,12 @@ display_dprintf_header(FILE *fp)
 	}
 
 	if ( mycluster != -1 ) {
-		fprintf( fp, "(%d.%d) (%ld): ", mycluster, myproc, (long)mypid );
+		return sprintf_realloc( buf, bufpos, buflen, "(%d.%d) (%ld): ", mycluster, myproc, (long)mypid );
 	} else {
-		fprintf( fp, "(?.?) (%ld): ", (long)mypid );
+		return sprintf_realloc( buf, bufpos, buflen, "(?.?) (%ld): ", (long)mypid );
 	}	
 
-	return TRUE;
+	return 0;
 }
 
 bool

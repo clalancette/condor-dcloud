@@ -1025,7 +1025,7 @@ static int setenv(const char *var, const char *val, int overwrite)
 
     (void) overwrite;
 
-    tmp = malloc(strlen(var) + strlen(val) + 2);
+    tmp = (char *) malloc(strlen(var) + strlen(val) + 2);
     if (tmp == NULL) {
         return -1;
     }

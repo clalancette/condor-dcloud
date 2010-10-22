@@ -40,13 +40,7 @@
 #include <sys/mount.h>
 
 
-int
-getmnt( start, buf, bufsize, mode, path )
-int				*start;
-struct fs_data	buf[];
-unsigned		bufsize;
-int				mode;
-char			*path;
+int getmnt( int * start, struct fs_data buf[], unsigned bufsize, int mode, char * path )
 {
 	struct statfs	*data = NULL;
 	struct stat	st_buf;

@@ -67,7 +67,7 @@ if (WITH_GLOBUS)
 		if(SOLARIS)
 			set ( GLOBUS_PATCH patch -i ${CMAKE_CURRENT_SOURCE_DIR}/putenv.patch -p0 && ${GLOBUS_PATCH} )
 		elseif(DARWIN)
-			set ( GLOBUS_PATCH patch -i  ${CMAKE_CURRENT_SOURCE_DIR}/xio-plugins-2.patch -p0 && ${GLOBUS_PATCH} )
+			set ( GLOBUS_PATCH ${GLOBUS_PATCH} && cd ../../../../../../ && patch -i ${CMAKE_CURRENT_SOURCE_DIR}/xio-plugins-2.patch -p0 )
 		endif()
 
 		set (GLOBUS_FLAGS CFLAGS=-I${EXTERNAL_STAGE}/include && export CFLAGS &&

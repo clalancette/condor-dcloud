@@ -31,7 +31,7 @@
 #include "XInterface.unix.h"
 #include "condor_config.h"
 #include "condor_string.h"
-#include <paths.h>
+//#include <paths.h>
 #if USES_UTMPX  /* SGI IRIX 62/65 */
 #	include <utmpx.h>
 #else 

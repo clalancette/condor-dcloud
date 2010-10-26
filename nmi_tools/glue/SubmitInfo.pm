@@ -70,7 +70,7 @@ our %build_and_test_sets = (
 		'hppa_hpux_11',
 		# 'sun4u_sol_5.8',  <-- support only phase? why are we building latest against?
 		# 'x86_64_fedora_12-updated',  <-- no longer supported in 11/2010, and nmi fails why are we doing this?
-		# 'ps3_ydl_5.0',   <- no longer supported, and sony has eliminated the ability to install, why are we doing this?
+		# 'ps3_ydl_5.0',   <- no longer supported, and sony has eliminated the ability to install & are even prosecuting jailbreakers, why are we doing this?
 	],
 
 	'psilord' => [
@@ -122,6 +122,7 @@ my @minimal_build_configure_args =
 		'-DWITH_PCRE:BOOL=ON'		=> undef,
 		'-DWITH_GSOAP:BOOL=OFF'		=> undef,
 		'-DWITH_CREAM:BOOL=OFF'		=> undef,
+		'-DSCRATCH_EXTERNALS:BOOL=ON'	=> undef,
 	);
 
 ###############################################################################

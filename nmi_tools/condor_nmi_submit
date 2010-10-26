@@ -1153,21 +1153,25 @@ EOF
     # print $fh "\n";
     print $fh "remote_pre = nmi_tools/glue/build/remote_pre\n";
     print $fh "remote_task = nmi_tools/glue/build/remote_task\n";
-    # print $fh "remote_post = nmi_tools/glue/build/remote_post\n";
-    # print $fh "platform_post = nmi_tools/glue/build/platform_post\n";
-    # print $fh "post_all = nmi_tools/glue/build/post_all\n";
+    print $fh "remote_post = nmi_tools/glue/build/remote_post\n";
+    print $fh "platform_post = nmi_tools/glue/build/platform_post\n";
 
+	# tstclair: no longer needed.
+	# print $fh "post_all = nmi_tools/glue/build/post_all\n";
+
+	# tstclair: why is this even an option it should always be the case. 
     # Pass common arguments to <platform>_remote_pre script
     #if( defined($opt_use_externals_cache) ) {
 	#	$common_pre_args .= ' --use_externals_cache';
     #}
+
     if( defined($opt_clear_externals_cache) ) {
 		$common_pre_args .= ' --clear_externals_cache';
     }
-    #if( defined($opt_clear_externals_cache_weekly) ) {
-	#	$common_pre_args .= ' --clear-externals-cache-weekly';
-    #}
-	#print $fh "\n";
+    if( defined($opt_clear_externals_cache_weekly) ) {
+		$common_pre_args .= ' --clear-externals-cache-weekly';
+    }
+	print $fh "\n";
 
 	print $fh <<EOF;
 ###############################################################################

@@ -32,7 +32,7 @@
 
 use Cwd;
 my $BaseDir = getcwd();
-my $execstr= "make externals && make -j4 all";
+
 my $SrcDir = "$BaseDir/src";
 my $msconfigDir = "$BaseDir/msconfig";
 my $PublicDir = "$BaseDir/public";
@@ -40,8 +40,29 @@ my $PublicDir = "$BaseDir/public";
 # autoflush our STDOUT
 $| = 1;
 
+## TSTCLAIR->THAWAN ok below is the conundrum as it relates to packaging
+## The remote declare needs to be created/updated for (N) different packages
+## b/c of the issues with multiple PATHS on install targets.  As a result
+## cmake will need to be called again with the same args, which you may want
+## to store in a file during the remote pre phase.
+
+
+#if( ! defined $ENV{_NMI_TASKNAME} ) {
+#    c_die("_NMI_TASKNAME not in environment, can't build anything!\n");
+#}
+#my $taskname = $ENV{_NMI_TASKNAME};
+#if( ! $taskname ) {
+#    # if we have no task, just return success immediately
+#    print "No tasks specified, returning SUCCESS\n";
+#    exit 0;
+#}
+#if ($taskname eq "make") {
+my $execstr= "make externals && make -j4 all && make package";
+
 print "------------------------- ENV DUMP ------------------------\n";
 if ($ENV{NMI_PLATFORM} =~ /winnt/) {
+	#path hack b/c nmi pre-reqs & paths are broken on windows.
+	$ENV{PATH} ="C:\prereq\ActivePerl-5.10.1\site\bin;C:\prereq\ActivePerl-5.10.1\bin;C:\Perl\site\bin;C:\Perl\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Program Files\CMake 2.8\bin;C:\Program Files\7-Zip;$BaseDir/msconfig;$ENV{PATH}";
     system("set");
     $execstr= "devenv CONDOR.sln /Rebuild RelWithDebInfo /project PACKAGE"
 } else {

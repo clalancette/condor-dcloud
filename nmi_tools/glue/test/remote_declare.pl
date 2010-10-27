@@ -28,12 +28,11 @@ parseOptions();
 ######################################################################
 
 my $BaseDir = $ENV{BASE_DIR} || die "BASE_DIR not in environment!\n";
-my $SrcDir = $ENV{SRC_DIR} || die "SRC_DIR not in environment!\n";
 my $TaskFile = "$BaseDir/tasklist.nmi";
 my $UserdirTaskFile = "$BaseDir/../tasklist.nmi";
 
 my %CustomTimeouts;
-my $TimeoutFile = "$SrcDir/condor_tests/TimeoutChanges";
+my $TimeoutFile = "$BaseDir/condor_tests/TimeoutChanges";
 # Do we have a file with non-default timeouts for some tests?
 if( -f "$TimeoutFile") {
 	open(TIMEOUTS,"<$TimeoutFile") || die "Failed to open $TimeoutFile: $!\n";
@@ -50,7 +49,7 @@ if( -f "$TimeoutFile") {
 }
 
 my %RuncountChanges;
-my $RuncountFile = "$SrcDir/condor_tests/RuncountChanges";
+my $RuncountFile = "$BaseDir/condor_tests/RuncountChanges";
 # Do we have a file with non-default runtimes for some tests?
 if( -f "$RuncountFile") {
     open(RUNCOUNT,"<$RuncountFile") || die "Failed to open $RuncountFile: $!\n";
@@ -66,8 +65,8 @@ if( -f "$RuncountFile") {
     close(RUNCOUNT);
 }
 # file which contains the list of tests to run on Windows
-my $WinTestList = "$SrcDir/condor_tests/Windows_list";
-my $ShortWinTestList = "$SrcDir/condor_tests/Windows_shortlist";
+my $WinTestList = "$BaseDir/condor_tests/Windows_list";
+my $ShortWinTestList = "$BaseDir/condor_tests/Windows_shortlist";
 
 # Figure out what testclasses we should declare based on our
 # command-line arguments.  If none are given, we declare the testclass
@@ -93,89 +92,6 @@ open( USERTASKFILE, ">$UserdirTaskFile" ) || die "Can't open $UserdirTaskFile: $
 
 
 ######################################################################
-# run configure on the source tree
-######################################################################
-
-if( !($ENV{NMI_PLATFORM} =~ /winnt/) )
-{
-	chdir( $SrcDir ) || die "Can't chdir($SrcDir): $!\n";
-	print "****************************************************\n";
-	print "**** running CONFIGURE ...\n"; 
-	print "****************************************************\n";
-	print "./configure $configure_args\n";
-	open( TESTCONFIG, "./configure $configure_args 2>&1 |") ||
-    	die "Can't open configure as a pipe: $!\n";
-	while ( <TESTCONFIG> ) {
-    	print $_;
-	}
-	close (TESTCONFIG);
-	$configstat = $?;
-	print "CONFIGURE returned a code of $configstat\n"; 
-
-	if($configstat != 0) {
-		print "Let's try without gcc version check and disabling the full " .
-			"port!\n";
-
-		print "****************************************************\n";
-		print "**** running CONFIGURE (again)...\n"; 
-		print "****************************************************\n";
-		$extra_try_args =  " --disable-gcc-version_check --disable-full-port ";
-		print "./configure $extra_try_args $configure_args\n";
-		open( TESTCONFIG, "./configure $extra_try_args $configure_args 2>&1 |") ||
-    		die "Can't open configure as a pipe: $!\n";
-		while ( <TESTCONFIG> ) {
-    		print $_;
-		}
-		close (TESTCONFIG);
-		$configstat = $?;
-		print "CONFIGURE returned a code of $configstat\n"; 
-	}
-
-	($configstat == 0) || die "CONFIGURE failed, aborting testsuite run.\n";  
-}
-
-######################################################################
-# generate compiler_list and each Makefile we'll need
-######################################################################
-
-if( !($ENV{NMI_PLATFORM} =~ /winnt/) )
-{
-	print "****************************************************\n";
-	print "**** Creating Makefiles\n"; 
-	print "****************************************************\n";
-
-	$testdir = "condor_tests";
-
-	chdir( $SrcDir ) || die "Can't chdir($SrcDir): $!\n";
-	print "Creating $testdir/Makefile\n";
-	doMake( "$testdir/Makefile" );
-
-	chdir( $testdir ) || die "Can't chdir($testdir): $!\n";
-	# First, generate the list of all compiler-specific subdirectories. 
-	doMake( "compiler_list" );
-
-	@compilers = ();
-	open( COMPILERS, "compiler_list" ) || die "cannot open compiler_list: $!\n";
-	while( <COMPILERS> ) {
-    	chomp;
-    	push @compilers, $_;
-	}
-	close( COMPILERS );
-	print "Found compilers: " . join(' ', @compilers) . "\n";
-	foreach $cmplr (@compilers) {
-    	print "Creating $testdir/$cmplr/Makefile\n";
-    	doMake( "$cmplr/Makefile" );
-	}
-
-	doMake( "list_testclass" );
-	foreach $cmplr (@compilers) {
-    	$cmplr_dir = "$SrcDir/$testdir/$cmplr";
-    	chdir( $cmplr_dir ) || die "cannot chdir($cmplr_dir): $!\n"; 
-    	doMake( "list_testclass" );
-	}
-}
-
-######################################################################
 # For each testclass, generate the list of tests that match it
 ######################################################################
 
@@ -189,9 +105,11 @@ if( !($ENV{NMI_PLATFORM} =~ /winnt/) ) {
     	print "****************************************************\n";
     	$total_tests = 0;    
     	$total_tests += findTests( $class, "top" );
-    	foreach $cmplr (@compilers) {
-			$total_tests += findTests( $class, $cmplr );
-    	}
+
+		# this compiler specific tests for std:u is total crap.
+		#foreach $cmplr (@compilers) {
+		#	$total_tests += findTests( $class, $cmplr );
+    	#}
 	}
 } else {
     # eat the file Windows_list into tasklist hash
@@ -276,10 +194,9 @@ sub findTests () {
 		$dir = "$testdir/$dir_arg";
     }
     print "-- Searching \"$dir\" for \"$classname\"\n";
-    chdir( "$SrcDir/$dir" ) || die "Can't chdir($SrcDir/$dir): $!\n";
+    chdir( "$BaseDir/$dir" ) || die "Can't chdir($BaseDir/$dir): $!\n";
 
     $list_target = "list_" . $classname;
-    doMake( $list_target );
 
     open( LIST, $list_target ) || die "cannot open $list_target: $!\n";
     while( <LIST> ) {
@@ -296,22 +213,6 @@ sub findTests () {
     }
     print "-- Found $total $word in \"$dir\" for \"$classname\"\n\n";
     return $total;
-}
-
-
-sub doMake () {
-    my( $target ) = @_;
-    my @make_out;
-    open( MAKE, "make $target 2>&1 |" ) || 
-	die "\nCan't run make $target\n";
-    @make_out = <MAKE>;
-    close( MAKE );
-    $makestatus = $?;
-    if( $makestatus != 0 ) {
-		print "\n";
-		print @make_out;
-		die("\"make $target\" failed!\n");
-    }
 }
 
 sub usage

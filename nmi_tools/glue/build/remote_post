@@ -35,12 +35,19 @@ my $pub_logs = "$pub_dir/logs";
 my $pub_testbin = "$pub_dir/testbin";
 my $failed = $ENV{_NMI_STEP_FAILED};
 
-if( defined $failed ) { 
-	die "Stopping testing since step \"$failed\" failed\n";
+# This is debugging output for the sake of the NWO infrastructure.
+# However, it might be useful to us some day so we can see what's
+# going on in case of failures...
+if( defined $ENV{_NMI_STEP_FAILED} ) { 
+    my $nmi_task_failure = "$ENV{_NMI_STEP_FAILED}";
+    print "The value of _NMI_STEP_FAILED is: '$nmi_task_failure'\n";
+} else {
+    print "The _NMI_STEP_FAILED variable is not set\n";
 }
 
 print "------------------------- ENV DUMP ------------------------\n";
 if ($ENV{NMI_PLATFORM} =~ /winnt/) {
+	$ENV{PATH} ="C:\prereq\ActivePerl-5.10.1\site\bin;C:\prereq\ActivePerl-5.10.1\bin;C:\Perl\site\bin;C:\Perl\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Program Files\CMake 2.8\bin;C:\Program Files\7-Zip;$BaseDir/msconfig;$ENV{PATH}";
     system("set");
 } else {
 	$ENV{PATH} ="$ENV{PATH}:/sw/bin:/sw/sbin:/usr/kerberos/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/usr/bin/X11:/usr/X11R6/bin:/usr/local/condor/bin:/usr/local/condor/sbin:/usr/local/bin:/bin:/usr/bin:/usr/X11R6/bin:/usr/ccs/bin:/usr/lib/java/bin";
@@ -53,19 +60,22 @@ print "------------------------- ENV DUMP ------------------------\n";
 # save debugging results
 ######################################################################
 
-# create a directory to save build logs, if it doesn't already exist
+# create a directory to save the data
 if( ! -d $pub_dir ) {
     mkdir( "$pub_dir", 0777 ) || die("Can't mkdir($pub_dir): $!\n");
 }
 
-# copy in the output elements.
-if( $ENV{NMI_PLATFORM} ne "x86_winnt_5.1-tst" ) {
-	system("cp condor*.tar.gz *.rpm $pub_dir");
+# copy in the package targets
+if( $ENV{NMI_PLATFORM} =~ /winnt/ ) {
+	system("mv *.msi *.zip $pub_dir");
 }
 else
 {
-	system("cp *.msi *.zip $pub_dir");
+	system("mv condor*.tar.gz *.rpm $pub_dir");
 }
+
+system("cmake -E md5sum $pub_dir/* md5s.txt");
+system("cp -r $SrcDir/condor_tests $pub_dir");
 
 ######################################################################
 # tar up build results

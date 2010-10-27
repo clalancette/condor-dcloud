@@ -40,12 +40,11 @@ my $PublicDir = "$BaseDir/public";
 # autoflush our STDOUT
 $| = 1;
 
-## TSTCLAIR->THAWAN ok below is the conundrum as it relates to packaging
+## TSTCLAIR->THAWAN et.al ok below is the conundrum as it relates to packaging
 ## The remote declare needs to be created/updated for (N) different packages
 ## b/c of the issues with multiple PATHS on install targets.  As a result
 ## cmake will need to be called again with the same args, which you may want
 ## to store in a file during the remote pre phase.
-
 
 #if( ! defined $ENV{_NMI_TASKNAME} ) {
 #    c_die("_NMI_TASKNAME not in environment, can't build anything!\n");
@@ -57,7 +56,8 @@ $| = 1;
 #    exit 0;
 #}
 #if ($taskname eq "make") {
-my $execstr= "make externals && make -j4 all && make package";
+# 
+my $execstr= "make externals && make -j4 package && make tests";
 
 print "------------------------- ENV DUMP ------------------------\n";
 if ($ENV{NMI_PLATFORM} =~ /winnt/) {
@@ -65,6 +65,8 @@ if ($ENV{NMI_PLATFORM} =~ /winnt/) {
 	$ENV{PATH} ="C:\prereq\ActivePerl-5.10.1\site\bin;C:\prereq\ActivePerl-5.10.1\bin;C:\Perl\site\bin;C:\Perl\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Program Files\CMake 2.8\bin;C:\Program Files\7-Zip;$BaseDir/msconfig;$ENV{PATH}";
     system("set");
     $execstr= "devenv CONDOR.sln /Rebuild RelWithDebInfo /project PACKAGE"
+	# need to make the tests here. 
+
 } else {
     $ENV{PATH} ="$ENV{PATH}:/sw/bin:/sw/sbin:/usr/kerberos/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/usr/bin/X11:/usr/X11R6/bin:/usr/local/condor/bin:/usr/local/condor/sbin:/usr/local/bin:/bin:/usr/bin:/usr/X11R6/bin:/usr/ccs/bin:/usr/lib/java/bin";
     system("env");

@@ -1334,7 +1334,7 @@ sub generateTestFetchFiles
         # We rather crudely copy all of nmi_glue when we really
         # on need nmi_glue/$runtype.  But we want the nmi_glue path
         # in front of it.
-        makeFetchFileSCP( $glue_file, "$src_workspace/nmi_tools/glue", "recursive" );
+        makeFetchFileSCP( $glue_file, "$src_workspace/nmi_tools", "recursive" );
         push( @fetch_files, $glue_file );
 
     } elsif( ( ! defined $opt_nmi_glue) ) {

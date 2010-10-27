@@ -1,5 +1,5 @@
 
-file( GLOB DCRmvElements dc_credd* dc_lease_manager* *.t* )
+file( GLOB DCRmvElements *.t* )
 condor_glob(DCHeaderFiles DCSourceFiles "${DCRmvElements}")
 
 #create the library

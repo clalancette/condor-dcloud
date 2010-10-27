@@ -11,8 +11,8 @@ if (NOT WINDOWS)
 
 		add_dependencies( condor_lease_manager conversion)
 
-		condor_exe_test(condor_lease_manager_test  "lease_manager_test.cpp" "${CONDOR_TOOL_LIBS}")
-		condor_exe_test(condor_lease_manager_tester "lease_manager_tester.cpp" "${CONDOR_TOOL_LIBS}")
+		condor_exe_test(condor_lease_manager_test "lease_manager_test.cpp" "${CONDOR_TOOL_LIBS};${PCRE_FOUND};${OPENSSL_FOUND};${KRB5_FOUND}")
+		condor_exe_test(condor_lease_manager_tester "lease_manager_tester.cpp" "${CONDOR_TOOL_LIBS};${PCRE_FOUND};${OPENSSL_FOUND};${KRB5_FOUND}")
 
 	else(WANT_LEASE_MANAGER)
 		message(STATUS "NOTE: *lease_manager* targets will not be built WANT_LEASE_MANAGER=${WANT_LEASE_MANAGER}")

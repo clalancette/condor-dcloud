@@ -145,12 +145,79 @@ int DCloudJob::funcRetryInterval = 15;
 int DCloudJob::pendingWaitTime = 15;
 int DCloudJob::maxRetryTimes = 3;
 
+static char *copy_token(char *end, char *start)
+{
+	char *ret;
+	int len, i;
+	int buff_index = 0;
+	bool in_escape = false;
+
+	len = end - start;
+	ret = (char *) malloc( len + 1 );
+	for (i = 0; i < len; i++) {
+		if (in_escape) {
+			ret[buff_index++] = start[i];
+			in_escape = false;
+		}
+		else if (start[i] == '\\')
+			in_escape = true;
+		else
+			ret[buff_index++] = start[i];
+	}
+
+	ret[buff_index] = '\0';
+
+	return ret;
+}
+
+static int parse_dcloud_tokens(char *buff, char ***targets)
+{
+	bool in_escape = false;
+	char *cur_token = buff;
+	int cur_target = 0;
+	char *p = buff;
+
+	for (p = buff; *p != '\0'; p++) {
+		if (targets[cur_target] == NULL)
+			goto error_exit;
+		if (in_escape)
+			in_escape = false;
+		else if (*p == '\\')
+			in_escape = true;
+		else if (*p == ' ') {
+			*targets[cur_target++] = copy_token(p, cur_token);
+			// note that this is safe against overrunning
+			// the buffer.  In order to have reached here
+			// at all, *p had to be != '\0', so the worst
+			// the can happen is that p + 1 is the \0 on
+			// the end of the string
+			cur_token = p + 1;
+		}
+	}
+
+	// At the end of the loop handle the last parameter
+	if (targets[cur_target] == NULL)
+		goto error_exit;
+	*targets[cur_target] = copy_token(p, cur_token);
+
+	return 0;
+
+ error_exit:
+	return -1;
+}
+
+
 DCloudJob::DCloudJob( ClassAd *classad )
 	: BaseJob( classad )
 {
 	char buff[16385]; // user data can be 16K, this is 16K+1
 	MyString error_string = "";
 	char *gahp_path = NULL;
+	char *serviceType = NULL, *name = NULL, *id = NULL;
+	char **resource_targets[] = { &serviceType, &m_serviceUrl, &m_username,
+				      &m_password, &m_imageId, &m_instanceName,
+				      &m_realmId, &m_hwpId, &m_keyname, NULL };
+	char **job_id_targets[] = { &serviceType, &name, &id, NULL };
 
 	m_serviceUrl = NULL;
 	m_instanceId = NULL;
@@ -193,86 +260,39 @@ DCloudJob::DCloudJob( ClassAd *classad )
 	buff[0] = '\0';
 	jobAd->LookupString( ATTR_GRID_RESOURCE, buff );
 	if ( buff[0] ) {
-		const char *token;
-		MyString str = buff;
-
-		str.Tokenize();
-
-		token = str.GetNextToken( " ", false );
-		if ( !token || strcasecmp( token, "dcloud" ) ) {
-			error_string.sprintf( "%s not of type dcloud",
-								  ATTR_GRID_RESOURCE );
+		if (parse_dcloud_tokens(buff, resource_targets) < 0) {
+			error_string.sprintf( "'%s' too many arguments", buff );
 			goto error_exit;
 		}
 
-		token = str.GetNextToken( " ", false );
-		if ( token ) {
-			m_serviceUrl = strdup( token );
+		if ( !serviceType || strcasecmp( serviceType, "dcloud" )) {
+			error_string.sprintf( "%s not of type dcloud", ATTR_GRID_RESOURCE );
+			goto error_exit;
 		}
-
-		token = str.GetNextToken( " ", false );
-		if ( token ) {
-			m_username = strdup( token );
-		}
-
-		token = str.GetNextToken( " ", false );
-		if ( token ) {
-			m_password = strdup( token );
-		}
-
-		token = str.GetNextToken( " ", false );
-		if ( token ) {
-			m_imageId = strdup( token );
-		}
-
-		token = str.GetNextToken( " ", false );
-		if ( token ) {
-			m_instanceName = strdup( token );
-		}
-
-		token = str.GetNextToken( " ", false );
-		if ( token ) {
-			m_realmId = strdup( token );
-		}
-
-		token = str.GetNextToken( " ", false );
-		if ( token ) {
-			m_hwpId = strdup( token );
-		}
-
-		token = str.GetNextToken( " ", false );
-		if ( token ) {
-			m_keyname = strdup( token );
-		}
-	}
-	if ( m_realmId == NULL ) {
-		error_string.sprintf( "%s missing or incomplete", ATTR_GRID_RESOURCE );
-		goto error_exit;
+		free(serviceType);
+		serviceType = NULL;
 	}
 
 	buff[0] = '\0';
 	jobAd->LookupString( ATTR_GRID_JOB_ID, buff );
 	if ( buff[0] ) {
-		const char *token;
-		MyString str = buff;
-
-		str.Tokenize();
-
-		token = str.GetNextToken( " ", false );
-		if ( !token || strcasecmp( token, "dcloud" ) ) {
-			error_string.sprintf( "%s not of type dcloud",
-								  ATTR_GRID_JOB_ID );
+		if (parse_dcloud_tokens(buff, job_id_targets) < 0) {
+			error_string.sprintf( "'%s' too many arguments", buff );
 			goto error_exit;
 		}
 
-		token = str.GetNextToken( " ", false );
-		if ( token ) {
-			SetInstanceName( token );
+		if ( !serviceType || strcasecmp( serviceType, "dcloud" )) {
+			error_string.sprintf( "%s not of type dcloud", ATTR_GRID_RESOURCE );
+			goto error_exit;
 		}
 
-		token = str.GetNextToken( " ", false );
-		if ( token ) {
-			SetInstanceId( token );
+		if ( name ) {
+			SetInstanceName( name );
+			free( name );
+		}
+		if ( id ) {
+			SetInstanceId( id );
+			free( id );
 		}
 	}
 
@@ -287,6 +307,7 @@ DCloudJob::DCloudJob( ClassAd *classad )
 	return;
 
  error_exit:
+	free(serviceType);
 	gmState = GM_HOLD;
 	if ( !error_string.IsEmpty() ) {
 		jobAd->Assign( ATTR_HOLD_REASON, error_string.Value() );
@@ -491,6 +512,15 @@ void DCloudJob::doEvaluateState()
 					}
 
 					StringList instance_attrs;
+
+                                        dprintf(D_ALWAYS, "Submitting job:\n");
+                                        dprintf(D_ALWAYS, "  username: %s\n", m_username);
+                                        dprintf(D_ALWAYS, "  password: %s\n", m_password);
+                                        dprintf(D_ALWAYS, "  image id: %s\n", m_imageId);
+                                        dprintf(D_ALWAYS, "  instance name: %s\n", m_instanceName);
+                                        dprintf(D_ALWAYS, "  realm id: %s\n", m_realmId);
+                                        dprintf(D_ALWAYS, "  hardware profile id: %s\n", m_hwpId);
+                                        dprintf(D_ALWAYS, "  keyname: %s\n", m_keyname);
 
 					rc = gahp->dcloud_submit( m_serviceUrl,
 											  m_username,
@@ -965,14 +995,47 @@ void DCloudJob::SetInstanceId( const char *instance_id )
 	SetRemoteJobId( m_instanceName, m_instanceId );
 }
 
+static char *add_escapes(const char *str)
+{
+	int len;
+	char *ret;
+	int i, j;
+
+	len = strlen(str);
+
+	// since we are only possibly adding \ characters, the most we can
+	// expand the string is by doubling it
+	ret = (char *)malloc(len * 2 + 1);
+	if (ret == NULL) {
+		dprintf(D_ALWAYS, "malloc returned NULL: Out of memory\n");
+		return NULL;
+	}
+
+	j = 0;
+	for (i = 0; i < len; i++) {
+		if (str[i] == ' ' || str[i] == '\\')
+			ret[j++] = str[i];
+		ret[j++] = str[i];
+	}
+	ret[j] = '\0';
+
+	return ret;
+}
+
 // SetRemoteJobId() is used to set the value of global variable "remoteJobID"
 void DCloudJob::SetRemoteJobId( const char *instance_name, const char *instance_id )
 {
 	MyString full_job_id;
 	if ( instance_name && instance_name[0] ) {
-		full_job_id.sprintf( "dcloud %s", instance_name );
+		char *tmp;
+
+		tmp = add_escapes(instance_name);
+		full_job_id.sprintf( "dcloud %s", tmp);
+		free(tmp);
 		if ( instance_id && instance_id[0] ) {
-			full_job_id.sprintf_cat( " %s", instance_id );
+			tmp = add_escapes(instance_id);
+			full_job_id.sprintf_cat( " %s", tmp );
+			free(tmp);
 		}
 	}
 	BaseJob::SetRemoteJobId( full_job_id.Value() );

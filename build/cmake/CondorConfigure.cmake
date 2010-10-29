@@ -1,6 +1,6 @@
 
 message(STATUS "***********************************************************")
-message(STATUS "System: ${OS_NAME}(${OS_VER}) Arch=${SYS_ARCH} BitMode=${BIT_MODE}")
+message(STATUS "System: ${OS_NAME}(${OS_VER}) Arch=${SYS_ARCH} BitMode=${BIT_MODE} BUILDID:${BUILDID}")
 message(STATUS "********* BEGINNING CONFIGURATION *********")
 
 ##################################################

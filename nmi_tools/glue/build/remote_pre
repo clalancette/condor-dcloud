@@ -75,7 +75,7 @@ if( ! $buildid ) {
     die "Can't find Condor build id in $buildid_file!\n";
 }
 print "Build id is: $buildid\n";
-$buildid = "-DBUILD_ID:STRING=$buildid ";
+$buildid = "-DBUILDID:STRING=$buildid ";
 
 ######################################################################
 # run cmake on the source tree

@@ -24,10 +24,9 @@ if (HAVE_EXT_GSOAP AND HAVE_EXT_OPENSSL AND HAVE_PTHREADS)
 	add_dependencies(gen_amazon_soapfiles gsoap)
 	add_dependencies(cp_wsseapi gsoap)
 	add_dependencies(cp_smdevp gsoap)
-	add_dependencies(patch_wsseapi gsoap)
-	
 	add_dependencies(patch_wsseapi cp_wsseapi)
-	add_dependencies(amazon_gahp gen_amazon_soapfiles cp_wsseapi patch_wsseapi cp_smdevp)
+	
+	add_dependencies(amazon_gahp gen_amazon_soapfiles patch_wsseapi cp_smdevp)
 
 	condor_exe_test(ec2_sim "ec2_sim_main.cpp;ec2_sim_impl.cpp;soapC.cpp;soapServer.cpp" "${CONDOR_TOOL_LIBS};${PCRE_FOUND};${OPENSSL_FOUND};${KRB5_FOUND};${GSOAP_FOUND};${ZLIB_FOUND}")
 

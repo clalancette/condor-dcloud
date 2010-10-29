@@ -108,6 +108,8 @@
 //#cmakedefine YYTEXT_POINTER
 //////////////////////////////////////////////////
 
+#cmakedefine BUILDID ${BUILDID}
+
 /////////////////////////////////////////
 // The following are configurable options
 // previously --enable or --with...

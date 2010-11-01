@@ -60,9 +60,7 @@ if (WITH_GSOAP)
 
 		#find gsoap and supporting bit(s)
 		find_multiple( "gsoapssl++" GSOAP_FOUND)
-		find_program( SOAPCPP2
-					  soapcpp2
-		    	      HINTS /usr/bin )
+		find_program( SOAPCPP2 soapcpp2 HINTS /usr/bin )
 
 		set ( SOAPCPP2 ${SOAPCPP2} )
 		set ( GSOAP_SHARE "/usr/share/gsoap" )
@@ -71,25 +69,21 @@ if (WITH_GSOAP)
 
 	if (GSOAP_FOUND)
 
-		# all of the madness below has to do with recent update to gsoap and
 		# removing dependencies from condor-proper.
-		find_file(SMDEVP smdevp.c HINTS ${GSOAP_SHARE}/plugin/ )
-		file(COPY ${SMDEVP} DESTINATION ${EXTERNAL_STAGE}/src/)
-		file(RENAME ${EXTERNAL_STAGE}/src/smdevp.c ${EXTERNAL_STAGE}/src/smdevp.cpp)
-		
-		find_file(WSSEAPI wsseapi.cpp HINTS ${GSOAP_SHARE}/plugin/ )
-		if (${WSSEAPI} STREQUAL "WSSEAPI_CPP-NOTFOUND" )
-		
-		  find_file(WSSEAPI wsseapi.c HINTS ${GSOAP_SHARE}/plugin/wsseapi.cpp )
-		  file(COPY ${WSSEAPI} DESTINATION ${EXTERNAL_STAGE}/src/)
-		  file(RENAME ${EXTERNAL_STAGE}/src/wsseapi.c ${EXTERNAL_STAGE}/src/wsseapi.cpp)
-		  set(WSSEAPI ${EXTERNAL_STAGE}/src/wsseapi.cpp)
-		  # now apply the patch directly
-		  exec_program(patch ${EXTERNAL_STAGE}/src
-					  ARGS -p3 <  ${CMAKE_CURRENT_SOURCE_DIR}/wsseapi.patch )
+		command_target( cp_smdevp cp "${GSOAP_SHARE}/plugin/smdevp.c;${EXTERNAL_STAGE}/src/smdevp.cpp" "smdevp.cpp" )
+		append_var (CONDOR_EXTERNALS cp_smdevp)
+		add_dependencies(cp_smdevp gsoap)
 
-		  set (PRE_WSEAPPI_CPP ON PARENT_SCOPE)
-		  
+		find_file(WSSEAPI wsseapi.cpp HINTS ${GSOAP_SHARE}/plugin/ )
+		if (${WSSEAPI} STREQUAL "WSSEAPI-NOTFOUND" )
+	
+		  command_target(cp_wsseapi cp "${GSOAP_SHARE}/plugin/wsseapi.c;${EXTERNAL_STAGE}/src/wsseapi.cpp;&&;patch;-p3;${EXTERNAL_STAGE}/src/wsseapi.cpp;${CMAKE_CURRENT_SOURCE_DIR}/wsseapi.patch" "wsseapi.cpp")
+
+		  set(WSSEAPI ${EXTERNAL_STAGE}/src/wsseapi.cpp)
+		  set(PRE_WSEAPPI_CPP ON PARENT_SCOPE)
+		  add_dependencies(cp_wsseapi gsoap)
+		  append_var (CONDOR_EXTERNALS cp_wsseapi)
+
 		endif()
 
 		

@@ -17,6 +17,10 @@
  *
  ***************************************************************/
 
+#ifdef WIN32
+#include "condor_header_features.h"
+#include "condor_sys_nt.h"
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>

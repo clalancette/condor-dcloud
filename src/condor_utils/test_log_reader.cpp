@@ -29,6 +29,9 @@
 #include "subsystem_info.h"
 #include "simple_arg.h"
 #include <stdio.h>
+#ifdef WIN32
+#include <signal.h>
+#endif
 
 static const char *	VERSION = "0.9.5";
 
@@ -630,7 +633,11 @@ ReadEvents(Options &opts, int &totalEvents)
 			if ( opts.writePersist && reader.GetFileState( state ) ) {
 				int	fd = safe_open_wrapper( opts.persistFile,
 											O_WRONLY|O_CREAT,
+#ifdef WIN32
+											_S_IWRITE);
+#else
 											S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP );
+#endif
 				if ( fd >= 0 ) {
 					if ( write( fd, state.buf, state.size ) != state.size ) {
 						fprintf( stderr, "Failed writing persistent file\n" );
@@ -650,7 +657,11 @@ ReadEvents(Options &opts, int &totalEvents)
 				printf( "\n*** Sending SIGSTOP to myself (PID %d) ***\n",
 						getpid() );
 				fflush( stdout );
+#ifdef WIN32
+				ExitProcess(SIGSTOP);
+#else
 				kill( getpid(), SIGSTOP );
+#endif
 				opts.stop--;
 				numEvents = 0;
 				printf( "\n*** Continued after stop ***\n");
@@ -693,7 +704,11 @@ ReadEvents(Options &opts, int &totalEvents)
 		fputs( "\nStoring final state...", stdout );
 		int	fd = safe_open_wrapper( opts.persistFile,
 									O_WRONLY|O_CREAT,
+#ifdef WIN32
+									_S_IWRITE);
+#else
 									S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP );
+#endif
 		if ( fd >= 0 ) {
 			if ( write( fd, state.buf, state.size ) != state.size ) {
 				fputs( "Failed writing persistent file\n", stderr );

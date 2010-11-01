@@ -20,7 +20,12 @@
 
 #include <stdio.h>
 #include <string.h>
+#ifdef WIN32
+#include <windows.h>
+__inline void sleep(unsigned __int32 seconds) { Sleep(seconds); }
+#else
 #include <unistd.h>
+#endif
 #include <stdlib.h>
 #include "chirp_client.h"
 

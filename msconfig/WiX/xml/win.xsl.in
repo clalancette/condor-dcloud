@@ -82,11 +82,18 @@
              if Not fso.FolderExists(path & "config") Then
                  Set objFolderExec = fso.CreateFolder(path & "config")
             End if
+            
+            Dim daemonList = "MASTER"
+            
+            if Session.Property("SUBMITJOBS") = "Y" Then
+              daemonList = daemonList & " SCHEDD"
+            End If
 
             Set Myfh = fso.OpenTextFile(path & "config\\local.config", 2, True)
             if Session.Property("NEWPOOL") = "Y" Then
               Myfh.WriteLine("CONDOR_HOST=$$(FULL_HOSTNAME)")
               Myfh.WriteLine("COLLECTOR_NAME=" & Session.Property("POOLNAME") )
+              daemonList = daemonList & " COLLECTOR NEGOTIATOR"
             Elseif Session.Property("NEWPOOL") = "N" THEN
               Myfh.WriteLine("CONDOR_HOST=" & Session.Property("POOLHOSTNAME") )
             End If
@@ -103,12 +110,14 @@
               Myfh.WriteLine("WANT_SUSPEND=FALSE")
               Myfh.WriteLine("WANT_VACATE=FALSE")
               Myfh.WriteLine("PREEMPT=FALSE")
+              daemonList = daemonList & " STARTD KBDD"
             Case "N"
               Myfh.WriteLine("START=FALSE")
             Case "I"
               Myfh.WriteLine("START=KeyboardIdle > $$(StartIdleTime)" )
               Myfh.WriteLine("SUSPEND=$$(UWCS_SUSPEND)")
               Myfh.WriteLine("CONTINUE=KeyboardIdle > $$(ContinueIdleTime)" )
+              daemonList = daemonList & " STARTD KBDD"
             Case "C"
               Myfh.WriteLine("START=$$(UWCS_START)" )
               Myfh.WriteLine("CONTINUE=$$(UWCS_CONTINUE)")
@@ -116,6 +125,7 @@
               Myfh.WriteLine("WANT_SUSPEND=$$(UWCS_WANT_SUSPEND)" )
               Myfh.WriteLine("WANT_VACATE=$$(UWCS_WANT_VACATE)" )
               Myfh.WriteLine("WANT_PREEMPT=$$(UWCS_WANT_PREEMPT)" )
+              daemonList = daemonList & " STARTD KBDD"
             End Select
             Select Case Session.Property("VACATEJOBS")
             Case "N"
@@ -125,7 +135,10 @@
               Myfh.WriteLine("WANT_VACATE=$$(UWCS_WANT_VACATE)")
               Myfh.WriteLine("WANT_SUSPEND=$$(UWCS_WANT_SUSPEND)")
             End Select
-            Myfh.Close
+            
+            Myfh.WriteLine("ALLOW_READ=" & Session.Property("HOSTALLOWREAD") )
+            Myfh.WriteLine("ALLOW_WRITE=" & Session.Property("HOSTALLOWWRITE") )
+            Myfh.WriteLine("ALLOW_ADMINISTRATOR=" & Session.Property("HOSTALLOWADMINISTRATOR") )
             
             If Session.Property("USEVMUNIVERSE") = "Y" Then
               Set VMfh = fso.OpenTextFile(path & "config\\vm.config", 2, True)
@@ -162,6 +175,9 @@
               HDFSfh.WriteLine("HDFS_DATANODE_DIR=" & Session.Property("HDFSDATADIR") )
               HDFSfh.Close
             End if
+            
+            Myfh.WriteLine("DAEMON_LIST=" & daemonList)
+            Myfh.Close
            ]]>
         </CustomAction>
 

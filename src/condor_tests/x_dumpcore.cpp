@@ -29,7 +29,9 @@ int main( int argc, char **argv )
 	space = (char *) malloc(600000);
 
 	/* try a couple of different ways to dump core. */
+#ifndef WIN32
 	dumpnow = 7 / 0;
+#endif
 	*null = '\0';
 
 	return 0;

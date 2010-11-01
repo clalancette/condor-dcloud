@@ -23,6 +23,37 @@
 #include "generic_query.h"
 #include "condor_query.h"
 
+#ifdef WIN32
+Daemon::Daemon( daemon_t type, const char* name, const char* pool)
+{
+}
+Daemon::~Daemon(void)
+{
+}
+
+bool Daemon::locate()
+{
+	return false;
+}
+
+Sock*
+Daemon::startCommand( int cmd, Stream::stream_type st, int timeout, CondorError* errstack, char const *cmd_description, bool raw_protocol, char const *sec_session_id )
+{
+	return NULL;
+}
+
+SecMan::SecMan(int)
+{
+}
+
+SecMan::~SecMan()
+{
+}
+
+int addCredential( const char* user, const char* pw, Daemon *d ) {
+	return 0;	
+}
+#endif
 /* This file contains various stub functions or small implementation of other
 	functions. The purpose of this is to break edges in a nasty dependency
 	graph between our .o files so we are able to release the user log API
@@ -123,7 +154,7 @@ int param_integer(const char *, int default_value, int, int, bool)
 	return default_value;
 }
 
-bool param_boolean( const char *, const bool default_value, bool, 
+bool param_boolean( const char *, bool default_value, bool, 
 	ClassAd *, ClassAd *, bool)
 {
 	return default_value;

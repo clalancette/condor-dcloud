@@ -53,7 +53,7 @@ if (WITH_GSOAP)
 			set(SOAPCPP2 "${EXTERNAL_STAGE}/soapcpp2.exe")
 		endif(NOT WINDOWS)
 
-		set ( GSOAP_SHARE "${EXTERNAL_BUILD_PREFIX}/${GSOAP_VER}/src/gsoap/${GSOAP_VER}/gsoap" )		
+		set ( GSOAP_SHARE "${EXTERNAL_BUILD_PREFIX}/${GSOAP_VER}/src/gsoap/${GSOAP_VER}/gsoap" )
 		append_var (CONDOR_EXTERNALS gsoap)
 
 	else( NOT PROPER )
@@ -70,7 +70,28 @@ if (WITH_GSOAP)
 	endif( NOT PROPER )
 
 	if (GSOAP_FOUND)
-		message ( STATUS "external configured (GSOAP_FOUND=${GSOAP_FOUND})" )
+
+		# all of the madness below has to do with recent update to gsoap and
+		# removing dependencies from condor-proper.
+		find_file(SMDEVP smdevp.c HINTS ${GSOAP_SHARE}/plugin/ )
+		file(COPY ${SMDEVP} DESTINATION ${EXTERNAL_STAGE}/src/)
+		file(RENAME ${EXTERNAL_STAGE}/src/smdevp.c ${EXTERNAL_STAGE}/src/smdevp.cpp)
+		
+		find_file(WSSEAPI wsseapi.cpp HINTS ${GSOAP_SHARE}/plugin/ )
+		if (${WSSEAPI} STREQUAL "WSSEAPI_CPP-NOTFOUND" )
+		
+		  find_file(WSSEAPI wsseapi.c HINTS ${GSOAP_SHARE}/plugin/wsseapi.cpp )
+		  file(COPY ${WSSEAPI} DESTINATION ${EXTERNAL_STAGE}/src/)
+		  file(RENAME ${EXTERNAL_STAGE}/src/wsseapi.c ${EXTERNAL_STAGE}/src/wsseapi.cpp)
+		  set(WSSEAPI ${EXTERNAL_STAGE}/src/wsseapi.cpp)
+		  # now apply the patch directly
+		  exec_program(patch ${EXTERNAL_STAGE}/src
+					  ARGS -p3 <  ${CMAKE_CURRENT_SOURCE_DIR}/wsseapi.patch )
+
+		  set (PRE_WSEAPPI_CPP ON PARENT_SCOPE)
+		  
+		endif()
+
 		
 		if (NOT WINDOWS)
 			set( GSOAP_FOUND ${GSOAP_FOUND} PARENT_SCOPE )
@@ -78,7 +99,11 @@ if (WITH_GSOAP)
 		
 		set( SOAPCPP2 ${SOAPCPP2} PARENT_SCOPE )
 		set( GSOAP_SHARE ${GSOAP_SHARE} PARENT_SCOPE )
+		set( WSSEAPI ${WSSEAPI} PARENT_SCOPE )
+		set( SMDEVP  ${EXTERNAL_STAGE}/src/smdevp.cpp PARENT_SCOPE )
 		set( HAVE_EXT_GSOAP ON PARENT_SCOPE )
+
+		message ( STATUS "external configured (GSOAP_FOUND=${GSOAP_FOUND})" )
 
 	endif (GSOAP_FOUND)
 

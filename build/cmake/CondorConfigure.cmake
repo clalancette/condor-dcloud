@@ -287,7 +287,8 @@ file (MAKE_DIRECTORY ${EXTERNAL_DL}
 	${EXTERNAL_STAGE}/include
 	${EXTERNAL_STAGE}/lib
 	${EXTERNAL_STAGE}/lib64
-	${EXTERNAL_STAGE}/opt )
+	${EXTERNAL_STAGE}/opt
+	${EXTERNAL_STAGE}/src )
 
 include_directories( ${EXTERNAL_STAGE}/include )
 link_directories( ${EXTERNAL_STAGE}/lib ${EXTERNAL_STAGE}/lib64 )

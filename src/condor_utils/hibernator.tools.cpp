@@ -147,7 +147,7 @@ void UserDefinedToolsHibernator::configure ()
 				argument list */
 			name.sprintf ( 
 				"%s_USER_%s_ARGS", 
-				m_keyword,
+				m_keyword.Value(),
 				description );
 
 			/** Grab the command's arguments */
@@ -167,7 +167,7 @@ void UserDefinedToolsHibernator::configure ()
 						"UserDefinedToolsHibernator::configure: failed "
 						"to parse the tool arguments defined in the "
 						"configuration file: %s\n",
-						error );
+						error.Value() );
 
 				}
 

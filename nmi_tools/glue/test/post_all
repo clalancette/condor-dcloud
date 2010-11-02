@@ -18,24 +18,5 @@
 ##
 ##**************************************************************
 
-
-##################################################################
-# We do not need to hang on to the source tarball
-##################################################################
-
-my $vers_file = "CONDOR-VERSION";
-print "Finding version of Condor\n";
-open( VERS, "$vers_file" ) || die "Can't open $vers_file: $!\n";
-while( <VERS> ) {
-    chomp;
-    $vers = $_;
-}
-close( VERS );
-if( ! $vers ) {
-    die "Can't find Condor version in $vers_file!\n";
-}
-print "Condor version: $vers\n";
-$src_file = "condor-$vers.tar.gz";
-system("rm -f $src_file");
-
+print "Done!"
 exit(0);

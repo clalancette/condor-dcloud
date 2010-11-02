@@ -55,7 +55,6 @@ if( ! $fulltestname ) {
 }
 
 my $BaseDir = $ENV{BASE_DIR} || c_die("BASE_DIR is not in environment!\n");
-my $SrcDir = $ENV{SRC_DIR} || c_die("SRC_DIR is not in environment!\n");
 my $testdir = "condor_tests";
 
 # iterations have numbers placed at the end of the name
@@ -89,78 +88,23 @@ print "testname is $testname\n";
 if( !($ENV{NMI_PLATFORM} =~ /winnt/) ) {
     if( $compiler ) {
         print "compiler is $compiler\n";
-        $targetdir = "$SrcDir/$testdir/$compiler";
+        $targetdir = "$BaseDir/$testdir/$compiler";
     } else {
         $compiler = ".";
-        $targetdir = "$SrcDir/$testdir";
+        $targetdir = "$BaseDir/$testdir";
     }
 } else {
     $compiler = ".";
-    $targetdir = "$SrcDir/$testdir";
+    $targetdir = "$BaseDir/$testdir";
 }
-
-
-######################################################################
-# build the test
-######################################################################
-
-chdir( "$targetdir" ) || c_die("Can't chdir($targetdir): $!\n");
-
-if( !($ENV{NMI_PLATFORM} =~ /winnt/)) {
-    print "Attempting to build test in: $targetdir\n";
-    print "Invoking \"make $testname\"\n";
-    open( TESTBUILD, "make $testname 2>&1 |" ) || 
-        c_die("Can't run make $testname\n");
-    while( <TESTBUILD> ) {
-        print $_;
-    }
-    close( TESTBUILD );
-    $buildstatus = $?;
-    print "BUILD TEST for $testname returned $buildstatus\n";
-    if( $buildstatus != 0 ) {
-        print "Build failed for $testname\n";
-		# add it to the failed tests summary file....
-		# we do that by continueing......
-    }
-}
-
 
 ######################################################################
 # run the test using batch_test.pl
 ######################################################################
 
 print "RUNNING $testinfo\n";
-chdir("$SrcDir/$testdir") || c_die("Can't chdir($SrcDir/$testdir): $!\n");
+chdir("$BaseDir/$testdir") || c_die("Can't chdir($BaseDir/$testdir): $!\n");
 
-if( !($ENV{NMI_PLATFORM} =~ /winnt/) ) {
-    system( "make batch_test.pl" );
-    if( $? >> 8 ) {
-        c_die("Can't build batch_test.pl\n");
-    }
-    system( "make CondorTest.pm" );
-    if( $? >> 8 ) {
-        c_die("Can't build CondorTest.pm\n");
-    }
-    system( "make Condor.pm" );
-    if( $? >> 8 ) {
-        c_die("Can't build Condor.pm\n");
-    }
-    system( "make CondorPersonal.pm" );
-    if( $? >> 8 ) {
-        c_die("Can't build CondorPersonal.pm\n");
-    }
-    system( "make CondorUtils.pm" );
-    if( $? >> 8 ) {
-        c_die("Can't build CondorUtils.pm\n");
-    }
-} else {
-    my $scriptdir = $SrcDir . "/condor_scripts";
-    copy_file("$scriptdir/batch_test.pl", "batch_test.pl");
-    copy_file("$scriptdir/Condor.pm", "Condor.pm");
-    copy_file("$scriptdir/CondorTest.pm", "CondorTest.pm");
-    copy_file("$scriptdir/CondorPersonal.pm", "CondorPersonal.pm");
-    copy_file("$scriptdir/CondorUtils.pm", "CondorUtils.pm");
-}
 print "About to run batch_test.pl\n";
 
 # -b means build & test and ensures the first time that
@@ -181,15 +125,15 @@ if( $batchteststatus != 0 ) {
 # print output from .run script to stdout of this task, and final exit
 ######################################################################
 
-chdir( "$SrcDir/$testdir/$compiler" ) || 
-  c_die("Can't chdir($SrcDir/$testdir/$compiler): $!\n");
-$local_out = "$SrcDir/$testdir/TestingPersonalCondor/condor_config.local";
+chdir( "$BaseDir/$testdir/$compiler" ) ||
+  c_die("Can't chdir($BaseDir/$testdir/$compiler): $!\n");
+$local_out = "$BaseDir/$testdir/TestingPersonalCondor/condor_config.local";
 $run_out = "$testname.run.out";
-$run_out_full = "$SrcDir/$testdir/$compiler/$run_out";
+$run_out_full = "$BaseDir/$testdir/$compiler/$run_out";
 $test_out = "$testname.out";
-$test_out_full = "$SrcDir/$testdir/$compiler/$test_out";
+$test_out_full = "$BaseDir/$testdir/$compiler/$test_out";
 $test_err = "$testname.err";
-$test_err_full = "$SrcDir/$testdir/$compiler/$test_err";
+$test_err_full = "$BaseDir/$testdir/$compiler/$test_err";
 
 if( ! -f $run_out_full ) {
     if( $teststatus == 0 ) {
@@ -254,20 +198,9 @@ if( open(RES, "<$local_out") ) {
 
 exit $teststatus;
 
-
 ######################################################################
 # helper methods
 ######################################################################
-
-sub copy_file {
-    my( $src, $dest ) = @_;
-    copy($src, $dest);
-    if( $? >> 8 ) {
-        print "Can't copy $src to $dest: $!\n";
-    } else {
-        print "Copied $src to $dest\n";
-    }
-}
 
 sub c_die {
     my( $msg ) = @_;

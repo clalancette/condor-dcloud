@@ -26,7 +26,6 @@
 use File::Copy;
 
 my $BaseDir = $ENV{BASE_DIR} || die "BASE_DIR not in environment!\n";
-my $SrcDir = $ENV{SRC_DIR} || die "SRC_DIR not in environment!\n";
 my $testdir = "condor_tests";
 my $exit_status = 0;
 
@@ -48,17 +47,17 @@ if( defined $ENV{_NMI_STEP_FAILED} ) {
 
 print "Seeing if personal condor needs killing\n";
 
-if( -f "$SrcDir/condor_tests/TestingPersonalCondor/local/log/.scheduler_address" ) {
+if( -f "$BaseDir/condor_tests/TestingPersonalCondor/local/log/.scheduler_address" ) {
     #  Came up and had a scheduler running. good
-	$ENV{"CONDOR_CONFIG"} = "$SrcDir/condor_tests/TestingPersonalCondor/condor_config";
+	$ENV{"CONDOR_CONFIG"} = "$BaseDir/condor_tests/TestingPersonalCondor/condor_config";
 	if( defined $ENV{_NMI_STEP_FAILED} ) { 
-		print "not calling condor_off for $SrcDir/condor_tests/TestingPersonalCondor/condor_config\n";
+		print "not calling condor_off for $BaseDir/condor_tests/TestingPersonalCondor/condor_config\n";
 	} else {
-		print "calling condor_off for $SrcDir/condor_tests/TestingPersonalCondor/condor_config\n";
+		print "calling condor_off for $BaseDir/condor_tests/TestingPersonalCondor/condor_config\n";
 		system("$BaseDir/userdir/condor/sbin/condor_off -master");
 		# give some time for condor to shutdown
 		sleep(30);
-		print "done calling condor_off for $SrcDir/condor_tests/TestingPersonalCondor/condor_config\n";
+		print "done calling condor_off for $BaseDir/condor_tests/TestingPersonalCondor/condor_config\n";
 	}
 } else {
     # if there's no pid_file, there must be no personal condor running
@@ -98,7 +97,7 @@ chdir("$BaseDir") || die "Can't chdir($BaseDir): $!\n";
 $results = "results.tar.gz";
 print "Tarring up all results\n";
 chdir("$BaseDir") || die "Can't chdir($BaseDir): $!\n";
-system( "tar zcf $results --exclude *.exe src/condor_tests local" );
+system( "tar zcf $results --exclude *.exe $BaseDir/condor_tests local" );
 # don't care if condor is still running or sockets
 # are being skipped. Save what we can and don't bitch
 #if( $? >> 8 ) {

@@ -74,8 +74,8 @@ print "Preparing input test job in $BaseDir\n";
 ######################################################################
 if(!(-f $extractdone)) {
 	print "Searching in results.tar.gz for binaries\n";
-	open( LTAR, "tar -xvzf $results '*/condor-*.tar.*' |" ) ||
-    	die "Can't open tar -xzvf $results '*/condor-*.tar.*' : $!\n";
+	open( LTAR, "tar -xvzf $results |" ) ||
+    	die "Can't open tar -xzvf $results : $!\n";
 	my $saved_tarball;
 	while( <LTAR> ) {
     	chomp;

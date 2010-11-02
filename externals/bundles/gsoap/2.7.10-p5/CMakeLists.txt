@@ -69,32 +69,34 @@ if (WITH_GSOAP)
 
 	if (GSOAP_FOUND)
 
-		# removing dependencies from condor-proper.
-		command_target( cp_smdevp cp "${GSOAP_SHARE}/plugin/smdevp.c;${EXTERNAL_STAGE}/src/smdevp.cpp" "smdevp.cpp" )
-		append_var (CONDOR_EXTERNALS cp_smdevp)
-		add_dependencies(cp_smdevp gsoap)
-
-		find_file(WSSEAPI wsseapi.cpp HINTS ${GSOAP_SHARE}/plugin/ )
-		if (${WSSEAPI} STREQUAL "WSSEAPI-NOTFOUND" )
-	
-		  command_target(cp_wsseapi cp "${GSOAP_SHARE}/plugin/wsseapi.c;${EXTERNAL_STAGE}/src/wsseapi.cpp;&&;patch;-p3;${EXTERNAL_STAGE}/src/wsseapi.cpp;${CMAKE_CURRENT_SOURCE_DIR}/wsseapi.patch" "wsseapi.cpp")
-
-		  set(WSSEAPI ${EXTERNAL_STAGE}/src/wsseapi.cpp)
-		  set(PRE_WSEAPPI_CPP ON PARENT_SCOPE)
-		  add_dependencies(cp_wsseapi gsoap)
-		  append_var (CONDOR_EXTERNALS cp_wsseapi)
-
-		endif()
-
-		
 		if (NOT WINDOWS)
+		
 			set( GSOAP_FOUND ${GSOAP_FOUND} PARENT_SCOPE )
+
+			# removing dependencies from condor-proper.
+			command_target( cp_smdevp cp "${GSOAP_SHARE}/plugin/smdevp.c;${EXTERNAL_STAGE}/src/smdevp.cpp" "smdevp.cpp" )
+			append_var (CONDOR_EXTERNALS cp_smdevp)
+			add_dependencies(cp_smdevp gsoap)
+
+			find_file(WSSEAPI wsseapi.cpp HINTS ${GSOAP_SHARE}/plugin/ )
+			if (${WSSEAPI} STREQUAL "WSSEAPI-NOTFOUND" )
+
+			  command_target(cp_wsseapi cp "${GSOAP_SHARE}/plugin/wsseapi.c;${EXTERNAL_STAGE}/src/wsseapi.cpp;&&;patch;-p3;${EXTERNAL_STAGE}/src/wsseapi.cpp;${CMAKE_CURRENT_SOURCE_DIR}/wsseapi.patch" "wsseapi.cpp")
+
+			  set(WSSEAPI ${EXTERNAL_STAGE}/src/wsseapi.cpp)
+			  set(PRE_WSEAPPI_CPP ON PARENT_SCOPE)
+			  add_dependencies(cp_wsseapi gsoap)
+			  append_var (CONDOR_EXTERNALS cp_wsseapi)
+
+			endif()
+
+			set( WSSEAPI ${WSSEAPI} PARENT_SCOPE )
+			set( SMDEVP  ${EXTERNAL_STAGE}/src/smdevp.cpp PARENT_SCOPE )
+		
 		endif(NOT WINDOWS)
 		
 		set( SOAPCPP2 ${SOAPCPP2} PARENT_SCOPE )
 		set( GSOAP_SHARE ${GSOAP_SHARE} PARENT_SCOPE )
-		set( WSSEAPI ${WSSEAPI} PARENT_SCOPE )
-		set( SMDEVP  ${EXTERNAL_STAGE}/src/smdevp.cpp PARENT_SCOPE )
 		set( HAVE_EXT_GSOAP ON PARENT_SCOPE )
 
 		message ( STATUS "external configured (GSOAP_FOUND=${GSOAP_FOUND})" )

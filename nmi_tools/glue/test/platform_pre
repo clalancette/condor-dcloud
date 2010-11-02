@@ -66,7 +66,7 @@ my $results = "results.tar.gz";
 #    exit 0;
 #}
 
-my $testbin = "public/condor_tests";
+my $testbin = "public/condor_*";
 print "Preparing input test job in $BaseDir\n";
 
 ######################################################################

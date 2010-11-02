@@ -75,7 +75,10 @@ else
 }
 
 system("cmake -E md5sum $pub_dir/* md5s.txt");
+
+# copy all the bits in which are required to run batch_test (omg what a cf) 
 system("cp -r $SrcDir/condor_tests $pub_dir");
+system("cp -r $SrcDir/condor_examples $pub_dir");
 
 ######################################################################
 # tar up build results

@@ -31,7 +31,6 @@ use File::Copy;
 $|=1;
 
 my $BaseDir = $ENV{BASE_DIR} || die "BASE_DIR not in environment!\n";
-my $SrcDir = $ENV{SRC_DIR} || die "SRC_DIR not in environment!\n";
 
 my $logsize = "50000000"; # size for logs of personal Condor
 
@@ -73,72 +72,28 @@ print "Untarring $release_tarball ...\n";
 system("tar -xzvf $release_tarball" ) && die "Can't untar $release_tarball: $!\n";
 print "Untarred $release_tarball ...\n";
 
-
-######################################################################
-# move prebuilt test programs into the source tree to their normal
-# location. "src/testbin_dir"
-######################################################################
-
-$testdir = "$BaseDir/testbin/testbin_dir";
-if( !($ENV{NMI_PLATFORM} =~ /winnt/) ) {
-	system("mv $testdir $SrcDir");
-	if( $? ) {
-    	die "Problem moving pre-built test programs: $?\n";
-	}
-}
-
 ######################################################################
 # setup the personal condor
 ######################################################################
 
 if( !($ENV{NMI_PLATFORM} =~ /winnt/) ) {
 	# New improved way to find the version for unix releases
-	$release_tarball =~ /condor-(\d+)\.(\d+)\.(\d+)-.*/; 
-	$version = "condor-$1.$2.$3";
+	$release_tarball =~ /condor-(\d+)\.(\d+)\.(\d+)-(\w+)-(\w+).*/;
+	$version = "condor-$1.$2.$3-$4-$5";
 	print "VERSION string is $version\n";
 } else {
-	my $vers_file = "CONDOR-VERSION";
-
-	print "Finding version of Condor\n";
-	open( VERS, "$vers_file" ) || die "Can't open $vers_file: $!\n";
-	while( <VERS> ) {
-		chomp;
-		$version = $_;
-	}
-	$version = "condor-" . $version;
-	close( VERS );
-	if( ! $version ) {
-		die "Can't find Condor version in $vers_file!\n";
-	}
+	die "Your tarball does not match condor-X-Y-Z!\n";
 }
 
 print "Condor version: $version\n";
 
 print "SETTING UP PERSONAL CONDOR\n";
 
+# I'm not 100% certain wtf this actually does. 
 if( !($ENV{NMI_PLATFORM} =~ /winnt/) ) {
-	# we use condor configure under unix
-	my $configure = "$BaseDir/$version/condor_configure";
 
 	mkdir( "$BaseDir/local", 0777 ) || die "Can't mkdir $BaseDir/local: $!\n";
-	mkdir( "$BaseDir/condor", 0777 ) || die "Can't mkdir $BaseDir/condor: $!\n";
 
-	my $release = "$BaseDir/$version";
-
-	print "RUNNING condor_configure\n";
-
-	$configure_cmd="$configure --make-personal-condor --local-dir=$BaseDir/local --install=$release --install-dir=$BaseDir/condor --verbose";
-	open( CONF, "$configure_cmd|" ) || 
-    	die "Can't open $configure as a pipe: $!\n";
-	while( <CONF> ) {
-    	print;
-	}
-	close( CONF );
-	if( $? ) {
-    	die "Problem installing Personal Condor: condor_configured returned $?\n";
-	}
-	print "condor_configure completed successfully\n";
-	
 } else {
 	# windows personal condor setup
 
@@ -147,12 +102,14 @@ if( !($ENV{NMI_PLATFORM} =~ /winnt/) ) {
 	mkdir( "local/execute", 0777 ) || die "Can't mkdir $BaseDir/local/execute: $!\n";
 	mkdir( "local/log", 0777 ) || die "Can't mkdir $BaseDir/local/log: $!\n";
 
-	# public contains bin, lib, etc... ;) 
-	system("mv public condor");
+	# public contains bin, lib, etc... ;)
+	# system("mv public condor");
 
 	$Win32BaseDir = $ENV{WIN32_BASE_DIR} || die "WIN32_BASE_DIR not in environment!\n";
 
 }
+
+system("mv $BaseDir/$version $BaseDir/condor" );
 
 ######################################################################
 # Remove leftovers from extracting built binaries.
@@ -161,65 +118,6 @@ if( !($ENV{NMI_PLATFORM} =~ /winnt/) ) {
 print "Removing $version tar file and extraction\n";
 system("rm -rf $version*");
 
-######################################################################
-# setup the src tree so the test suite finds condor_compile and its
-# other dependencies.  we do this by setting up a "release_dir" that
-# just contains symlinks to everything in the pre-built release
-# directory (what we unpacked into "$BaseDir/condor").
-######################################################################
-
-if( !($ENV{NMI_PLATFORM} =~ /winnt/) ) {
-	# save the configure.cf command for platform refernces to defines(bt)
-	$configuresaveloc = "$SrcDir/condor_tests/configure_out";
-	mkdir(  $configuresaveloc, 0777 ) || die "Can't mkdir($configuresaveloc): $!\n";
-	
-	safe_copy("config/configure.cf","$configuresaveloc");
-	safe_copy("config/externals.cf","$configuresaveloc");
-	safe_copy("config/config.sh","$configuresaveloc");
-	safe_copy("$SrcDir/config.h","$configuresaveloc");
-	safe_copy("$SrcDir/configure.ac","$configuresaveloc");
-	print "************************* configure.cf says.. ***************************\n";
-	system("cat config/configure.cf");
-	print "************************* configure.cf DONE.. ***************************\n";
-	print "************************* config.h says.. ***************************\n";
-	system("cat $SrcDir/config.h");
-	print "************************* config.h DONE.. ***************************\n";
-
-	chdir( "$SrcDir" ) || die "Can't chdir($SrcDir): $!\n";
-	mkdir( "$SrcDir/release_dir", 0777 );  # don't die, it might already exist...
-	-d "$SrcDir/release_dir" || die "$SrcDir/release_dir does not exist!\n";
-	chdir( "$SrcDir/release_dir" ) || die "Can't chdir($SrcDir/release_dir): $!\n";
-	opendir( DIR, "$BaseDir/condor" ) ||
-	die "can't opendir $BaseDir/condor for release_dir symlinks: $!\n";
-	@files = readdir(DIR);
-	closedir DIR;
-	foreach $file ( @files ) {
-		if( $file =~ /\.(\.)?/ ) {
-			next;
-		}
-		symlink( "$BaseDir/condor/$file", "$file" ) ||
-			die "Can't symlink($BaseDir/condor/$file): $!\n";
-	}
-}
-
-# this is a little weird, but so long as we've still got the OWO test
-# suites to support with our build system, Imake is going to have the
-# path to condor_compile hard-coded to find it in condor_scripts.  so,
-# we'll leave this cruft here to manually remove the old copy and add
-# a symlink to the one in our pre-built tarball.  whenever we remove
-# the OWO, condor_test_suite_C.V5 and friends, we can rip this out,
-# and change the definition of the "CONDOR_COMPILE" macro in
-# Imake.rules to point somewhere else (if we want).
-
-if( !($ENV{NMI_PLATFORM} =~ /winnt/) ) {
-	chdir( "$SrcDir/condor_scripts" ) || 
-	die "Can't chdir($SrcDir/condor_scripts): $!\n";
-	unlink( "condor_compile" ) || die "Can't unlink(condor_compile): $!\n";
-	symlink( "$BaseDir/condor/bin/condor_compile", "condor_compile" ) ||
-	die "Can't symlink($BaseDir/condor/lib/condor_compile): $!\n";
-}
-
-
 my $OldPath = $ENV{PATH} || die "PATH not in environment!\n";
 my $NewPath = "$BaseDir/condor/sbin:" . "$BaseDir/condor/bin:" . $OldPath;
 $ENV{PATH} = $NewPath;
@@ -227,33 +125,15 @@ $ENV{PATH} = $NewPath;
 # -p means  just set up the personal condor for the test run
 # move into the condor_tests directory first
 
-chdir( "$SrcDir/condor_tests" ) ||
-    die "Can't chdir($SrcDir/condor_tests for personal condor setup): $!\n";
+chdir( "$BaseDir/condor_tests" ) ||
+    die "Can't chdir($BaseDir/condor_tests for personal condor setup): $!\n";
 
 if( !($ENV{NMI_PLATFORM} =~ /winnt/) ) {
-    system( "make batch_test.pl" );
-    if( $? >> 8 ) {
-        c_die("Can't build batch_test.pl\n");
-    }
-    system( "make CondorTest.pm" );
-    if( $? >> 8 ) {
-        c_die("Can't build CondorTest.pm\n");
-    }
-    system( "make Condor.pm" );
-    if( $? >> 8 ) {
-        c_die("Can't build Condor.pm\n");
-    }
-    system( "make CondorPersonal.pm" );
-    if( $? >> 8 ) {
-        c_die("Can't build CondorPersonal.pm\n");
-    }
-    system( "make CondorUtils.pm" );
-    if( $? >> 8 ) {
-        c_die("Can't build CondorUtils.pm\n");
-    }
-	print "About to run batch_test.pl -p\n";
 
-	system("perl $SrcDir/condor_scripts/batch_test.pl -p");
+	print "About to run batch_test.pl --debug -p\n";
+	#system("env");
+
+	system("perl $BaseDir/condor_tests/batch_test.pl --debug -p");
 	$batchteststatus = $?;
 
 	# figure out here if the setup passed or failed.
@@ -261,6 +141,7 @@ if( !($ENV{NMI_PLATFORM} =~ /winnt/) ) {
     	exit 2;
 	}
 } else {
+	system("set");
 	# do not do a pre-setup yet in remote_pre till fixed
     #my $scriptdir = $SrcDir . "/condor_scripts";
     #copy_file("$scriptdir/batch_test.pl", "batch_test.pl");
@@ -269,25 +150,25 @@ if( !($ENV{NMI_PLATFORM} =~ /winnt/) ) {
     #copy_file("$scriptdir/CondorPersonal.pm", "CondorPersonal.pm");
 }
 
-sub copy_file {
-    my( $src, $dest ) = @_;
-    copy($src, $dest);
-    if( $? >> 8 ) {
-        print "Can't copy $src to $dest: $!\n";
-    } else {
-        print "Copied $src to $dest\n";
-    }
-}
-
-sub safe_copy {
-    my( $src, $dest ) = @_;
-	copy($src, $dest);
-	if( $? >> 8 ) {
-		print "Can't copy $src to $dest: $!\n";
-		return 0;
-    } else {
-		print "Copied $src to $dest\n";
-		return 1;
-    }
-}
-
+# sub copy_file {
+#     my( $src, $dest ) = @_;
+#     copy($src, $dest);
+#     if( $? >> 8 ) {
+#         print "Can't copy $src to $dest: $!\n";
+#     } else {
+#         print "Copied $src to $dest\n";
+#     }
+# }
+# 
+# sub safe_copy {
+#     my( $src, $dest ) = @_;
+# 	copy($src, $dest);
+# 	if( $? >> 8 ) {
+# 		print "Can't copy $src to $dest: $!\n";
+# 		return 0;
+#     } else {
+# 		print "Copied $src to $dest\n";
+# 		return 1;
+#     }
+# }
+# 

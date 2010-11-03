@@ -104,7 +104,10 @@ elseif ( ${OS_NAME} MATCHES "WIN" )
 	set (CPACK_PACKAGE_INSTALL_DIRECTORY "${CONDOR_VER}")
 	set (CPACK_PACKAGE_FILE_NAME "${CONDOR_VER}")
 	set (CPACK_PACKAGE_INSTALL_REGISTRY_KEY "${CONDOR_VER}")
-	set (CPACK_PACKAGE_ICON ${CONDOR_WIX_LOC}/Bitmaps/dlgbmp.bmp) # A branding image that will be displayed inside the installer.
+
+	# branding and licensing
+	set (CPACK_PACKAGE_ICON ${CONDOR_WIX_LOC}/Bitmaps/dlgbmp.bmp) 
+	set (CPACK_RESOURCE_FILE_LICENSE "${CONDOR_SOURCE_DIR}/msconfig/license.rtf")
 
 	set (CPACK_GENERATOR "WIX;ZIP")
 	set (CPACK_WIX_PRODUCT_GUID "ea9608e1-9a9d-4678-800c-645df677094a")

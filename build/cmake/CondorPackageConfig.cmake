@@ -83,11 +83,14 @@ set( C_LOCK_DIR		var/lock/condor )
 set( C_RUN_DIR		var/run/condor )
 # NOTE: any RPATH should use these variables + PREFIX for location
 
+# set a default generator
+set ( CPACK_GENERATOR "TGZ" )
+
 #this needs to be evaluated in order due to WIN collision.
 if(${OS_NAME} STREQUAL "DARWIN")
-	# whatever .dmg is..
-	set ( CPACK_GENERATOR "STGZ" ) #PackageMaker;
-	#set (CPACK_OSX_PACKAGE_VERSION)
+	# enable if we desire native packaging.
+	# set ( CPACK_GENERATOR "${CPACK_GENERATOR};PackageMaker" ) ;
+	# set (CPACK_OSX_PACKAGE_VERSION)
 elseif ( ${OS_NAME} MATCHES "WIN" )
 
 	# override for windows.
@@ -265,10 +268,6 @@ elseif( ${OS_NAME} STREQUAL "LINUX" AND CONDOR_PACKAGE_BUILD )
 			DESTINATION	"${C_INCLUDE}")
 	install(DIRECTORY	temp
 			DESTINATION	"${C_LIB}")
-
-else()
-
-	set ( CPACK_GENERATOR "TGZ" )
 
 endif()
 

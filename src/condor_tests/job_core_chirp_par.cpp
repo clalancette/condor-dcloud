@@ -22,7 +22,7 @@
 #include <string.h>
 #ifdef WIN32
 #include <windows.h>
-__inline void sleep(unsigned __int32 seconds) { Sleep(seconds); }
+__inline void sleep(unsigned __int32 milliseconds) { Sleep(milliseconds * 1000); }
 #else
 #include <unistd.h>
 #endif

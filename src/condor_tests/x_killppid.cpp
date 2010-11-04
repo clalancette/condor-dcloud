@@ -31,11 +31,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef WIN32
-#define INITIAL_SIZE    40960L    // init. size for getting pDataBlock
-#define EXTEND_SIZE	     4096L    // incremental addition to pDataBlock
-#endif
-
 int main(int argc, char ** argv)
 {
 	char * killsig;

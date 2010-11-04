@@ -58,9 +58,6 @@ int main(int argc, char ** argv)
 
 	printf("args in for x_killppid is %d\n",argc);
 	printf("Kill signal is %s\n",argv[1]);
-#ifdef WIN32
-	parentpid = cSysInfo.GetParentPID(GetCurrentProcessId());
-#else
 
 	if(!strcasecmp(killsig,"KILL")) {
 		mykillsig = SIGKILL;
@@ -71,22 +68,14 @@ int main(int argc, char ** argv)
 	} else if(!strcasecmp(killsig,"ABRT")) {
 		mykillsig = SIGABRT;
 	}
-
+#ifdef WIN32
+	parentpid = cSysInfo.GetParentPID(GetCurrentProcessId());
+#else
 	parentpid = getppid();
 #endif
 
 	printf("Parent pid is %d\n",parentpid);
 #ifdef WIN32
-
-	if(!strcasecmp(killsig,"KILL")) {
-		mykillsig = SIGKILL;
-	} else if(!strcasecmp(killsig,"TERM")) {
-		mykillsig = SIGTERM;
-	} else if(!strcasecmp(killsig,"SEGV")) {
-		mykillsig = SIGSEGV;
-	} else if(!strcasecmp(killsig,"ABRT")) {
-		mykillsig = SIGABRT;
-	}
 
 	parentprocess = OpenProcess(PROCESS_TERMINATE, FALSE, parentpid);
 	if(!parentprocess)

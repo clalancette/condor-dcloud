@@ -30,7 +30,6 @@ if (BUILD_TESTS)
 	# exe test targets
 	condor_exe_test(x_return-n.exe "x_return-n.cpp;x_waste_second.cpp" "")
 	condor_exe_test(x_dumpcore.exe "x_dumpcore.cpp" "")
-	condor_exe_test(x_trapsig.exe "x_trapsig.cpp" "" )
 	condor_exe_test(x_tightloop.exe "x_tightloop.cpp" "")
 	condor_exe_test(x_killppid.exe "x_killppid.cpp" "condorapi")
 	condor_exe_test(lib_chirpio.exe "lib_chirpio.cpp" "chirp_client")
@@ -40,6 +39,11 @@ if (BUILD_TESTS)
 	condor_exe_test(x_write_joblog_events.exe "x_write_joblog_events.cpp" "condorapi")
 	condor_exe_test(lib_eventlog_base.exe "lib_eventlog_base.cpp" "condorapi")
 	condor_exe_test(job_core_bigenv.exe "job_core_bigenv.cpp" "")
+	
+	if (NOT WINDOWS)
+	  condor_exe_test(x_trapsig.exe "x_trapsig.cpp" "" )
+	endif(NOT WINDOWS)
+	
 	if (STD_UNIVERSE)
 		condor_exe_test(job_core_compressfiles.exe "job_core_compressfiles.cpp" "")
 		condor_exe_test(job_core_coredump.exe "job_core_coredump.cpp" "")
@@ -48,9 +52,9 @@ if (BUILD_TESTS)
 
 	##########################################################
 	# platform specific tests
-	if(${OS_NAME} MATCHES "AIX")
+	if(AIX)
 		condor_pl_test(lib_procapi_pidtracking-snapshot "Fast Termination Child Cleanup Test" "core;quick;full;quicknolink")
-	elseif(${OS_NAME} MATCHES "LINUX")
+	elseif(LINUX)
 		condor_pl_test(job_amazon_basic "Amazon EC2 test" "quick;full")
 		condor_pl_test(lib_procapi_pidtracking-byenv "Slow Termination Child Cleanup Test" "core;quick;full;quicknolink")
 		condor_pl_test(job_core_shadow-lessthan-memlimit_van "Make sure the shadow stays below memory limit" "core;quick;full;quicknolink")
@@ -59,12 +63,12 @@ if (BUILD_TESTS)
 	endif()
 
 	# negative matches. test on everything but this
-	if(NOT ${OS_NAME} MATCHES "SOLARIS")
+	if(NOT SOLARIS AND NOT WINDOWS)
 		condor_pl_test(job_core_killsignal_sched "Scheduler: Verify the specified input file is used" "core;quick;full;quicknolink")
 		condor_pl_test(job_core_rmkillsig_sched "Scheduler: Verify the  remove_kill_sig" "core;quick;full;quicknolink")
 	endif()
 
-	if(NOT ${OS_NAME} MATCHES "HPUX")
+	if(NOT HPUX)
 		condor_pl_test(fetch_work-basic "work fetch smoke test" "core;quick;quicknolink")
 		condor_pl_test(lib_auth_protocol-ssl "SSL authentication test" "core;quick;full;quicknolink")
 		#condor_pl_test(lib_auth_protocol-pw "PW authentication test" "core;quick;full;quicknolink")

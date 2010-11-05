@@ -58,23 +58,24 @@ set (CPACK_PACKAGE_FILE_NAME "${CONDOR_VER}-${OS_NAME}-${SYS_ARCH}" )
 #option used to enable/disable make package for rpm/deb with different install paths
 option(CONDOR_PACKAGE_BUILD "Enables a package build" OFF)
 
-# 1st set the location of the install targets.
+# 1st set the location of the install targets, these are the defaults for 
 set( C_BIN			bin)
 set( C_LIB			lib)
 set( C_LIBEXEC		libexec )
 set( C_SBIN			sbin)
 
-set( C_INCLUDE		include/condor)
+set( C_INCLUDE		include)
 set( C_MAN			man)
 set( C_SRC			src)
-set( C_SQL			usr/share/condor/sql)
+set( C_SQL			sql)
 
 set( C_INIT			etc/init.d )
 set( C_ETC			etc/examples )
 set( C_CONFIGD		etc/condor/config.d )
 set( C_SYSCONFIG	etc/sysconfig )
 
-set( C_ETC_EXAMPLES	. ) #etc/examples)
+set( C_ETC_EXAMPLES etc/examples )
+set( C_SHARE_EXAMPLES .)
 set( C_DOC			. )
 
 set( C_LOCAL_DIR	var/lib/condor )

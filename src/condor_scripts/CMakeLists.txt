@@ -11,6 +11,9 @@ if (NOT WINDOWS)
 			DESTINATION ${C_SBIN} )
 
 	install ( FILES condor_configure DESTINATION ${C_SBIN} RENAME condor_install )
+	install (CODE "EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E create_symlink \${CMAKE_INSTALL_PREFIX}/${C_SBIN}/condor_install \${CMAKE_INSTALL_PREFIX}/condor_install)")
+	install (CODE "EXECUTE_PROCESS(COMMAND ${CMAKE_COMMAND} -E create_symlink \${CMAKE_INSTALL_PREFIX}/${C_SBIN}/condor_configure \${CMAKE_INSTALL_PREFIX}/condor_configure)")
+	
 
 	install ( FILES condor_ssh
 				sshd.sh

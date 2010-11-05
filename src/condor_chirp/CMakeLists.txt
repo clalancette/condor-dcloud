@@ -9,4 +9,5 @@ install ( FILES Chirp.jar DESTINATION ${C_LIB} )
 
 if (NOT WINDOWS)
 	install (TARGETS chirp_client DESTINATION ${C_LIB})
+	install (FILES chirp_client.cpp chirp_client.h chirp_protocol.h DESTINATION ${C_SRC}/chirp)
 endif (NOT WINDOWS)

@@ -48,6 +48,9 @@ if ( NOT PROPER AND WITH_DRMAA )
 	set( HAVE_EXT_DRMAA ON PARENT_SCOPE )
 	append_var (CONDOR_EXTERNALS drmaa)
 
+	# i've tar bundled drmaa, does anyone actually use this?  if so I can explode. 
+	install ( FILES ${EXTERNAL_DL}/${DRMAA_VER}.tar.gz DESTINATION ${C_SRC} )
+
 else ()
 	message ( STATUS "external skipped (drmaa)" )
 endif ()

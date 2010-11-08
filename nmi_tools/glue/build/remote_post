@@ -67,11 +67,11 @@ if( ! -d $pub_dir ) {
 
 # copy in the package targets
 if( $ENV{NMI_PLATFORM} =~ /winnt/ ) {
-	system("mv *.msi *.zip $pub_dir");
+	system("mv *.msi *.zip *.tar.gz $pub_dir");
 }
 else
 {
-	system("mv condor*.tar.gz *.rpm $pub_dir");
+	system("mv *.tar.gz *.rpm *.deb $pub_dir");
 }
 
 system("cmake -E md5sum $pub_dir/* md5s.txt");

@@ -5,7 +5,7 @@ if ( LINUX AND WITH_VOMS )
 
 	if (NOT PROPER)
 
-		set (VOMS_VER voms-1.8.8_2)
+		set (VOMS_VER voms-1.9.10_4)
 
 		ExternalProject_Add(voms
 							DEPENDS expat openssl globus zlib
@@ -16,8 +16,8 @@ if ( LINUX AND WITH_VOMS )
 							URL http://parrot.cs.wisc.edu/externals/${VOMS_VER}.tar.gz
 							#--Patch step ----------
 							PATCH_COMMAND patch -p0 < ${CMAKE_CURRENT_SOURCE_DIR}/configure.patch &&
-								patch -p0 < ${CMAKE_CURRENT_SOURCE_DIR}/includes.patch &&
 								patch -p0 < ${CMAKE_CURRENT_SOURCE_DIR}/makefile.patch &&
+								patch -p0 < ${CMAKE_CURRENT_SOURCE_DIR}/private.patch &&
 								${CMAKE_CURRENT_SOURCE_DIR}/voms_file_patch.sh
 							#--Configure step ----------
 							CONFIGURE_COMMAND cd org.glite.security.voms &&

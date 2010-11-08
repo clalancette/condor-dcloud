@@ -294,6 +294,10 @@ include_directories( ${EXTERNAL_STAGE}/include )
 link_directories( ${EXTERNAL_STAGE}/lib ${EXTERNAL_STAGE}/lib64 )
 
 ###########################################
+add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/boost/1.33.1)
+if (PROPER AND WITH_BOOST)
+  include_directories(${BOOST_FOUND})
+endif(PROPER AND WITH_BOOST)
 add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/krb5/1.4.3-p0)
 add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/openssl/0.9.8h-p2)
 add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/pcre/7.6)
@@ -326,11 +330,11 @@ if (NOT WINDOWS)
 	endif(PROPER AND GLOBUS_FOUND)
 
 	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/blahp/1.16.0-p2)
-	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/voms/1.8.8_2-p2)
+	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/voms/1.9.10_4)
 
 	dprint("stork is the only thing to use SRB, I'm commenting out")
 	# add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/srb/3.2.1-p2)
-	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/cream/1.10.1-p6)
+	add_subdirectory(${CONDOR_EXTERNAL_DIR}/bundles/cream/1.12.1_14)
 
 	# the following logic if for standard universe *only*
 	if (LINUX AND NOT CLIPPED AND GLIBC_VERSION AND NOT PROPER)

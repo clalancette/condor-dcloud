@@ -26,7 +26,7 @@ if (WITH_BOOST)
 				    	./build.${JAM_EXT} ${CMD_TERM}
 						mv `find . | grep bjam` ../../../
 				    #--Build Step ----------
-				    BUILD_COMMAND cd boost_${BOOST_VER} && bjam -sNO_COMPRESSION=1 -sTOOLS=${TOOLSET} --prefix=${EXTERNAL_STAGE} link=static install
+				    BUILD_COMMAND cd boost_${BOOST_VER} && bjam -sNO_COMPRESSION=1 -sTOOLS=${TOOLSET} --prefix=${EXTERNAL_STAGE} install
 				    BUILD_IN_SOURCE 1
 				    #--install Step ----------
 				    INSTALL_DIR ${EXTERNAL_STAGE}

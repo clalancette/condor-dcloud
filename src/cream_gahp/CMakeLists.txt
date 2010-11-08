@@ -4,7 +4,8 @@ if ( HAVE_EXT_CREAM AND NOT PROPER )
 	# externals
 	include_directories ( ${CREAM_STAGE}/include )
 	link_directories ( ${CREAM_STAGE}/lib )
-
+	add_definitions(-D_REENTRANT)
+	
 	condor_exe( cream_gahp
 		"cream_gahp_server.cpp"
 		${C_SBIN}

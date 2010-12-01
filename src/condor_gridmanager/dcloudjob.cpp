@@ -216,7 +216,8 @@ DCloudJob::DCloudJob( ClassAd *classad )
 	char *serviceType = NULL, *name = NULL, *id = NULL;
 	char **resource_targets[] = { &serviceType, &m_serviceUrl, &m_username,
 				      &m_password, &m_imageId, &m_instanceName,
-				      &m_realmId, &m_hwpId, &m_keyname, NULL };
+				      &m_realmId, &m_hwpId, &m_keyname,
+				      &m_userdata, NULL };
 	char **job_id_targets[] = { &serviceType, &name, &id, NULL };
 
 	m_serviceUrl = NULL;
@@ -228,6 +229,7 @@ DCloudJob::DCloudJob( ClassAd *classad )
 	m_username = NULL;
 	m_password = NULL;
 	m_keyname = NULL;
+	m_userdata = NULL;
 
 	remoteJobState = "";
 	gmState = GM_INIT;
@@ -337,6 +339,7 @@ DCloudJob::~DCloudJob()
 	free( m_username );
 	free( m_password );
 	free( m_keyname );
+	free( m_userdata );
 }
 
 
@@ -521,6 +524,7 @@ void DCloudJob::doEvaluateState()
                                         dprintf(D_ALWAYS, "  realm id: %s\n", m_realmId);
                                         dprintf(D_ALWAYS, "  hardware profile id: %s\n", m_hwpId);
                                         dprintf(D_ALWAYS, "  keyname: %s\n", m_keyname);
+                                        dprintf(D_ALWAYS, "  userdata: %s\n", m_userdata);
 
 					rc = gahp->dcloud_submit( m_serviceUrl,
 											  m_username,
@@ -530,6 +534,7 @@ void DCloudJob::doEvaluateState()
 											  m_realmId,
 											  m_hwpId,
 											  m_keyname,
+											  m_userdata,
 											  instance_attrs );
 					if ( rc == GAHPCLIENT_COMMAND_NOT_SUBMITTED ||
 						 rc == GAHPCLIENT_COMMAND_PENDING ) {

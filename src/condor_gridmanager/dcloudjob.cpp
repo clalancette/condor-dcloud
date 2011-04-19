@@ -393,7 +393,7 @@ void DCloudJob::doEvaluateState()
 				rc = gahp->dcloud_find( m_serviceUrl,
 										m_username,
 										m_password,
-										m_instanceName,
+										m_instanceId,
 										&instance_id );
 				if ( rc == GAHPCLIENT_COMMAND_NOT_SUBMITTED ||
 					 rc == GAHPCLIENT_COMMAND_PENDING ) {

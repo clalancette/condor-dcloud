@@ -598,12 +598,12 @@ cleanup_password:
 }
 
 /*
- * DELTACLOUD_VM_FIND <reqid> <url> <user> <password_file> <name>
- *  where reqid, url, user, password_file, and name have to be non-NULL.
+ * DELTACLOUD_VM_FIND <reqid> <url> <user> <password_file> <id>
+ *  where reqid, url, user, password_file, and id have to be non-NULL.
  */
 bool dcloud_find_worker(int argc, char **argv, std::string &output_string)
 {
-    char *url, *user, *password_file, *password, *name, *reqid;
+    char *url, *user, *password_file, *password, *id, *reqid;
     struct deltacloud_api api;
     struct deltacloud_instance inst;
     int rc;
@@ -620,9 +620,9 @@ bool dcloud_find_worker(int argc, char **argv, std::string &output_string)
     url = argv[2];
     user = argv[3];
     password_file = argv[4];
-    name = argv[5];
+    id = argv[5];
 
-    dcloudprintf("Arguments: reqid %s, url %s, user %s, password_file %s, name %s\n", reqid, url, user, password_file, name);
+    dcloudprintf("Arguments: reqid %s, url %s, user %s, password_file %s, id %s\n", reqid, url, user, password_file, id);
 
     if (STRCASEEQ(url, NULLSTRING)) {
         output_string = create_failure(reqid, "Invalid_URL");
@@ -632,8 +632,8 @@ bool dcloud_find_worker(int argc, char **argv, std::string &output_string)
         output_string = create_failure(reqid, "Invalid_User");
         return FALSE;
     }
-    if (STRCASEEQ(name, NULLSTRING)) {
-        output_string = create_failure(reqid, "Invalid_Name");
+    if (STRCASEEQ(id, NULLSTRING)) {
+        output_string = create_failure(reqid, "Invalid_Id");
         return FALSE;
     }
 
@@ -652,7 +652,7 @@ bool dcloud_find_worker(int argc, char **argv, std::string &output_string)
         goto cleanup_password;
     }
 
-    rc = deltacloud_get_instance_by_name(&api, name, &inst);
+    rc = deltacloud_get_instance_by_id(&api, id, &inst);
     if (rc == 0) {
         /* found the instance, output the id */
         output_string = reqid;
@@ -667,15 +667,14 @@ bool dcloud_find_worker(int argc, char **argv, std::string &output_string)
         last = deltacloud_get_last_error();
         if (!last) {
             output_string = create_failure(reqid,
-                                           "Instance_Fetch_Failure %s",
-                                           name);
+                                           "Instance_Fetch_Failure %s", id);
             goto cleanup_library;
         }
-        else if(last->error_num != DELTACLOUD_NAME_NOT_FOUND_ERROR) {
+        else if(last->error_num != DELTACLOUD_GET_URL_ERROR) {
             /* failed to find the instance, output an error */
             output_string = create_failure(reqid,
                                            "Instance_Fetch_Failure %s: %s",
-                                           name, last->details);
+                                           id, last->details);
             goto cleanup_library;
         }
         else {

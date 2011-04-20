@@ -161,6 +161,7 @@ DCloudJob::DCloudJob( ClassAd *classad )
 	m_userdata = NULL;
 
 	remoteJobState = "";
+	createdStopped = false;
 	gmState = GM_INIT;
 	probeNow = false;
 	enteredCurrentGmState = time(NULL);
@@ -517,6 +518,7 @@ void DCloudJob::doEvaluateState()
 
 						if ( remoteJobState == DCLOUD_VM_STATE_STOPPED ) {
 							gmState = GM_START_VM;
+							createdStopped = true;
 						} else {
 							gmState = GM_SAVE_INSTANCE_ID;
 						}
@@ -584,10 +586,8 @@ void DCloudJob::doEvaluateState()
 
 			case GM_SUBMITTED:
 
-				// TODO Make sure instances that begin in the 'stopped'
-				//   state aren't flagged here.
-				if ( remoteJobState == DCLOUD_VM_STATE_FINISH ||
-					 remoteJobState == DCLOUD_VM_STATE_STOPPED ) {
+				if ( !createdStopped && (remoteJobState == DCLOUD_VM_STATE_FINISH ||
+						   remoteJobState == DCLOUD_VM_STATE_STOPPED) ) {
 
 					gmState = GM_DONE_SAVE;
 
@@ -597,8 +597,14 @@ void DCloudJob::doEvaluateState()
 
 				} else if ( probeNow ) {
 					gmState = GM_PROBE_JOB;
-					break;
 				}
+
+				/* we reset this back to false so that if we
+				 * come back into GM_SUBMITTED later on for this
+				 * job, we will properly do the remoteJobState
+				 * checks
+				 */
+				createdStopped = false;
 
 				break;
 

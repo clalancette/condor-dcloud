@@ -80,6 +80,7 @@ public:
 
 	MyString errorString;
 	MyString remoteJobState;
+	bool createdStopped;
 
 	DCloudResource *myResource;
 	GahpClient *gahp;
